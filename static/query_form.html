@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <link rel="icon" href="img/favicon.ico"/>
+
+    <title>Aurora SDG Project - Query execution</title>
+    <link href="css/bootstrap.css" rel="stylesheet"/>
+    <link href="css/ie10-viewport-bug-workaround.css" rel="stylesheet"/>
+    <link href="css/jumbotron.css" rel="stylesheet"/>
+
+    <script src="js/ie-emulation-modes-warning.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="col-md-12">
+        <h1>Define new query</h1>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Query</h3>
+            </div>
+            <div class="panel-body">
+                <form name="queryDefinition" action="" method="POST" id="form">
+                    <fieldset>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="Name of query" name="identifier" type="text"
+                                   autofocus/>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="form-control" placeholder="Topic search string" name="topic" type="text"
+                                      value="" rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="Year search string" name="year" type="text"
+                                   value=""/>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="form-control" placeholder="Author search string" name="author" type="text"
+                                      value="" rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="form-control" placeholder="Subject search string" name="subject" type="text"
+                                      value="" rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="Title search string" name="title" type="text"
+                                   value=""/>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="form-control" placeholder="Author-ID search string" name="author_id"
+                                      type="text" value="" rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="form-control" placeholder="Affiliation-ID search string" name="affiliation_id"
+                                      type="text" value="" rows="4"></textarea>
+                        </div>
+                        <input class="btn btn-lg btn-success btn-block" type="submit" value="submit" id="submit" />
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="js/jquery.min.js"></script>
+<!--  <script>window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')</script> -->
+<script src="js/bootstrap.min.js"></script>
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="js/ie10-viewport-bug-workaround.js"></script>
+<script src="js/form_submit.js"></script>
+
+</body>
+</html>

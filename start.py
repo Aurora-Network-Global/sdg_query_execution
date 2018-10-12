@@ -2,10 +2,17 @@ import csv
 import json
 import requests
 import os
+import hashlib
+import scopus
 
 from flask import Flask
 from flask import request
 from elasticsearch import Elasticsearch
+
+from model.AllResponses import AllResponses
+from model.Unpaywall import Unpaywall
+from utilities import utils
+
 es = Elasticsearch()
 
 # configure FLASK and get the parameters from the settings file
@@ -17,44 +24,12 @@ location = app.config.get("LIBINTEL_DATA_DIR")
 elsevier_url = app.config.get("ELSEVIER_URL")
 altmetric_url = app.config.get("ALTMETRIC_URL")
 altmetric_key = app.config.get("ALTMETRIC_API_KEY")
+altmetric_secret = app.config.get("ALTMETRIC_API_SECRET")
 scopus_api_key = app.config.get("SCOPUS_API_KEY")
 unpaywall_api_url = app.config.get("UNPAYWALLL_API_URL")
 libintel_user_email = app.config.get("LIBINTEL_USER_EMAIL")
 
-
-# read in the JSON-data from the request and convert them to a scopus query string
-# (one could add alternative query targets here, for example transforming the individual query strings to a WoS-Search
-def convert_search_to_scopus_search_string(search):
-    search_string = ""
-    if search["author_name"]:
-        if search_string != "":
-            search_string += " AND "
-        search_string += "AUTH(" + search["author"] + ")"
-    if search["topic"]:
-        if search_string != "":
-            search_string += " AND "
-        search_string += "TITLE-ABS-KEY(" + search["topic"] + ")"
-    if search["year"]:
-        if search_string != "":
-            search_string += " AND "
-        search_string += "PUBYEAR(" + search["year"] + ")"
-    if search["title"]:
-        if search_string != "":
-            search_string += " AND "
-        search_string += "TITLE(" + search["title"] + ")"
-    if search["subject"]:
-        if search_string != "":
-            search_string += " AND "
-        search_string += "SUBJAREA(" + search["subject"] + ")"
-    if search["author_id"]:
-        if search_string != "":
-            search_string += " AND "
-        search_string += "AU-ID(" + search["author_id"] + ")"
-    if search["affiliation_id"]:
-        if search_string != "":
-            search_string += " AND "
-        search_string += 'AF-ID(' + search["affiliation_id"] + ')'
-    return search_string
+unpaywall = Unpaywall(libintel_user_email)
 
 
 @app.route('/query_execution', methods=['POST'])
@@ -68,16 +43,64 @@ def query_execution():
 
     print(search)
 
-    query_id = search['identifier']
+    # get the identifier from the set, this will determine the index in elasticsearch
+    query_id = search['query_id']
 
     # convert the JSON search object to the search string for the scopus api
-    search_string = convert_search_to_scopus_search_string(search).replace(" ", "+")
+    search_string = utils.convert_search_to_scopus_search_string(search)
 
+    print(search_string)
+
+    # perform the search in Scopus
+    search = scopus.ScopusSearch(search_string, refresh=True)
+
+    # retrieve the EIDs
+    eids = search.EIDS
+
+    total_number_of_results = eids.__len__()
+
+    print('found ' + str(total_number_of_results) + ' in Scopus')
+
+    # save_eids_to_file(eids)
+
+    # for each EID , create a AllResponses object and attach the full data set from scopus,
+    # the altmetric response and the unpaywall response
+    if eids.__len__() > 0:
+
+        responses = []
+        for idx, eid in enumerate(eids):
+
+
+            print('processing entry ' + str(idx) + 'of ' + str(total_number_of_results) + ' entries: ' + str(idx/total_number_of_results * 100) + '%')
+
+            # retrieve data from scopus
+            scopus_abstract = scopus.ScopusAbstract(eid, view="FULL")
+
+            # create new AllResponses object to hold the individual information
+            response = AllResponses(eid)
+
+            # add scopus abstract to AllResponses object
+            response.scopusAbtractRetrieval = scopus_abstract
+
+            # get doi and collect unpaywall data and Altmetric data
+            doi = scopus_abstract.doi
+            if doi is not "":
+                response.UnpaywallResponse = get_unpaywall_data(doi)
+                response.AltmetricResponse = get_altmetric_data(doi)
+
+            # add response to list of responses
+            responses.append(response)
+
+            # send response to elastic search index
+            send_to_index(response, query_id)
+
+
+    return 'ok'
     # define the number of results for further requests
     results_per_page = 100
 
     # define the url to be queried, first of all get only the number of results, hence only 1 result per page
-    url = elsevier_url + '/content/search/scopus?count=1&query=' + search_string + '&apiKey=' + scopus_api_key
+    url = elsevier_url + '/content/search/scopus?count=1&query=' + search_string.replace(" ", "+") + '&apiKey=' + scopus_api_key
     print("querying URL: " + url)
 
     # perform the query
@@ -154,6 +177,13 @@ def send_to_index(document, query_id):
     return res['result']
 
 
+def send_to_index(all_responses: AllResponses, query_id):
+    scopus_response = all_responses.scopusAbtractRetrieval
+    res = es.index(query_id, 'scopus_abstract', scopus_response.toJSON(), all_responses.id)
+    print('saved to index ' + query_id)
+    return res['result']
+
+
 # persist the resulting json document on disk
 def save_to_file(documents):
     out_dir = location + '/out/'
@@ -187,19 +217,27 @@ def get_citation_data_from_scopus(document):
             document['citation_response'] = r.json()
 
 
-def get_unpaywall_data(document):
-    if document['prism:doi'] is not None:
-        url = unpaywall_api_url + '/' + document['prism:doi'] + "?email=" + libintel_user_email
+def get_unpaywall_data(doi):
+        url = unpaywall_api_url + '/' + doi + "?email=" + libintel_user_email
         r = requests.get(url)
         print("queryied URL: " + url + " with status code " + str(r.status_code))
         if r.status_code == 200:
-            document['unpaywall_response'] = r.json()
+            return r.json()
 
 
-def get_altmetric_data(document):
-    if document['prism:doi'] is not None:
-        url = altmetric_url + '/doi/' + document['prism:doi'] + '?key=' + altmetric_key
-        r = requests.get(url)
-        print("queryied URL: " + url + " with status code " + str(r.status_code))
-        if r.status_code == 200:
-            document['altmetric_response'] = r.json()
+def get_altmetric_data(doi):
+
+    url = altmetric_url + '/doi/' + doi + '?key=' + altmetric_key
+    r = requests.get(url)
+    print("queryied URL: " + url + " with status code " + str(r.status_code))
+    if r.status_code == 200:
+        return r.json()
+    # filters = ''
+    # searchterm = []
+    # for term in searchterm:
+    #   filters += '|' + term
+    # digest = hashlib.sha1()
+    # first_digest = digest.sha1(filters)
+    # second_digest = first_digest.update(altmetric_secret)
+
+
