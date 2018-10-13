@@ -35,6 +35,7 @@ def convert_search_to_scopus_search_string(search):
     return search_string
 
 
+# TO DO: apply Altmeric search fields to procedure. Up to now only copy of Scopus procedure.
 def convert_search_to_altmetric_seach_string(search):
     search_string = ""
     if search["author_name"]:

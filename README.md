@@ -61,13 +61,24 @@ UNPAYWALLL_API_URL = "https://api.unpaywall.org/my/request"
 
 To start the application the virtual environment has to be activated.
 After that some environmental parameters need to be set for the flask application.
-For a development version the following code can be executed: 
+For a development version the following code can be executed:
 
+ 
+On Windows Powershell:
 ```
 ./venv/Scripts/activate
 $env:FLASK_APP="start.py"
 $env:FLASK_ENV="development"
 $env:LIBINTEL_SETTINGS = "${USER_HOME}\\.libintel\\config\\query_execution.cfg"
+python -m flask run
+```
+
+On the Linus Command Prompt:
+```
+./venv/Scripts/activate
+export FLASK_APP="start.py"
+export FLASK_ENV="development"
+export LIBINTEL_SETTINGS = "${USER_HOME}\\.libintel\\config\\query_execution.cfg"
 python -m flask run
 ```
 

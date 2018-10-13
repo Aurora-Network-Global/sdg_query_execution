@@ -6,13 +6,16 @@ from utilities import utils
 
 class Altmetric:
 
-    def __init__(self, key):
+    def __init__(self):
         self.altmetric_url = "https://api.altmetric.com/v1"
-        self.api_key = key
+        self.api_key = ""
         self.secret = ""
 
     def set_secret(self, secret):
         self.secret = secret
+
+    def set_key(self, api_key):
+        self.api_key = api_key
 
     def get_data_for_doi(self, doi):
         url = self.altmetric_url + '/doi/' + doi + '?key=' + self.api_key
