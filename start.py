@@ -2,13 +2,15 @@ import json
 import requests
 import os
 import scopus
+import csv
 
-from flask import Flask
+from flask import Flask, send_file
 from flask import request
 from elasticsearch import Elasticsearch
 
 from model.AllResponses import AllResponses
 from altmetric.Altmetric import Altmetric
+from scival.Scival import Scival
 from unpaywall.Unpaywall import Unpaywall
 from utilities import utils
 
@@ -33,15 +35,46 @@ def hello():
     return "Hello World!"
 
 
-@app.route('/query_execution', methods=['POST'])
-def query_execution():
+@app.route("/downloadEids/<query_id>", methods=['GET'])
+def download_eids(query_id):
+    path_to_file = location + '/out/' + query_id + '/' + 'eids_list.txt'
+    try:
+        return send_file(path_to_file, attachment_filename='eids_list.txt')
+    except Exception as e:
+        return str(e)
+
+
+@app.route('/uploadScivalData/<query_id>', methods=['POST'])
+def upload_file(query_id):
+    if request.method == 'POST':
+        file = request.files['scival-file']
+        path_to_save = location + '/out/' + query_id + '/'
+        if not os.path.exists(path_to_save):
+            os.makedirs(path_to_save)
+        print(path_to_save)
+        file.save(path_to_save + 'scival_data.csv')
+
+
+@app.route('/importScivalData/<query_id>', methods=['Get'])
+def import_scival_data(query_id):
+    with open(location + '/out/' + query_id + '/' + 'scival_data.csv', 'r') as csvfile:
+        scivals = []
+        linereader = csv.reader(csvfile, delimiter=',')
+        for row in linereader:
+            if row.__len__() != 32:
+                continue
+            if row[0] == 'Title':
+                continue
+            scival = Scival(row)
+            # append_to_index(scival, scival._eid, query_id)
+            scivals.append(scival)
+    return "imported " + str(scivals.__len__()) + " Scival data"
+
+
+@app.route('/query_execution/<query_id>', methods=['POST'])
+def query_execution(query_id):
     # load the search queries from the http POST body
     search = request.get_json(silent=True)
-
-    print(search)
-
-    # get the identifier from the set, this will determine the index in elasticsearch
-    query_id = search['query_id']
 
     # prepare location for saving data
     out_dir = location + '/out/' + query_id + '/'
@@ -74,7 +107,7 @@ def query_execution():
         for idx, eid in enumerate(eids):
             # print progress
             print('processing entry ' + str(idx) + 'of ' + str(total_number_of_results) + ' entries: ' +
-                  str(idx/total_number_of_results * 100) + '%')
+                  str(idx / total_number_of_results * 100) + '%')
 
             # retrieve data from scopus
             scopus_abstract = scopus.ScopusAbstract(eid, view="FULL")
@@ -124,6 +157,14 @@ def save_eids_to_file(eids, out_dir):
 def send_to_index(all_responses: AllResponses, query_id):
     all_responses_json = json.dumps(all_responses, cls=HiddenEncoder)
     res = es.index(query_id, 'all_data', all_responses_json, all_responses.id)
+    print('saved to index ' + query_id)
+    return res
+
+
+def append_to_index(document, eid, query_id):
+    document_json = json.dumps(document)
+    es.update(query_id, 'all_data', eid.scival, document_json)
+    res = es.index(query_id, 'all_data', document_json, eid)
     print('saved to index ' + query_id)
     return res
 
