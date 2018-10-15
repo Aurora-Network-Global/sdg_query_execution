@@ -287,7 +287,7 @@ class ScopusAbstract(object):
             self._scopus_url = None
         subjectAreas = self.xml.find('subject-areas', ns)
         try:
-            self._subjectAreas =  [a.text for a in subjectAreas]
+            self._subjectAreas = [a.text for a in subjectAreas]
         except:
             self._subjectAreas = None
         cite_link = self.coredata.find('link[@rel="scopus-citedby"]', ns)

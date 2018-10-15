@@ -2,7 +2,6 @@ import json
 import requests
 import os
 import scopus
-import pickle
 
 from flask import Flask
 from flask import request
@@ -27,11 +26,6 @@ altmetric_key = app.config.get("ALTMETRIC_API_KEY")
 altmetric_secret = app.config.get("ALTMETRIC_API_SECRET")
 scopus_api_key = app.config.get("SCOPUS_API_KEY")
 libintel_user_email = app.config.get("LIBINTEL_USER_EMAIL")
-
-# initialize the API connectors for Unpaywall and Altmetric.
-altmetric = Altmetric()
-altmetric.set_key(altmetric_key)
-altmetric.set_secret(altmetric_secret)
 
 
 @app.route("/")
@@ -79,7 +73,8 @@ def query_execution():
         responses = []
         for idx, eid in enumerate(eids):
             # print progress
-            print('processing entry ' + str(idx) + 'of ' + str(total_number_of_results) + ' entries: ' + str(idx/total_number_of_results * 100) + '%')
+            print('processing entry ' + str(idx) + 'of ' + str(total_number_of_results) + ' entries: ' +
+                  str(idx/total_number_of_results * 100) + '%')
 
             # retrieve data from scopus
             scopus_abstract = scopus.ScopusAbstract(eid, view="FULL")
@@ -94,7 +89,7 @@ def query_execution():
             doi = scopus_abstract.doi
             if doi is not "":
                 response.unpaywall_response = Unpaywall(libintel_user_email, doi)
-                # response.altmetric_response = altmetric.get_data_for_doi(doi)
+                response.altmetric_response = Altmetric(altmetric_key, doi)
 
             # add response to list of responses
             responses.append(response)
@@ -140,6 +135,7 @@ def save_to_file(documents, out_dir):
     with open(out_dir + 'data_out.json', 'w') as json_file:
         json.dump(documents, json_file)
     print('saved results to disk')
+
 
 class HiddenEncoder(json.JSONEncoder):
     def default(self, o):
