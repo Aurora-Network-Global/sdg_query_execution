@@ -35,18 +35,18 @@ class Scival:
             self._country = row[30].split(', ')
             self._all_science_classification = row[31].split('; ')
         else:
-            self._title = ""
-            self._authors = ""
+            self._title = ''
+            self._authors = ''
             self._number_of_authors = 0
             self._scopus_author_ids = []
             self._year = 0
-            self._scopus_source_title = ""
-            self._volume = ""
-            self._issue = ""
-            self._pages = ""
-            self._issn = ""
-            self._source_id = ""
-            self._source_type = ""
+            self._scopus_source_title = ''
+            self._volume = ''
+            self._issue = ''
+            self._pages = ''
+            self._issn = ''
+            self._source_id = ''
+            self._source_type = ''
             self._snip = 1
             self._cite_score = 1
             self._sjr = 1
@@ -56,12 +56,12 @@ class Scival:
             self._field_weighted_citation_impact = 1
             self._output_in_top_percentiles = 100
             self._field_weighted_output_in_top_citation_percentiles = 100
-            self._reference = ""
-            self._abstract_url = ""
-            self._doi = ""
-            self._publication_type = ""
-            self._eid = ""
-            self._pubmed_id = ""
+            self._reference = ''
+            self._abstract_url = ''
+            self._doi = ''
+            self._publication_type = ''
+            self._eid = ''
+            self._pubmed_id = ''
             self._institutions = []
             self._scopus_affil_ids = []
             self._scopus_affil_names = []
@@ -71,3 +71,11 @@ class Scival:
     def __getstate__(self):
         state = self.__dict__.copy()
         return state
+
+    @property
+    def eid(self):
+        return self._eid
+
+    @property
+    def title(self):
+        return self._title

@@ -10,6 +10,8 @@ from elasticsearch import Elasticsearch
 
 from model.AllResponses import AllResponses
 from altmetric.Altmetric import Altmetric
+from model.ScivalUpdate import ScivalUpdate
+from model.UpdateContainer import UpdateContainer
 from scival.Scival import Scival
 from unpaywall.Unpaywall import Unpaywall
 from utilities import utils
@@ -66,7 +68,7 @@ def import_scival_data(query_id):
             if row[0] == 'Title':
                 continue
             scival = Scival(row)
-            # append_to_index(scival, scival._eid, query_id)
+            append_to_index(ScivalUpdate(scival), scival.eid, query_id)
             scivals.append(scival)
     return "imported " + str(scivals.__len__()) + " Scival data"
 
@@ -123,6 +125,7 @@ def query_execution(query_id):
             if doi is not "":
                 response.unpaywall_response = Unpaywall(libintel_user_email, doi)
                 response.altmetric_response = Altmetric(altmetric_key, doi)
+                response.scival_data = Scival([])
 
             # add response to list of responses
             responses.append(response)
@@ -156,15 +159,16 @@ def save_eids_to_file(eids, out_dir):
 
 def send_to_index(all_responses: AllResponses, query_id):
     all_responses_json = json.dumps(all_responses, cls=HiddenEncoder)
+    print(all_responses_json)
     res = es.index(query_id, 'all_data', all_responses_json, all_responses.id)
     print('saved to index ' + query_id)
     return res
 
 
 def append_to_index(document, eid, query_id):
-    document_json = json.dumps(document)
-    es.update(query_id, 'all_data', eid.scival, document_json)
-    res = es.index(query_id, 'all_data', document_json, eid)
+    update_container = UpdateContainer(document)
+    update_json = json.dumps(update_container, cls=HiddenEncoder)
+    res = es.update(index=query_id, doc_type="all_data", id=eid, body=update_json)
     print('saved to index ' + query_id)
     return res
 
