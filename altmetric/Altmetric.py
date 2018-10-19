@@ -8,7 +8,7 @@ class Altmetric:
         self.api_key = api_key
         url = self.altmetric_url + '/doi/' + doi + '?key=' + self.api_key
         r = requests.get(url)
-        print("queryied URL: " + url + " with status code " + str(r.status_code))
+        # print("queryied URL: " + url + " with status code " + str(r.status_code))
         if r.status_code == 200:
             self.json = r.json()
             try:

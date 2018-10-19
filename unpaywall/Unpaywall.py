@@ -8,7 +8,7 @@ class Unpaywall:
         self.email = email
         url = self.unpaywall_url + '/' + doi + "?email=" + self.email
         r = requests.get(url)
-        print("queryied URL: " + url + " with status code " + str(r.status_code))
+        # print("queryied URL: " + url + " with status code " + str(r.status_code))
         if r.status_code == 200:
             self.json = r.json()['results'][0]
             self._doi = self.json['doi']
