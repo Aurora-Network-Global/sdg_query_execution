@@ -3,7 +3,6 @@ import requests
 import os
 import scopus
 import csv
-import pytextrank
 
 from flask import Flask, send_file, jsonify
 from flask import request
@@ -358,13 +357,6 @@ def save_to_file(documents, out_dir):
     with open(out_dir + 'data_out.json', 'w') as json_file:
         json.dump(documents, json_file)
     print('saved results to disk')
-
-@app.route("/calculateTextrank/<query_id>")
-def calculate_text_rank(query_id):
-    path_to_file = location + '/out/' + query_id + '/abstracts.json'
-    for graf in pytextrank.parse_doc(pytextrank.json_iter(path_to_file)):
-        print(pytextrank.pretty_print(graf))
-    return "ok"
 
 class HiddenEncoder(json.JSONEncoder):
     def default(self, o):
