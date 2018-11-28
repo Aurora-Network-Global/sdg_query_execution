@@ -30,6 +30,7 @@ plac==0.9.6
 preshed==1.0.1
 pyparsing==2.2.2
 pyreadline==2.1
+pytextrank==1.1.0
 python-dateutil==2.7.3
 redis==2.10.6
 regex==2017.4.5

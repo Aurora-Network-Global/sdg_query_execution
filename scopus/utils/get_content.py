@@ -65,6 +65,7 @@ def download(url, params=None, accept="xml"):
         # Authentication with Key from my_scopus.py file
         try:
             key = scopus.MY_API_KEY
+            params.put("apiKey", key)
         except AttributeError:
             load_api_key()  # loads MY_API_KEY in scopus namespace
         header = {'X-ELS-APIKey': scopus.MY_API_KEY}

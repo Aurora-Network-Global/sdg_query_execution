@@ -3,6 +3,7 @@ import requests
 import os
 import scopus
 import csv
+import pytextrank
 
 from flask import Flask, send_file, jsonify
 from flask import request
@@ -224,7 +225,7 @@ def query_execution(query_id):
 
 
     # perform the search in Scopus
-    search = scopus.ScopusSearch(search_string, refresh=True)
+    search = scopus.ScopusSearch(search_string, refresh=True, query_id = query_id)
 
     # retrieve the EIDs
     eids = search.EIDS
@@ -278,9 +279,10 @@ def query_execution(query_id):
                 # get doi and collect unpaywall data and Altmetric data
                 doi = scopus_abstract.doi
                 if doi is not "":
-                    response.unpaywall_response = Unpaywall(libintel_user_email, doi)
-                    response.altmetric_response = Altmetric(altmetric_key, doi)
-                    response.scival_data = Scival([])
+                    if doi is not None:
+                        response.unpaywall_response = Unpaywall(libintel_user_email, doi)
+                        response.altmetric_response = Altmetric(altmetric_key, doi)
+                        response.scival_data = Scival([])
 
                 # add response to list of responses
                 responses.append(response)
@@ -357,6 +359,13 @@ def save_to_file(documents, out_dir):
     with open(out_dir + 'data_out.json', 'w') as json_file:
         json.dump(documents, json_file)
     print('saved results to disk')
+
+@app.route("/calculateTextrank/<query_id>")
+def calculate_text_rank(query_id):
+    path_to_file = location + '/out/' + query_id + '/abstracts.json'
+    for graf in pytextrank.parse_doc(pytextrank.json_iter(path_to_file)):
+        print(pytextrank.pretty_print(graf))
+    return "ok"
 
 class HiddenEncoder(json.JSONEncoder):
     def default(self, o):

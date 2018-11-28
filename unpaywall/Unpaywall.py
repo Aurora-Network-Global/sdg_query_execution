@@ -21,7 +21,10 @@ class Unpaywall:
             self._license = self.json['license']
             self._oa_color = self.json['oa_color']
             self._reported_noncompliant_copies = self.json['reported_noncompliant_copies']
-            self._title = self.json['title']
+            try:
+                self._title = self.json['title']
+            except KeyError:
+                self._title = "no title given"
             self._url = self.json['url']
 
     @property
@@ -74,7 +77,10 @@ class Unpaywall:
 
     def __getstate__(self):
         state = self.__dict__.copy()
-        del state['email']
-        del state['unpaywall_url']
-        del state['json']
-        return state
+        try:
+            del state['email']
+            del state['unpaywall_url']
+            del state['json']
+            return state
+        except KeyError:
+            return state

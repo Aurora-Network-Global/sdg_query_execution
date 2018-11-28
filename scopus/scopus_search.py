@@ -18,7 +18,7 @@ class ScopusSearch(object):
         return self._EIDS
 
     def __init__(self, query, fields='eid', count=200, start=0,
-                 max_entries=5000, refresh=False):
+                 max_entries=100000, refresh=False, query_id='1'):
         """Class to search a query, and retrieve a list of EIDs as results.
 
         Parameters
@@ -62,7 +62,7 @@ class ScopusSearch(object):
         qfile = os.path.join(SCOPUS_SEARCH_DIR,
                              # We need to remove / in a DOI here so we can save
                              # it as a file.
-                             query.replace('/', '_slash_'))
+                             query_id)
 
         if os.path.exists(qfile) and not refresh:
             with open(qfile) as f:
