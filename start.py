@@ -241,8 +241,15 @@ def query_execution(query_id):
                 relevance_measure.true_positives = relevance_measure.true_positives + 1
             relevance_measure.false_positives = relevance_measure.total_number_of_query_results - relevance_measure.true_positives
             relevance_measure.false_negatives = relevance_measure.number_of_test_entries - relevance_measure.true_positives
-            relevance_measure.precision = relevance_measure.true_positives / relevance_measure.total_number_of_query_results
-            relevance_measure.recall = relevance_measure.true_positives / relevance_measure.number_of_test_entries
+            if relevance_measure.total_number_of_query_results > 0:
+                relevance_measure.precision = relevance_measure.true_positives / relevance_measure.total_number_of_query_results
+            else:
+                relevance_measure.precision = 0
+            if relevance_measure.recall > 0:
+                relevance_measure.recall = relevance_measure.true_positives / relevance_measure.number_of_test_entries
+            else:
+                relevance_measure.recall = 0
+
     print('found ' + str(relevance_measure.total_number_of_query_results) + ' in Scopus')
 
     save_relevance_measures_to_file(relevance_measure, out_dir)
