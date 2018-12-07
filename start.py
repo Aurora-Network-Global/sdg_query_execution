@@ -39,6 +39,108 @@ altmetric_secret = app.config.get("ALTMETRIC_API_SECRET")
 scopus_api_key = app.config.get("SCOPUS_API_KEY")
 libintel_user_email = app.config.get("LIBINTEL_USER_EMAIL")
 
+# -----------------------------------Endpoints for Project handling ----------------------------------------------------
+# list all the query subfolders in the working directory, used to prepare selection in the start page
+@app.route("/projects", methods=['GET'])
+def list_queries():
+    projects = []
+    list_filenames = os.listdir(location + '/out/')
+    for filename in list_filenames:
+        if filename.endswith('.json'):
+            path_to_file = location + '/out/' + filename
+            try:
+                with open(path_to_file) as json_file:
+                    project = json.load(json_file)
+                    projects.append(project)
+            except FileNotFoundError:
+                continue
+    return jsonify(projects)
+
+
+# loads a project by the project ID
+@app.route("/projects/<project_id>", methods=['GET'])
+def get_project(project_id):
+    try:
+        return jsonify(open_project(project_id))
+    except FileNotFoundError:
+        return Response("File not found", status=404)
+
+
+def open_project(project_id):
+    path_to_file = location + '/out/' + project_id + '.json'
+    with open(path_to_file) as json_file:
+        return json.load(json_file)
+
+
+# saves a project
+@app.route("/projects", methods=['post'])
+def save_posted_project():
+    project = request.get_json(silent=True)
+    save_project(project)
+    project_dir = location + '/out/' + project['project_id']
+    if not os.path.exists(project_dir):
+        os.makedirs(project_dir)
+    return jsonify(project)
+
+
+def save_project(project):
+    json_string = json.dumps(project)
+    out_dir = location + '/out/'
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+    with open(out_dir + project['project_id'] + '.json', 'w') as json_file:
+        json_file.write(json_string)
+
+
+# -----------------------------------Endpoints for Query handling ----------------------------------------------------
+# returns the query parameters as json document, saved in the working directory in the file query.json
+@app.route("/getQuery/<query_id>")
+def get_query(query_id):
+    path_to_file = location + '/out/' + query_id + '/query.json'
+    try:
+        with open(path_to_file) as json_file:
+            query = json.load(json_file)
+            return jsonify(query)
+    except FileNotFoundError:
+        query = Query()
+        return jsonify(query.__dict__)
+
+
+# retrieves the Scopus search string and to display it in the browser
+@app.route("/getScopusSearchString/<query_id>")
+def get_scopus_search_string(query_id):
+    path_to_file = location + '/out/' + query_id + '/scopus_search_string.txt'
+    try:
+        with open(path_to_file) as json_file:
+            search_string = json_file.read()
+            return Response(search_string, status=200)
+    except FileNotFoundError:
+        return Response("File not found", status=404)
+
+
+# saves the query as json document in the working directory as query.json file
+@app.route("/saveQuery/<query_id>", methods=['POST'])
+def save_query(query_id):
+    if request.method == 'POST':
+        project = open_project(query_id)
+        query = request.get_json(silent=True)
+        json_string = json.dumps(query)
+        out_dir = location + '/out/' + query_id + '/'
+        if not os.path.exists(out_dir):
+            os.makedirs(out_dir)
+        with open(out_dir + 'query.json', 'w') as json_file:
+            json_file.write(json_string)
+
+        # convert the JSON search object to the search string for the scopus api
+        search_string = utils.convert_search_to_scopus_search_string(query)
+        with open(out_dir + 'scopus_search_string.txt', 'w') as scopus_search_string_file:
+            scopus_search_string_file.write(search_string)
+        project['is_query_defined'] = True
+        save_project(project)
+        return jsonify(query)
+    else:
+        return Response("Use POST", status=405)
+
 
 # download the file with the EIDs from the search, stored in the working directory as eids_list.txt
 @app.route("/downloadEids/<query_id>", methods=['GET'])
@@ -75,23 +177,10 @@ def check_scival(query_id):
     return jsonify(os.path.exists(path_to_file))
 
 
-# list all the query subfolders in the working directory, used to prepare selection in the start page
-@app.route("/listQueries")
-def list_queries():
-    return jsonify(os.listdir(location + '/out/'))
 
 
-# returns the query paramteres as json document, saved in the working directory in the file query.json
-@app.route("/getQuery/<query_id>")
-def get_query(query_id):
-    path_to_file = location + '/out/' + query_id + '/query.json'
-    try:
-        with open(path_to_file) as json_file:
-            query = json.load(json_file)
-            return jsonify(query)
-    except FileNotFoundError:
-        query = Query()
-        return jsonify(query.__dict__)
+
+
 
 
 # reads the status file (status.json) and returns it.
@@ -119,37 +208,7 @@ def get_relevance_measures(query_id):
         return Response("File not found", status=404)
 
 
-# retrieves the Scopus search string and to display it in the browser
-@app.route("/getScopusSearchString/<query_id>")
-def get_scopus_search_string(query_id):
-    path_to_file = location + '/out/' + query_id + '/scopus_search_string.txt'
-    try:
-        with open(path_to_file) as json_file:
-            search_string = json_file.read()
-            return Response(search_string, status=200)
-    except FileNotFoundError:
-        return Response("File not found", status=404)
 
-
-# saves the query as json document in the working directory as query.json file
-@app.route("/saveQuery/<query_id>", methods=['POST'])
-def save_query(query_id):
-    if request.method == 'POST':
-        query = request.get_json(silent=True)
-        json_string = json.dumps(query)
-        out_dir = location + '/out/' + query_id + '/'
-        if not os.path.exists(out_dir):
-            os.makedirs(out_dir)
-        with open(out_dir + 'query.json', 'w') as json_file:
-            json_file.write(json_string)
-
-        # convert the JSON search object to the search string for the scopus api
-        search_string = utils.convert_search_to_scopus_search_string(query)
-        with open(out_dir + 'scopus_search_string.txt', 'w') as scopus_search_string_file:
-            scopus_search_string_file.write(search_string)
-        return jsonify(query)
-    else:
-        return Response("Use POST", status=405)
 
 
 # uploads the scival data and saves it as scival_data.csv in the working directory
@@ -157,12 +216,16 @@ def save_query(query_id):
 def upload_scival_file(query_id):
     print("saving scival file for " + query_id)
     if request.method == 'POST':
+        project = open_project(query_id);
         file = request.files['scival-file']
         path_to_save = location + '/out/' + query_id + '/'
         print(path_to_save)
         if not os.path.exists(path_to_save):
             os.makedirs(path_to_save)
         file.save(path_to_save + 'scival_data.csv')
+        project['is_scivaldata_uploaded'] = True
+        save_project(project)
+        import_scival_data(query_id)
     return Response("OK", status=204)
 
 
@@ -171,12 +234,14 @@ def upload_scival_file(query_id):
 def upload_test_file(query_id):
     print("saving test file for " + query_id)
     if request.method == 'POST':
+        project = open_project(query_id)
         file = request.files['test-file']
         path_to_save = location + '/out/' + query_id + '/'
         if not os.path.exists(path_to_save):
             os.makedirs(path_to_save)
         file.save(path_to_save + 'test_data.txt')
-        import_scival_data(query_id)
+        project['is_testdata'] = True
+        save_project(project)
     return Response("OK", status=204)
 
 
@@ -210,22 +275,20 @@ def query_execution(query_id):
     with open(out_dir + 'scopus_search_string.txt') as json_file:
         search_string = json_file.read()
 
-    isTestData = False
+    project = open_project(query_id)
     # open test data and read eids
-    with open(out_dir + 'test_data.txt') as f:
-        test_eids = f.readlines()
-        test_eids = [x.strip() for x in test_eids]
-        isTestData = True
+    if project['is_testdata']:
+        with open(out_dir + 'test_data.txt') as f:
+            test_eids = f.readlines()
+            test_eids = [x.strip() for x in test_eids]
     # remove whitespace characters like `\n` at the end of each line
-
 
     # prepares the status file
     status = Status("RUNNING")
     save_status(status, out_dir)
 
-
     # perform the search in Scopus
-    search = scopus.ScopusSearch(search_string, refresh=True, query_id = query_id)
+    search = scopus.ScopusSearch(search_string, refresh=True, query_id=query_id)
 
     # retrieve the EIDs
     eids = search.EIDS
@@ -234,7 +297,7 @@ def query_execution(query_id):
     relevance_measure.total_number_of_query_results = eids.__len__()
     status.total = relevance_measure.total_number_of_query_results
     save_status(status, out_dir)
-    if isTestData:
+    if project['is_testdata']:
         for test_eid in test_eids:
             relevance_measure.number_of_test_entries = test_eids.__len__()
             if test_eid in eids:
@@ -256,6 +319,8 @@ def query_execution(query_id):
 
     # persist EIDs to file to be uploaded to Scival
     save_eids_to_file(eids, out_dir)
+    project['is_eidslist'] = True
+    save_project(project)
 
     # for each EID , create a AllResponses object and attach the full data set from scopus,
     # the altmetric response and the unpaywall response
@@ -300,6 +365,8 @@ def query_execution(query_id):
                 # save_to_file(response, out_dir)
             keyword_file.write("{}]")
     status.status = "FINISHED"
+    project['is_query_run'] = True
+    save_project(project)
     save_status(status, out_dir)
 
     result = es.search(index=query_id, doc_type='all_data',
