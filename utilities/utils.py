@@ -39,7 +39,10 @@ def convert_search_to_scopus_search_string(search):
     if search["affiliation_id"]:
         if search_string != "":
             search_string += " AND "
-        search_string += 'AF-ID(' + search["affiliation_id"] + ')'
+        affil_search = 'AF-ID(' + search["affiliation_id"] + ')'
+        affil_search = affil_search.replace(" OR ", ") OR AF-ID(")
+        affil_search = affil_search.replace(" AND ", ") AND AF-ID(")
+        search_string += affil_search
     return search_string
 
 
@@ -73,9 +76,10 @@ def convert_search_to_altmetric_seach_string(search):
     if search["affiliation_id"]:
         if search_string != "":
             search_string += " AND "
-        search_string += 'AF-ID(' + search["affiliation_id"] + ')'
-        search_string = search_string.replace(" OR ", ") OR AF-ID(")
-        search_string = search_string.replace(" AND ", ") AND AF-ID(")
+        affil_search = 'AF-ID(' + search["affiliation_id"] + ')'
+        affil_search = affil_search.replace(" OR ", ") OR AF-ID(")
+        affil_search = affil_search.replace(" AND ", ") AND AF-ID(")
+        search_string += affil_search
     return search_string
 
 
