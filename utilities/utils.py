@@ -74,6 +74,8 @@ def convert_search_to_altmetric_seach_string(search):
         if search_string != "":
             search_string += " AND "
         search_string += 'AF-ID(' + search["affiliation_id"] + ')'
+        search_string = search_string.replace(" OR ", ") OR AF-ID(")
+        search_string = search_string.replace(" AND ", ") AND AF-ID(")
     return search_string
 
 
