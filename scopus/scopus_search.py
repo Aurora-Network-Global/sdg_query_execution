@@ -17,8 +17,7 @@ class ScopusSearch(object):
         """List of EIDs retrieved."""
         return self._EIDS
 
-    def __init__(self, query, fields='eid', count=200, start=0,
-                 max_entries=100000, refresh=False, query_id='1'):
+    def __init__(self, query, fields='eid', count=10, start=0, refresh=False, query_id='1'):
         """Class to search a query, and retrieve a list of EIDs as results.
 
         Parameters
@@ -41,10 +40,6 @@ class ScopusSearch(object):
 
         refresh : bool (optional, default=False)
             Whether to refresh the cached file if it exists or not.
-
-        max_entries : int (optional, default=5000)
-            Raise error when the number of results is beyond this number.
-            The Scopus Search Engine does not allow more than 5000 entries.
 
         Raises
         ------
@@ -73,34 +68,30 @@ class ScopusSearch(object):
             # No cached file exists, or we are refreshing.
             # First, we get a count of how many things to retrieve
             url = 'https://api.elsevier.com/content/search/scopus'
-            params = {'query': query, 'field': fields, 'count': 0, 'start': 0}
-            xml = download(url=url, params=params).text.encode('utf-8')
-            results = ET.fromstring(xml)
+            params = {'query': query, 'field': fields, 'count': 100, 'cursor': '*'}
+            response = download(url=url, params=params, accept="json")
+            results = response.json()
 
-            N = results.find('opensearch:totalResults', ns)
+            N = results['search-results']['opensearch:totalResults']
+            print(N + ' results in Scopus found')
             try:
-                N = int(N.text)
+                N = int(N)
             except:
                 N = 0
-
-            if N > max_entries:
-                raise Exception(('N = {}. '
-                                 'Set max_entries to a higher number or '
-                                 'change your query ({})').format(N, query))
-
             self._EIDS = []
+            print(str(N))
+            cursor = '*'
             while N > 0:
+                print(cursor)
                 params = {'query': query, 'fields': fields,
-                          'count': count, 'start': start}
+                          'count': count, 'cursor': cursor}
                 resp = download(url=url, params=params, accept="json")
                 results = resp.json()
-
                 if 'entry' in results.get('search-results', []):
                     self._EIDS += [str(r['eid']) for
                                    r in results['search-results']['entry']]
-                start += count
                 N -= count
-
+                cursor = results['search-results']['cursor']['@next']
             with open(qfile, 'wb') as f:
                 for eid in self.EIDS:
                     f.write('{}\n'.format(eid).encode('utf-8'))
