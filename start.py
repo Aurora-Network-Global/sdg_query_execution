@@ -313,7 +313,7 @@ def query_execution(query_id):
             else:
                 relevance_measure.recall = 0
 
-    print('found ' + str(relevance_measure.total_number_of_query_results) + ' in Scopus')
+    print('found ' + str(eids.__len__()) + ' in Scopus')
 
     save_relevance_measures_to_file(relevance_measure, out_dir)
 
@@ -342,8 +342,10 @@ def query_execution(query_id):
 
                 keyword_file.write("{\"" + eid + "\": \"" + "; ".join(scopus_abstract.authkeywords) + "\"},\n")
 
+                print(project)
+                print(project['name'])
                 # create new AllResponses object to hold the individual information
-                response = AllResponses(eid)
+                response = AllResponses(eid, project['name'], project['project_id'])
 
                 # add scopus abstract to AllResponses object
                 response.scopus_abtract_retrieval = scopus_abstract
