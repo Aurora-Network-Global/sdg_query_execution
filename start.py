@@ -352,7 +352,7 @@ def collectData(project):
             keyword_file.write("[")
             responses = []
             for idx, eid in enumerate(eids):
-                status.progress = idx + 1
+                status['progress'] = idx + 1
                 save_status(status, out_dir)
 
                 # print progress
@@ -394,7 +394,7 @@ def collectData(project):
             keyword_file.write("{}]")
     print('missed eids:' + str(misses))
     print(missed_eids)
-    status.status = "FINISHED"
+    status['status'] = "FINISHED"
     project['is_query_run'] = True
     save_project(project)
     save_status(status, out_dir)
