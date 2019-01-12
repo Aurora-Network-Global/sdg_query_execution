@@ -337,7 +337,7 @@ def return_query_execution(query_id):
 def collectData(project):
     misses = 0
     missed_eids = []
-    out_dir = location + '/out/' + project['query_id'] + '/'
+    out_dir = location + '/out/' + project['project_id'] + '/'
     path_to_status = out_dir + 'status.json'
     path_to_eids = out_dir + 'eids_list.txt'
     with open(path_to_status) as json_file:
@@ -347,7 +347,7 @@ def collectData(project):
         eids = [x.strip() for x in eids]
     number = eids.__len__()
     if number > 0:
-        es.indices.delete(project['query_id'], ignore=[400, 404])
+        es.indices.delete(project['project_id'], ignore=[400, 404])
         with open(out_dir + 'keywords.json', 'w') as keyword_file:
             keyword_file.write("[")
             responses = []
@@ -387,7 +387,8 @@ def collectData(project):
                 responses.append(response)
 
                 # send response to elastic search index
-                send_to_index(response, project['query_id'])
+                send_to_index(response, project['project_id'])
+
 
                 # save_to_file(response, out_dir)
             keyword_file.write("{}]")
@@ -398,7 +399,7 @@ def collectData(project):
     save_project(project)
     save_status(status, out_dir)
 
-    result = es.search(index=project['query_id '], doc_type='all_data',
+    result = es.search(index=project['project_id '], doc_type='all_data',
                        filter_path=["hits.hits._source.scopus_abtract_retrieval.abstract", "hits.hits._id"])
     keyword_list = []
     for hit in result["hits"]["hits"]:
