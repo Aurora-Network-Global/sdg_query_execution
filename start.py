@@ -321,11 +321,33 @@ def query_execution(query_id):
     save_eids_to_file(eids, out_dir)
     project['is_eidslist'] = True
     save_project(project)
+    print('collecting data for project' + project['project_id'])
+    collectData(project)
+    # calculate_text_rank(query_id)
+    return Response({"status": "FINISHED"}, status=204)
 
-    # for each EID , create a AllResponses object and attach the full data set from scopus,
-    # the altmetric response and the unpaywall response
-    if eids.__len__() > 0:
-        es.indices.delete(query_id, ignore=[400, 404])
+
+@app.route('/collect_data/<query_id>', methods=['POST'])
+def return_query_execution(query_id):
+    project = open_project(query_id)
+    collectData(project)
+    return Response({"status": "FINISHED"}, status=204)
+
+
+def collectData(project):
+    misses = 0
+    missed_eids = []
+    out_dir = location + '/out/' + project['query_id '] + '/'
+    path_to_status = out_dir + 'status.json'
+    path_to_eids = out_dir + 'eids_list.txt'
+    with open(path_to_status) as json_file:
+        status = json.load(json_file)
+    with open(path_to_eids) as file:
+        eids = file.readlines()
+        eids = [x.strip() for x in eids]
+    number = eids.__len__()
+    if number > 0:
+        es.indices.delete(project['query_id '], ignore=[400, 404])
         with open(out_dir + 'keywords.json', 'w') as keyword_file:
             keyword_file.write("[")
             responses = []
@@ -334,16 +356,19 @@ def query_execution(query_id):
                 save_status(status, out_dir)
 
                 # print progress
-                print('processing entry ' + str(idx) + 'of ' + str(relevance_measure.total_number_of_query_results) + ' entries: ' +
-                      str(idx / relevance_measure.total_number_of_query_results * 100) + '%')
+                print('processing entry ' + str(idx) + 'of ' + str(number) + ' entries: ' +
+                      str(idx / number * 100) + '%')
 
                 # retrieve data from scopus
-                scopus_abstract = scopus.ScopusAbstract(eid, view="FULL")
+                try:
+                    scopus_abstract = scopus.ScopusAbstract(eid, view="FULL")
+                except:
+                    misses = misses + 1
+                    missed_eids.append(eid)
+                    continue
 
                 keyword_file.write("{\"" + eid + "\": \"" + "; ".join(scopus_abstract.authkeywords) + "\"},\n")
 
-                print(project)
-                print(project['name'])
                 # create new AllResponses object to hold the individual information
                 response = AllResponses(eid, project['name'], project['project_id'])
 
@@ -362,16 +387,18 @@ def query_execution(query_id):
                 responses.append(response)
 
                 # send response to elastic search index
-                send_to_index(response, query_id)
+                send_to_index(response, project['query_id '])
 
                 # save_to_file(response, out_dir)
             keyword_file.write("{}]")
+    print('missed eids:' + str(misses))
+    print(missed_eids)
     status.status = "FINISHED"
     project['is_query_run'] = True
     save_project(project)
     save_status(status, out_dir)
 
-    result = es.search(index=query_id, doc_type='all_data',
+    result = es.search(index=project['query_id '], doc_type='all_data',
                        filter_path=["hits.hits._source.scopus_abtract_retrieval.abstract", "hits.hits._id"])
     keyword_list = []
     for hit in result["hits"]["hits"]:
@@ -380,8 +407,6 @@ def query_execution(query_id):
         json_file.write(json.dumps([ob.__dict__ for ob in keyword_list]))
 
 
-    # calculate_text_rank(query_id)
-    return Response({"status": "FINISHED"}, status=204)
 
 
 def save_relevance_measures_to_file(relevance_measures, out_dir):
