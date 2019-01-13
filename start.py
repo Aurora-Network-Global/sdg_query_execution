@@ -51,6 +51,7 @@ def list_queries():
             try:
                 with open(path_to_file) as json_file:
                     project = json.load(json_file)
+                    json_file.close()
                     projects.append(project)
             except FileNotFoundError:
                 continue
@@ -69,7 +70,9 @@ def get_project(project_id):
 def open_project(project_id):
     path_to_file = location + '/out/' + project_id + '.json'
     with open(path_to_file) as json_file:
-        return json.load(json_file)
+        project = json.load(json_file)
+        json_file.close()
+        return project
 
 
 # saves a project
@@ -100,6 +103,7 @@ def get_query(query_id):
     try:
         with open(path_to_file) as json_file:
             query = json.load(json_file)
+            json_file.close()
             return jsonify(query)
     except FileNotFoundError:
         query = Query()
@@ -113,6 +117,7 @@ def get_scopus_search_string(query_id):
     try:
         with open(path_to_file) as json_file:
             search_string = json_file.read()
+            json_file.close()
             return Response(search_string, status=200)
     except FileNotFoundError:
         return Response("File not found", status=404)
@@ -130,11 +135,13 @@ def save_query(query_id):
             os.makedirs(out_dir)
         with open(out_dir + 'query.json', 'w') as json_file:
             json_file.write(json_string)
+            json_file.close()
 
         # convert the JSON search object to the search string for the scopus api
         search_string = utils.convert_search_to_scopus_search_string(query)
         with open(out_dir + 'scopus_search_string.txt', 'w') as scopus_search_string_file:
             scopus_search_string_file.write(search_string)
+            scopus_search_string_file.close()
         project['is_query_defined'] = True
         save_project(project)
         return jsonify(query)
@@ -190,6 +197,7 @@ def get_status(query_id):
     try:
         with open(path_to_file) as json_file:
             status = json.load(json_file)
+            json_file.close()
             return jsonify(status)
     except FileNotFoundError:
         status = Status("ERROR")
@@ -203,6 +211,7 @@ def get_relevance_measures(query_id):
     try:
         with open(path_to_file) as json_file:
             relevance_measures = json.load(json_file)
+            json_file.close()
             return jsonify(relevance_measures)
     except FileNotFoundError:
         return Response("File not found", status=404)
@@ -259,6 +268,7 @@ def import_scival_data(query_id):
             scival = Scival(row)
             append_to_index(ScivalUpdate(scival), scival.eid, query_id)
             scivals.append(scival)
+        csvfile.close()
     return "imported " + str(scivals.__len__()) + " Scival data"
 
 
@@ -274,12 +284,14 @@ def query_execution(query_id):
     # reads the saved Scopus search string from disk
     with open(out_dir + 'scopus_search_string.txt') as json_file:
         search_string = json_file.read()
+        json_file.close()
 
     project = open_project(query_id)
     # open test data and read eids
     if project['is_testdata']:
         with open(out_dir + 'test_data.txt') as f:
             test_eids = f.readlines()
+            f.close()
             test_eids = [x.strip() for x in test_eids]
     # remove whitespace characters like `\n` at the end of each line
 
@@ -342,8 +354,10 @@ def collectData(project):
     path_to_eids = out_dir + 'eids_list.txt'
     with open(path_to_status) as json_file:
         status = json.load(json_file)
+        json_file.close()
     with open(path_to_eids) as file:
         eids = file.readlines()
+        file.close()
         eids = [x.strip() for x in eids]
     number = eids.__len__()
     if number > 0:
@@ -406,18 +420,22 @@ def collectData(project):
         keyword_list.append(AbstractText(hit['_id'], hit["_source"]["scopus_abtract_retrieval"]["abstract"]))
     with open(out_dir + 'abstracts.json', 'w') as json_file:
         json_file.write(json.dumps([ob.__dict__ for ob in keyword_list]))
-
-
+        json_file.close()
 
 
 def save_relevance_measures_to_file(relevance_measures, out_dir):
     with open(out_dir + 'relevance_measures.json', 'w') as json_file:
         json_file.write(json.dumps(relevance_measures.__dict__))
+        json_file.close()
 
 
 def save_status(status, out_dir):
     with open(out_dir + 'status.json', 'w') as json_file:
-        json_file.write(json.dumps(status.__dict__))
+        try:
+            json_file.write(json.dumps(status.__dict__))
+        except AttributeError:
+            json_file.write(status)
+        json_file.close()
 
 
 # to be changed, persist via posting
@@ -436,6 +454,7 @@ def save_eids_to_file(eids, out_dir):
     with open(out_dir + 'eids_list.txt', 'w') as list_file:
         for eid in eids:
             list_file.write(eid + '\n')
+        list_file.close()
     print('saved results to disk')
 
 
@@ -460,6 +479,7 @@ def save_to_file(documents, out_dir):
         os.makedirs(out_dir)
     with open(out_dir + 'data_out.json', 'w') as json_file:
         json.dump(documents, json_file)
+        json_file.close()
     print('saved results to disk')
 
 # @app.route("/calculateTextrank/<query_id>")
