@@ -413,7 +413,8 @@ def collectData(project):
     save_status(status, out_dir)
 
     result = es.search(index=project['project_id'], doc_type='all_data',
-                       filter_path=["hits.hits._source.scopus_abtract_retrieval.abstract", "hits.hits._id"])
+                       filter_path=["hits.hits._source.scopus_abtract_retrieval.abstract", "hits.hits._id"],
+                       request_timeout=600)
     keyword_list = []
     for hit in result["hits"]["hits"]:
         keyword_list.append(AbstractText(hit['_id'], hit["_source"]["scopus_abtract_retrieval"]["abstract"]))
@@ -456,7 +457,7 @@ def save_eids_to_file(eids, out_dir):
 
 def send_to_index(all_responses: AllResponses, query_id):
     all_responses_json = json.dumps(all_responses, cls=HiddenEncoder)
-    res = es.index(query_id, 'all_data', all_responses_json, all_responses.id)
+    res = es.index(query_id, 'all_data', all_responses_json, all_responses.id, request_timeout=600)
     print('saved to index ' + query_id)
     return res
 
