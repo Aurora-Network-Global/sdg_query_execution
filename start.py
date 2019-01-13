@@ -430,7 +430,7 @@ def save_relevance_measures_to_file(relevance_measures, out_dir):
 
 def save_status(status, out_dir):
     with open(out_dir + 'status.json', 'w') as json_file:
-        json_file.write(json.dump(status))
+        json.dump(status, json_file)
         json_file.close()
 
 
