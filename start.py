@@ -191,7 +191,7 @@ def get_status(query_id):
     path_to_file = location + '/out/' + query_id + '/status.json'
     try:
         with open(path_to_file) as json_file:
-            status = json.load(json_file, object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
+            status = json.load(json_file)
             json_file.close()
             return jsonify(status)
     except FileNotFoundError:
