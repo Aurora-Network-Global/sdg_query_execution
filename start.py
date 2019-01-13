@@ -412,7 +412,7 @@ def collectData(project):
     save_project(project)
     save_status(status, out_dir)
 
-    result = es.search(index=project['project_id '], doc_type='all_data',
+    result = es.search(index=project['project_id'], doc_type='all_data',
                        filter_path=["hits.hits._source.scopus_abtract_retrieval.abstract", "hits.hits._id"])
     keyword_list = []
     for hit in result["hits"]["hits"]:
