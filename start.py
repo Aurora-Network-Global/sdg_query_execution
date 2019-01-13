@@ -22,6 +22,7 @@ from model.UpdateContainer import UpdateContainer
 from scival.Scival import Scival
 from unpaywall.Unpaywall import Unpaywall
 from utilities import utils
+from collections import namedtuple
 
 es = Elasticsearch()
 
@@ -184,19 +185,13 @@ def check_scival(query_id):
     return jsonify(os.path.exists(path_to_file))
 
 
-
-
-
-
-
-
 # reads the status file (status.json) and returns it.
 @app.route("/getStatus/<query_id>")
 def get_status(query_id):
     path_to_file = location + '/out/' + query_id + '/status.json'
     try:
         with open(path_to_file) as json_file:
-            status = json.load(json_file)
+            status = json.load(json_file, object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
             json_file.close()
             return jsonify(status)
     except FileNotFoundError:
@@ -297,7 +292,9 @@ def query_execution(query_id):
 
     # prepares the status file
     status = Status("RUNNING")
-    save_status(status, out_dir)
+    with open(out_dir + 'status.json', 'w') as json_file:
+        json_file.write(json.dumps(status.__dict__))
+        json_file.close()
 
     # perform the search in Scopus
     search = scopus.ScopusSearch(search_string, refresh=True, query_id=query_id)
@@ -308,7 +305,9 @@ def query_execution(query_id):
     relevance_measure = RelevanceMeasure()
     relevance_measure.total_number_of_query_results = eids.__len__()
     status.total = relevance_measure.total_number_of_query_results
-    save_status(status, out_dir)
+    with open(out_dir + 'status.json', 'w') as json_file:
+        json_file.write(json.dumps(status.__dict__))
+        json_file.close()
     if project['is_testdata']:
         for test_eid in test_eids:
             relevance_measure.number_of_test_entries = test_eids.__len__()
@@ -431,10 +430,7 @@ def save_relevance_measures_to_file(relevance_measures, out_dir):
 
 def save_status(status, out_dir):
     with open(out_dir + 'status.json', 'w') as json_file:
-        try:
-            json_file.write(json.dumps(status.__dict__))
-        except AttributeError:
-            json_file.write(status)
+        json_file.write(json.dump(status))
         json_file.close()
 
 
@@ -492,5 +488,4 @@ def save_to_file(documents, out_dir):
 class HiddenEncoder(json.JSONEncoder):
     def default(self, o):
         return {k.lstrip('_'): v for k, v in o.__getstate__().items()}
-
 
