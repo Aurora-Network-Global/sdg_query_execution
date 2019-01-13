@@ -85,7 +85,10 @@ class ScopusSearch(object):
                 print(cursor)
                 params = {'query': query, 'fields': fields,
                           'count': count, 'cursor': cursor}
-                resp = download(url=url, params=params, accept="json")
+                try:
+                    resp = download(url=url, params=params, accept="json")
+                except:
+                    break
 
                 results = resp.json()
                 if 'entry' in results.get('search-results', []):
