@@ -17,7 +17,7 @@ class ScopusSearch(object):
         """List of EIDs retrieved."""
         return self._EIDS
 
-    def __init__(self, query, fields='eid', count=500, start=0, refresh=False, query_id='1'):
+    def __init__(self, query, fields='eid', count=100, start=0, refresh=False, query_id='1'):
         """Class to search a query, and retrieve a list of EIDs as results.
 
         Parameters
@@ -68,7 +68,7 @@ class ScopusSearch(object):
             # No cached file exists, or we are refreshing.
             # First, we get a count of how many things to retrieve
             url = 'https://api.elsevier.com/content/search/scopus'
-            params = {'query': query, 'field': fields, 'count': 500, 'cursor': '*'}
+            params = {'query': query, 'field': fields, 'count': count, 'cursor': '*'}
             response = download(url=url, params=params, accept="json")
             results = response.json()
 
@@ -85,10 +85,8 @@ class ScopusSearch(object):
                 print(cursor)
                 params = {'query': query, 'fields': fields,
                           'count': count, 'cursor': cursor}
-                try:
-                    resp = download(url=url, params=params, accept="json")
-                except:
-                    break
+                resp = download(url=url, params=params, accept="json")
+
                 results = resp.json()
                 if 'entry' in results.get('search-results', []):
                     self._EIDS += [str(r['eid']) for
