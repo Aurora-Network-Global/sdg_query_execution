@@ -1,6 +1,7 @@
 import os
 import requests
 import sys
+import time
 try:
     from configparser import ConfigParser
 except ImportError:
@@ -72,6 +73,14 @@ def download(url, params=None, accept="xml"):
     header.update({'Accept': 'application/{}'.format(accept)})
     resp = requests.get(url, headers=header, params=params)
     print('queried scopus with response code ' + str(resp.status_code))
+    tries = 0
+    response = resp.status_code
+    while response != 200 and tries < 3:
+        time.sleeps(60)
+        resp = requests.get(url, headers=header, params=params)
+        response = resp.status_code
+        tries = tries + 1
+        print('queried scopus with response code ' + str(resp.status_code))
     resp.raise_for_status()
     return resp
 
