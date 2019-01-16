@@ -71,6 +71,7 @@ def download(url, params=None, accept="xml"):
         header = {'X-ELS-APIKey': scopus.MY_API_KEY}
     header.update({'Accept': 'application/{}'.format(accept)})
     resp = requests.get(url, headers=header, params=params)
+    print('queried scopus with response code ' + str(resp.status_code))
     resp.raise_for_status()
     return resp
 
