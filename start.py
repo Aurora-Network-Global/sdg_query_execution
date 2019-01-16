@@ -40,6 +40,7 @@ altmetric_secret = app.config.get("ALTMETRIC_API_SECRET")
 scopus_api_key = app.config.get("SCOPUS_API_KEY")
 libintel_user_email = app.config.get("LIBINTEL_USER_EMAIL")
 
+
 # -----------------------------------Endpoints for Project handling ----------------------------------------------------
 # list all the query subfolders in the working directory, used to prepare selection in the start page
 @app.route("/projects", methods=['GET'])
@@ -164,7 +165,8 @@ def download_eids(query_id):
 # retrieve the list of keywords for the search
 @app.route("/getKeywords/<query_id>")
 def get_keywords(query_id):
-    result = es.search(index=query_id, doc_type='all_data', filter_path=["hits.hits._source.scopus_abtract_retrieval.authkeywords", "hits.hits._id"])
+    result = es.search(index=query_id, doc_type='all_data',
+                       filter_path=["hits.hits._source.scopus_abtract_retrieval.authkeywords", "hits.hits._id"])
     keyword_list = []
     for hit in result["hits"]["hits"]:
         keyword_list.extend(hit["_source"]["scopus_abtract_retrieval"]["authkeywords"])
@@ -210,9 +212,6 @@ def get_relevance_measures(query_id):
             return jsonify(relevance_measures)
     except FileNotFoundError:
         return Response("File not found", status=404)
-
-
-
 
 
 # uploads the scival data and saves it as scival_data.csv in the working directory
@@ -270,7 +269,6 @@ def import_scival_data(query_id):
 # executes the defined and saved query in scopus and saves the results to elasticsearch
 @app.route('/query_execution/<query_id>', methods=['POST'])
 def query_execution(query_id):
-
     # prepare location for saving data
     out_dir = location + '/out/' + query_id + '/'
     if not os.path.exists(location):
@@ -346,7 +344,6 @@ def return_query_execution(query_id):
 
 
 def collectData(project):
-    misses = 0
     missed_eids = []
     out_dir = location + '/out/' + project['project_id'] + '/'
     path_to_status = out_dir + 'status.json'
@@ -361,51 +358,37 @@ def collectData(project):
     number = eids.__len__()
     if number > 0:
         es.indices.delete(project['project_id'], ignore=[400, 404])
-        with open(out_dir + 'keywords.json', 'w') as keyword_file:
-            keyword_file.write("[")
-            responses = []
-            for idx, eid in enumerate(eids):
-                status['progress'] = idx + 1
-                save_status(status, out_dir)
+        for idx, eid in enumerate(eids):
+            status['progress'] = idx + 1
+            save_status(status, out_dir)
 
-                # print progress
-                print('processing entry ' + str(idx) + 'of ' + str(number) + ' entries: ' +
-                      str(idx / number * 100) + '%')
+            # print progress
+            print('processing entry ' + str(idx) + 'of ' + str(number) + ' entries: ' +
+                  str(idx / number * 100) + '%')
 
-                # retrieve data from scopus
-                try:
-                    scopus_abstract = scopus.ScopusAbstract(eid, view="FULL")
-                except:
-                    misses = misses + 1
-                    missed_eids.append(eid)
-                    continue
+            # retrieve data from scopus
+            try:
+                scopus_abstract = scopus.ScopusAbstract(eid, view="FULL")
+            except:
+                missed_eids.append(eid)
+                continue
 
-                keyword_file.write("{\"" + eid + "\": \"" + "; ".join(scopus_abstract.authkeywords) + "\"},\n")
+            # create new AllResponses object to hold the individual information
+            response = AllResponses(eid, project['name'], project['project_id'])
 
-                # create new AllResponses object to hold the individual information
-                response = AllResponses(eid, project['name'], project['project_id'])
+            # add scopus abstract to AllResponses object
+            response.scopus_abtract_retrieval = scopus_abstract
 
-                # add scopus abstract to AllResponses object
-                response.scopus_abtract_retrieval = scopus_abstract
+            # get doi and collect unpaywall data and Altmetric data
+            doi = scopus_abstract.doi
+            if doi is not "":
+                if doi is not None:
+                    response.unpaywall_response = Unpaywall(libintel_user_email, doi)
+                    response.altmetric_response = Altmetric(altmetric_key, doi)
+                    response.scival_data = Scival([])
 
-                # get doi and collect unpaywall data and Altmetric data
-                doi = scopus_abstract.doi
-                if doi is not "":
-                    if doi is not None:
-                        response.unpaywall_response = Unpaywall(libintel_user_email, doi)
-                        response.altmetric_response = Altmetric(altmetric_key, doi)
-                        response.scival_data = Scival([])
-
-                # add response to list of responses
-                responses.append(response)
-
-                # send response to elastic search index
-                send_to_index(response, project['project_id'])
-
-
-                # save_to_file(response, out_dir)
-            keyword_file.write("{}]")
-    print('missed eids:' + str(misses))
+            # send response to elastic search index
+            send_to_index(response, project['project_id'])
     print(missed_eids)
     status['status'] = "FINISHED"
     project['is_query_run'] = True
@@ -421,6 +404,10 @@ def collectData(project):
     with open(out_dir + 'abstracts.json', 'w') as json_file:
         json_file.write(json.dumps([ob.__dict__ for ob in keyword_list]))
         json_file.close()
+    with open(out_dir + 'missed_eids.txt', 'w') as list_file:
+        for eid in missed_eids:
+            list_file.write(eid + '\n')
+        list_file.close()
 
 
 def save_relevance_measures_to_file(relevance_measures, out_dir):
@@ -479,6 +466,7 @@ def save_to_file(documents, out_dir):
         json_file.close()
     print('saved results to disk')
 
+
 # @app.route("/calculateTextrank/<query_id>")
 # def calculate_text_rank(query_id):
 #     path_to_file = location + '/out/' + query_id + '/abstracts.json'
@@ -489,4 +477,3 @@ def save_to_file(documents, out_dir):
 class HiddenEncoder(json.JSONEncoder):
     def default(self, o):
         return {k.lstrip('_'): v for k, v in o.__getstate__().items()}
-
