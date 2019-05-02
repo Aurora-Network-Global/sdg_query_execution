@@ -79,7 +79,6 @@ class ScopusSearch(object):
             except:
                 N = 0
             self._EIDS = []
-            print(str(N))
             cursor = '*'
             while N > 0:
                 print(cursor)
@@ -92,11 +91,16 @@ class ScopusSearch(object):
 
                 results = resp.json()
                 if 'entry' in results.get('search-results', []):
-                    if 'eid' in results['search-results'].get('entry'):
+                    try:
                         self._EIDS += [str(r['eid']) for
                                    r in results['search-results']['entry']]
+                    except KeyError:
+                        print('could not read eid of entry')
                 N -= count
-                cursor = results['search-results']['cursor']['@next']
+                try:
+                    cursor = results['search-results']['cursor']['@next']
+                except KeyError:
+                    print('no new cursor')
             with open(qfile, 'wb') as f:
                 for eid in self.EIDS:
                     f.write('{}\n'.format(eid).encode('utf-8'))
