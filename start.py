@@ -23,7 +23,6 @@ from model.UpdateContainer import UpdateContainer
 from scival.Scival import Scival
 from unpaywall.Unpaywall import Unpaywall
 from utilities import utils
-from collections import namedtuple
 
 es = Elasticsearch()
 
@@ -42,10 +41,10 @@ scopus_api_key = app.config.get("SCOPUS_API_KEY")
 libintel_user_email = app.config.get("LIBINTEL_USER_EMAIL")
 
 
-# -----------------------------------Endpoints for Project handling ----------------------------------------------------
+# ----------------------------------- Project repository ---------------------------------------------------------------
 # list all the query subfolders in the working directory, used to prepare selection in the start page
-@app.route("/projects", methods=['GET'])
-def list_queries():
+@app.route("/project/all", methods=['GET'])
+def list_projects():
     projects = []
     list_filenames = os.listdir(location + '/out/')
     for filename in list_filenames:
@@ -62,7 +61,7 @@ def list_queries():
 
 
 # loads a project by the project ID
-@app.route("/projects/<project_id>", methods=['GET'])
+@app.route("/project/single/<project_id>", methods=['GET'])
 def get_project(project_id):
     try:
         return jsonify(open_project(project_id))
@@ -79,7 +78,7 @@ def open_project(project_id):
 
 
 # saves a project
-@app.route("/projects", methods=['post'])
+@app.route("/project", methods=['post'])
 def save_posted_project():
     project = request.get_json(silent=True)
     save_project(project)
@@ -98,9 +97,9 @@ def save_project(project):
         json_file.write(json_string)
 
 
-# -----------------------------------Endpoints for Query handling ----------------------------------------------------
+# ----------------------------------- Query repository -----------------------------------------------------------------
 # returns the query parameters as json document, saved in the working directory in the file query.json
-@app.route("/getQuery/<query_id>")
+@app.route("/query/single/<query_id>", methods=['GET'])
 def get_query(query_id):
     path_to_file = location + '/out/' + query_id + '/query.json'
     try:
@@ -114,7 +113,7 @@ def get_query(query_id):
 
 
 # retrieves the Scopus search string and to display it in the browser
-@app.route("/getScopusSearchString/<query_id>")
+@app.route("/query/scopusSearchString/<query_id>", methods=['GET'])
 def get_scopus_search_string(query_id):
     path_to_file = location + '/out/' + query_id + '/scopus_search_string.txt'
     try:
@@ -127,7 +126,7 @@ def get_scopus_search_string(query_id):
 
 
 # saves the query as json document in the working directory as query.json file
-@app.route("/saveQuery/<query_id>", methods=['POST'])
+@app.route("/query/<query_id>", methods=['POST'])
 def save_query(query_id):
     if request.method == 'POST':
         project = open_project(query_id)
@@ -152,9 +151,10 @@ def save_query(query_id):
         return Response("Use POST", status=405)
 
 
+# ----------------------------------- EIDs -repository -----------------------------------------------------------------
 # download the file with the EIDs from the search, stored in the working directory as eids_list.txt
-@app.route("/downloadEids/<query_id>", methods=['GET'])
-def download_eids(query_id):
+@app.route("/eids/all/<query_id>", methods=['GET'])
+def get_eids(query_id):
     # path to the file
     path_to_file = location + '/out/' + query_id + '/' + 'eids_list.txt'
     try:
@@ -163,8 +163,59 @@ def download_eids(query_id):
         return Response(str(e), status=404)
 
 
+# download the file with the missed EIDs from the search, stored in the working directory as missed_eids_list.txt
+@app.route("/eids/missed/<query_id>", methods=['GET'])
+def download_missed_eids(query_id):
+    # path to the file
+    path_to_file = location + '/out/' + query_id + '/' + 'missed_eids_list.txt'
+    try:
+        return send_file(path_to_file, attachment_filename='missed_eids_list.txt')
+    except Exception as e:
+        return Response('no list of missed eids', status=404)
+
+
+# download the file with the missed EIDs from the search, stored in the working directory as missed_eids_list.txt
+@app.route("/eids/calculate_sample/<query_id>", methods=['GET'])
+def calculate_sample(query_id):
+    sample_size = int(request.args.get('sample_size'))
+    print(sample_size)
+    if sample_size is None:
+        sample_size = 10
+    # path to the file
+    out_dir = location + '/out/' + query_id + '/'
+    with open(out_dir + 'eids_list.txt') as file:
+        eids = file.readlines()
+        file.close()
+        eids = [x.strip() for x in eids]
+    number = eids.__len__()
+    random_sample_eids = []
+    if number > sample_size:
+        test_indices = random.sample(range(1, eids.__len__()), sample_size)
+        for index, value in enumerate(eids):
+            if index in test_indices:
+                random_sample_eids.append(value)
+        save_eids_to_file(random_sample_eids, query_id, 'sample_')
+    else:
+        save_eids_to_file(eids, query_id, 'sample_')
+    try:
+        return send_file(out_dir + 'sample_eids_list.txt', attachment_filename='missed_eids_list.txt')
+    except FileNotFoundError:
+        return Response('no list of sample eids', status=404)
+
+
+# download the file with the missed EIDs from the search, stored in the working directory as missed_eids_list.txt
+@app.route("/eids/sample/<query_id>", methods=['GET'])
+def download_sample_eids(query_id):
+    # path to the file
+    path_to_file = location + '/out/' + query_id + '/' + 'test_sample_eids_list.txt'
+    try:
+        return send_file(path_to_file, attachment_filename='test_sample_eids_list.txt')
+    except Exception as e:
+        return Response('no list of missed eids', status=404)
+
+
 # retrieve the list of keywords for the search
-@app.route("/getKeywords/<query_id>")
+@app.route("/keywords/<query_id>")
 def get_keywords(query_id):
     result = es.search(index=query_id, doc_type='all_data',
                        filter_path=["hits.hits._source.scopus_abtract_retrieval.authkeywords", "hits.hits._id"])
@@ -176,65 +227,15 @@ def get_keywords(query_id):
     return json.dumps([ob.__dict__ for ob in sorted_dict])
 
 
-@app.route("/checkScival/<query_id>")
+# returns true if the eids_list.txt file is present for the given project
+@app.route("/eids/check/<query_id>")
 def check_eids(query_id):
-    path_to_file = location + '/out/' + query_id + '/scival_data.csv'
-    return jsonify(os.path.exists(path_to_file))
-
-
-@app.route("/checkEids/<query_id>")
-def check_scival(query_id):
     path_to_file = location + '/out/' + query_id + '/eids_list.txt'
     return jsonify(os.path.exists(path_to_file))
 
 
-# reads the status file (status.json) and returns it.
-@app.route("/getStatus/<query_id>")
-def get_status(query_id):
-    path_to_file = location + '/out/' + query_id + '/status.json'
-    try:
-        with open(path_to_file) as json_file:
-            status = json.load(json_file)
-            json_file.close()
-            return jsonify(status)
-    except FileNotFoundError:
-        status = Status("ERROR")
-        return jsonify(status.__dict__)
-
-
-#
-@app.route("/getRelevanceMeasures/<query_id>")
-def get_relevance_measures(query_id):
-    path_to_file = location + '/out/' + query_id + '/relevance_measures.json'
-    try:
-        with open(path_to_file) as json_file:
-            relevance_measures = json.load(json_file)
-            json_file.close()
-            return jsonify(relevance_measures)
-    except FileNotFoundError:
-        return Response("File not found", status=404)
-
-
-# uploads the scival data and saves it as scival_data.csv in the working directory
-@app.route('/uploadScivalData/<query_id>', methods=['POST'])
-def upload_scival_file(query_id):
-    print("saving scival file for " + query_id)
-    if request.method == 'POST':
-        project = open_project(query_id);
-        file = request.files['scival-file']
-        path_to_save = location + '/out/' + query_id + '/'
-        print(path_to_save)
-        if not os.path.exists(path_to_save):
-            os.makedirs(path_to_save)
-        file.save(path_to_save + 'scival_data.csv')
-        project['is_scivaldata_uploaded'] = True
-        save_project(project)
-        import_scival_data(query_id)
-    return Response("OK", status=204)
-
-
-# uploads the scival data and saves it as scival_data.csv in the working directory
-@app.route('/uploadTestData/<query_id>', methods=['POST'])
+# uploads the test data and saves it as test_data.csv in the working directory
+@app.route('/eids/test/<query_id>', methods=['POST'])
 def upload_test_file(query_id):
     print("saving test file for " + query_id)
     if request.method == 'POST':
@@ -249,8 +250,63 @@ def upload_test_file(query_id):
     return Response("OK", status=204)
 
 
+# ----------------------------------- Status repository ----------------------------------------------------------------
+# reads the status file (status.json) and returns it.
+@app.route("/status/single/<query_id>")
+def get_status(query_id):
+    path_to_file = location + '/out/' + query_id + '/status.json'
+    try:
+        with open(path_to_file) as json_file:
+            status = json.load(json_file)
+            json_file.close()
+            return jsonify(status)
+    except FileNotFoundError:
+        status = Status("ERROR")
+        return jsonify(status.__dict__)
+
+
+# ----------------------------------- Relevance measures repository ----------------------------------------------------
+# reads the relavance measures file (relevance_measures.json) and returns it.
+@app.route("/relevanceMeasures/single/<query_id>")
+def get_relevance_measures(query_id):
+    path_to_file = location + '/out/' + query_id + '/relevance_measures.json'
+    try:
+        with open(path_to_file) as json_file:
+            relevance_measures = json.load(json_file)
+            json_file.close()
+            return jsonify(relevance_measures)
+    except FileNotFoundError:
+        return Response("File not found", status=404)
+
+
+# ----------------------------------- Scival data repository -----------------------------------------------------------
+# returns true if the scival_data.csv file is present for the iven project
+@app.route("/scival/check/<query_id>")
+def check_scival(query_id):
+    path_to_file = location + '/out/' + query_id + '/scival_data.csv'
+    return jsonify(os.path.exists(path_to_file))
+
+
+# uploads the scival data and saves it as scival_data.csv in the working directory
+@app.route('/scival/single/<query_id>', methods=['POST'])
+def upload_scival_file(query_id):
+    print("saving scival file for " + query_id)
+    if request.method == 'POST':
+        project = open_project(query_id)
+        file = request.files['scival-file']
+        path_to_save = location + '/out/' + query_id + '/'
+        print(path_to_save)
+        if not os.path.exists(path_to_save):
+            os.makedirs(path_to_save)
+        file.save(path_to_save + 'scival_data.csv')
+        project['is_scivaldata_uploaded'] = True
+        save_project(project)
+        import_scival_data(query_id)
+    return Response("OK", status=204)
+
+
 # reads in the scival data and uses the results to update the elasticsearch index
-@app.route('/importScivalData/<query_id>', methods=['Get'])
+@app.route('/scival/import/<query_id>', methods=['GET'])
 def import_scival_data(query_id):
     with open(location + '/out/' + query_id + '/' + 'scival_data.csv', 'r') as csvfile:
         scivals = []
@@ -268,7 +324,7 @@ def import_scival_data(query_id):
 
 
 # executes the defined and saved query in scopus and saves the results to elasticsearch
-@app.route('/query_execution/<query_id>', methods=['POST'])
+@app.route('/query/execution/<query_id>', methods=['POST'])
 def query_execution(query_id):
     # prepare location for saving data
     out_dir = location + '/out/' + query_id + '/'
@@ -290,7 +346,7 @@ def query_execution(query_id):
     # remove whitespace characters like `\n` at the end of each line
 
     # prepares the status file
-    status = Status("RUNNING")
+    status = Status("EIDS_COLLECTING")
     with open(out_dir + 'status.json', 'w') as json_file:
         json_file.write(json.dumps(status.__dict__))
         json_file.close()
@@ -308,7 +364,7 @@ def query_execution(query_id):
         for index, value in enumerate(eids):
             if (index in test_indices):
                 random_sample_eids.append(value)
-        save_eids_to_file(random_sample_eids, 'test_sample_')
+        save_eids_to_file(random_sample_eids, query_id, 'test_sample_')
 
     relevance_measure = RelevanceMeasure()
     relevance_measure.total_number_of_query_results = eids.__len__()
@@ -338,6 +394,10 @@ def query_execution(query_id):
 
     # persist EIDs to file to be uploaded to Scival
     save_eids_to_file(eids, out_dir)
+    status = Status("EIDS_COLLECTED")
+    with open(out_dir + 'status.json', 'w') as json_file:
+        json_file.write(json.dumps(status.__dict__))
+        json_file.close()
     project['is_eidslist'] = True
     save_project(project)
     print('collecting data for project' + project['project_id'])
@@ -399,7 +459,7 @@ def collectData(project):
 
             # send response to elastic search index
             send_to_index(response, project['project_id'])
-    print(missed_eids)
+    save_eids_to_file(missed_eids, project['project_id'], 'missed_')
     status['status'] = "FINISHED"
     project['is_query_run'] = True
     save_project(project)
@@ -442,7 +502,8 @@ def persist_list(scopus_responses):
     print(post.status_code)
 
 
-def save_eids_to_file(eids, out_dir, prefix=''):
+def save_eids_to_file(eids, project_id, prefix=''):
+    out_dir = location + '/out/' + project_id + '/'
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
     with open(out_dir + prefix + 'eids_list.txt', 'w') as list_file:
