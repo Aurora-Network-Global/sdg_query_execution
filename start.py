@@ -3,6 +3,7 @@ import requests
 import os
 import scopus
 import csv
+import random
 # import pytextrank
 
 from flask import Flask, send_file, jsonify
@@ -300,6 +301,15 @@ def query_execution(query_id):
     # retrieve the EIDs
     eids = search.EIDS
 
+    # save random 100 entries to disk
+    random_sample_eids = []
+    if eids.__len__() > 100:
+        test_indices = random.sample(range(1, eids.__len__()), 100)
+        for index, value in enumerate(eids):
+            if (index in test_indices):
+                random_sample_eids.append(value)
+        save_eids_to_file(random_sample_eids, 'test_sample_')
+
     relevance_measure = RelevanceMeasure()
     relevance_measure.total_number_of_query_results = eids.__len__()
     status.total = relevance_measure.total_number_of_query_results
@@ -331,7 +341,7 @@ def query_execution(query_id):
     project['is_eidslist'] = True
     save_project(project)
     print('collecting data for project' + project['project_id'])
-    collectData(project)
+    # collectData(project)
     # calculate_text_rank(query_id)
     return Response({"status": "FINISHED"}, status=204)
 
@@ -432,10 +442,10 @@ def persist_list(scopus_responses):
     print(post.status_code)
 
 
-def save_eids_to_file(eids, out_dir):
+def save_eids_to_file(eids, out_dir, prefix=''):
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
-    with open(out_dir + 'eids_list.txt', 'w') as list_file:
+    with open(out_dir + prefix + 'eids_list.txt', 'w') as list_file:
         for eid in eids:
             list_file.write(eid + '\n')
         list_file.close()
