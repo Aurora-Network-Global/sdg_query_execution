@@ -175,7 +175,7 @@ def download_missed_eids(query_id):
 
 
 # download the file with the missed EIDs from the search, stored in the working directory as missed_eids_list.txt
-@app.route("/eids/calculate_sample/<query_id>", methods=['GET'])
+@app.route("/eids/calculateSample/<query_id>", methods=['GET'])
 def calculate_sample(query_id):
     sample_size = int(request.args.get('sample_size'))
     print(sample_size)
