@@ -126,7 +126,7 @@ def get_scopus_search_string(query_id):
 
 
 # saves the query as json document in the working directory as query.json file
-@app.route("/query/<query_id>", methods=['POST'])
+@app.route("/query/single/<query_id>", methods=['POST'])
 def save_query(query_id):
     if request.method == 'POST':
         project = open_project(query_id)
