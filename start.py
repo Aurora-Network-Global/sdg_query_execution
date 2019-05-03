@@ -393,7 +393,7 @@ def query_execution(query_id):
     save_relevance_measures_to_file(relevance_measure, out_dir)
 
     # persist EIDs to file to be uploaded to Scival
-    save_eids_to_file(eids, out_dir)
+    save_eids_to_file(eids, query_id)
     status = Status("EIDS_COLLECTED")
     with open(out_dir + 'status.json', 'w') as json_file:
         json_file.write(json.dumps(status.__dict__))

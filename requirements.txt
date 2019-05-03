@@ -15,7 +15,7 @@ Flask-Cors==3.0.6
 graphviz==0.9
 idna==2.7
 itsdangerous==0.24
-Jinja2==2.10
+Jinja2>=2.10.1
 kiwisolver==1.0.1
 lxml==4.2.5
 MarkupSafe==1.0
@@ -34,7 +34,7 @@ pytextrank==1.1.0
 python-dateutil==2.7.3
 redis==2.10.6
 regex==2017.4.5
-requests==2.19.1
+requests>=2.20.0
 scopus==1.1.0
 six==1.11.0
 spacy==2.0.12
@@ -43,6 +43,6 @@ thinc==6.10.3
 toolz==0.9.0
 tqdm==4.26.0
 ujson==1.35
-urllib3==1.23
+urllib3>=1.24.2
 Werkzeug==0.14.1
 wrapt==1.10.11
