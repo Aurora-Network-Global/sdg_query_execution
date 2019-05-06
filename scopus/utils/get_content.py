@@ -76,7 +76,7 @@ def download(url, params=None, accept="xml"):
     tries = 0
     response = resp.status_code
     while response != 200 and tries < 3:
-        time.sleeps(60)
+        time.sleep(60)
         resp = requests.get(url, headers=header, params=params)
         response = resp.status_code
         tries = tries + 1
