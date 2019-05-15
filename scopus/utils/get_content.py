@@ -71,7 +71,9 @@ def download(url, params=None, accept="xml"):
             load_api_key()  # loads MY_API_KEY in scopus namespace
         header = {'X-ELS-APIKey': scopus.MY_API_KEY}
     header.update({'Accept': 'application/{}'.format(accept)})
+    print('querying scopus at url: ' + url)
     resp = requests.get(url, headers=header, params=params)
+    print('querying scopus at url: ' + resp.url)
     print('queried scopus with response code ' + str(resp.status_code))
     tries = 0
     response = resp.status_code
