@@ -12,3 +12,5 @@ class Project:
         self.isScivalData = False
         self.isEidslist = False
         self.isIndexPresent = False
+        self.isReferencesCollecting = False
+        self.isReferencesCollected = False

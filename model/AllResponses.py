@@ -2,7 +2,7 @@ class AllResponses:
 
     def __init__(self, identifier, query_title, query_id):
         self.id = identifier
-        self.scopus_abtract_retrieval = None
+        self.scopus_abstract_retrieval = None
         self.unpaywall_response = None
         self.altmetric_response = None
         self.scival_data = None

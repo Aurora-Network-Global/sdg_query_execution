@@ -2,7 +2,10 @@
 
 # read in the JSON-data from the request and convert them to a scopus query string
 # (one could add alternative query targets here, for example transforming the individual query strings to a WoS-Search
+import numpy as np
+
 from model.KeywordFrequency import KeywordFrequency
+from service import eids_service
 
 
 def convert_search_to_scopus_search_string(search):
@@ -104,3 +107,56 @@ def sort_freq_dict(freqdict):
     return list_of_frequencies
 
 
+def calculate_symmetric_overlap(primary):
+    primary_length = len(primary)
+    overlap_map = np.empty((primary_length, primary_length), dtype=object)
+    data = {}
+    for key in primary:
+        data[key] = eids_service.load_eid_list(key, '')
+    for i in range(0, primary_length):
+        for entry in data[primary[i]]:
+            found = False
+            for j in range(i + 1, primary_length):
+                if entry in data[primary[j]]:
+                    if overlap_map[i, j] is None:
+                        overlap_map[i, j] = [entry]
+                        overlap_map[j, i] = [entry]
+                    else:
+                        overlap_map[i, j].append(entry)
+                        overlap_map[j, i].append(entry)
+                    found = True
+            if not found:
+                if overlap_map[i, i] is None:
+                    overlap_map[i, i] = [entry]
+                else:
+                    overlap_map[i, i].append(entry)
+    return overlap_map
+
+
+def calculate_asymmetric_overlap(primary, secondary):
+    primary_length = primary.__len__()
+    secondary_length = secondary.__len__()
+    overlap_map = np.empty((primary_length, secondary_length), dtype=object)
+    data = {}
+    for key in primary:
+        data[key] = eids_service.load_eid_list(key, '')
+    for key in secondary:
+        data[key] = eids_service.load_eid_list(key, '')
+    for i in range(0, primary_length):
+        for entry in data[primary[i]]:
+            found = False
+            for j in range(0, secondary):
+                if j == i:
+                    continue
+                if entry in data[secondary[j]]:
+                    if overlap_map[i, j] is None:
+                        overlap_map[i, j] = [entry]
+                    else:
+                        overlap_map[i, j].append(entry)
+                    found = True
+            if not found:
+                if overlap_map[i, i] is None:
+                    overlap_map[i, i] = [entry]
+                else:
+                    overlap_map[i, i].append(entry)
+    return overlap_map
