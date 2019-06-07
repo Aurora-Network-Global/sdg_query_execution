@@ -19,10 +19,10 @@ def save_query(project_id, query):
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
     json_string = json.dumps(query)
-    out_dir = location + '/out/'
+    out_dir = location + '/out/' + project_id
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
-    with open(out_dir + project_id + '.json', 'w') as json_file:
+    with open(out_dir + '/query.json', 'w') as json_file:
         json_file.write(json_string)
 
 
