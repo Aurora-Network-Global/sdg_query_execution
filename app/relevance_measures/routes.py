@@ -57,7 +57,6 @@ def getPrecision(query_id):
     relevance_measure['number_sample_entries'] = judgement_list.__len__()
     relevance_measure['number_positive_sample_entries'] = 0
     for judgement in judgement_list:
-        print(judgement['isRelevant'])
         if judgement['isRelevant']:
             relevance_measure['number_positive_sample_entries'] = \
                 relevance_measure['number_positive_sample_entries'] + 1
