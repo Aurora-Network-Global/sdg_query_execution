@@ -1,5 +1,4 @@
 import csv
-import json
 import os
 
 from flask import current_app as app

@@ -27,7 +27,7 @@ def download_eids(query_id):
     try:
         return send_file(path_to_file, attachment_filename='eids_list.txt')
     except FileNotFoundError:
-        return Response('no list of missed eids', status=404)
+        return Response('no list of eids', status=404)
 
 
 # download the file with the missed EIDs from the search, stored in the working directory as missed_eids_list.txt
@@ -196,8 +196,8 @@ def upload_sample_judgement_file(query_id):
     path_to_save = location + '/out/' + query_id + '/'
     if not os.path.exists(path_to_save):
         os.makedirs(path_to_save)
-    file.save(path_to_save + 'sample_judgement_eids_list.json')
-    project['isTestdata'] = True
+    file.save(path_to_save + 'sample_judgement_eids_list.csv')
+    project['isSampledata'] = True
     project_service.save_project(project)
     return Response('list saved', status=204)
 
