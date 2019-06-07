@@ -39,7 +39,7 @@ def get_project(project_id):
 
 
 # saves a project, creates the project folder if it not exists
-@project_blueprint.route("/", methods=['post'])
+@project_blueprint.route("/new", methods=['post'])
 def save_posted_project():
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
