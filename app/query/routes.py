@@ -62,7 +62,9 @@ def query_execution(query_id):
     search = scopus.ScopusSearch(search_string, refresh=True, query_id=query_id)
 
     # retrieve the EIDs
-    eids = search.EIDS
+    eids = []
+    for result in search.results:
+        eids.append(result.eid)
 
     # set the total number of results to the relevance_measures measure save it to disk
     relevance_measure = {'total_number_of_query_results': eids.__len__()}

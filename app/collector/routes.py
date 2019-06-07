@@ -38,12 +38,12 @@ def data_collection_execution(query_id):
                   str(idx / status.total * 100) + '%')
 
             # retrieve data from scopus
-            # try:
-            scopus_abstract = scopus.AbstractRetrieval(identifier=eid, id_type='eid', view="FULL", refresh=True)
-            # except IOError:
-             #   print('could not collect data for EID ' + eid)
-             #   missed_eids.append(eid)
-             #   continue
+            try:
+                scopus_abstract = scopus.AbstractRetrieval(identifier=eid, id_type='eid', view="FULL", refresh=True)
+            except IOError:
+               print('could not collect data for EID ' + eid)
+               missed_eids.append(eid)
+               continue
 
             # create new AllResponses object to hold the individual information
             response = AllResponses(eid, project['name'], project['project_id'])
@@ -56,8 +56,8 @@ def data_collection_execution(query_id):
             if doi is not None:
                 if doi is not "":
                     response.unpaywall_response = Unpaywall(doi)
-                    # response.altmetric_response = Altmetric(doi)
-                    # response.scival_data = Scival([])
+                    response.altmetric_response = Altmetric(doi)
+                    response.scival_data = Scival([])
 
             # send response to elastic search index
             elasticsearch_service.send_to_index(response, project['project_id'])

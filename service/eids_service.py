@@ -1,3 +1,4 @@
+import csv
 import json
 import os
 
@@ -8,8 +9,8 @@ def load_eid_list(project_id, prefix=''):
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
     # path to the file
-    out_dir = location + '/out/' + project_id + '/'
-    with open(out_dir + prefix + 'eids_list.txt') as f:
+    path_to_file = location + '/out/' + project_id + '/' + prefix + 'eids_list.txt'
+    with open(path_to_file) as f:
         eids = f.readlines()
         f.close()
         # remove whitespace characters like `\n` at the end of each line
@@ -31,10 +32,19 @@ def save_eid_list(project_id, eids, prefix=''):
 def load_judgement_file(project_id):
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
-    path_to_file = location + '/out/' + project_id + '/sample_judgement_eids_list.json'
-    with open(path_to_file) as json_file:
-        judgement_list = json.load(json_file)
-        json_file.close()
+    path_to_file = location + '/out/' + project_id + '/sample_judgement_eids_list.csv'
+    judgement_list = []
+    with open(path_to_file, 'r') as csvfile:
+        linereader = csv.reader(csvfile, delimiter=',')
+        for line in linereader:
+            if line.__len__() < 2:
+                continue
+            if line[0] == 'identifier':
+                continue
+            if line[0] == 'eid':
+                continue
+            judgement = {'identifier': line[0], 'isRelevant': (line[1] == 'true')}
+            judgement_list.append(judgement)
         return judgement_list
 
 
