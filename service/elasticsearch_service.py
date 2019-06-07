@@ -54,10 +54,9 @@ class PropertyEncoder(json.JSONEncoder):
                 if key in fields:
                     return_object[key] = getattr(input_object, key)
         elif object_type == 'AbstractRetrieval':
-            print(input_object.title)
             fields = ['abstract', 'affiliation', 'authkeywords', 'authorgroup', 'authors', 'citedby-count',
                       'citedby-link', 'correspondence', 'coverDate', 'description', 'doi', 'eid', 'endingPage',
-                      'funding', 'funding_text', 'isbn', 'issn', 'identifier', 'idxterms', 'issueIdentifier',
+                      'funding', 'isbn', 'issn', 'identifier', 'idxterms', 'issueIdentifier',
                       'issuetitle', 'language', 'pageRange', 'publicationName', 'publisher', 'publisheraddress',
                       'refcount', 'references', 'scopus_link', 'self_link', 'source_id',
                       'sourcetitle_abbreviation', 'srctype', 'startingPage', 'subject_areas', 'url',

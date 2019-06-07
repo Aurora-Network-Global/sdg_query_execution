@@ -23,6 +23,7 @@ def download_eids(query_id):
         location = app.config.get("LIBINTEL_DATA_DIR")
     # path to the file
     path_to_file = location + '/out/' + query_id + '/' + 'eids_list.txt'
+    print('sending file ' + path_to_file)
     try:
         return send_file(path_to_file, attachment_filename='eids_list.txt')
     except FileNotFoundError:
