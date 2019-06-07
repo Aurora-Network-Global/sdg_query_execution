@@ -36,15 +36,13 @@ def load_judgement_file(project_id):
     with open(path_to_file, 'r') as csvfile:
         linereader = csv.reader(csvfile, delimiter=',')
         for line in linereader:
-            print(line)
             if line.__len__() < 2:
                 continue
             if line[0] == 'identifier':
                 continue
             if line[0] == 'eid':
                 continue
-            judgement = {'identifier': line[0], 'isRelevant': (line[1] == 'true')}
-            print(judgement)
+            judgement = {'identifier': line[0], 'isRelevant': (line[1].strip() == 'true')}
             judgement_list.append(judgement)
         return judgement_list
 
