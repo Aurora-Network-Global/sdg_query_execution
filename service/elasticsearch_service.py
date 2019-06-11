@@ -18,9 +18,12 @@ def send_to_index(all_responses: AllResponses, query_id):
 def append_to_index(document, eid, query_id):
     update_container = UpdateContainer(document)
     update_json = json.dumps(update_container, cls=HiddenEncoder)
-    res = es.update(index=query_id, doc_type="all_data", id=eid, body=update_json)
-    print('saved to index ' + query_id)
-    return res
+    try:
+        res = es.update(index=query_id, doc_type="all_data", id=eid, body=update_json)
+        return res
+    except:
+        print('could not send scival update')
+
 
 
 def delete_index(project_id):
@@ -32,7 +35,7 @@ class HiddenEncoder(json.JSONEncoder):
         return_object = {}
         for key, value in o.__getstate__().items():
             if key.startswith('_'):
-                return_object['key'.lstrip('_')] = value
+                return_object[key.lstrip('_')] = value
         return return_object
 
 

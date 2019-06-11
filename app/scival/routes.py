@@ -41,15 +41,14 @@ def upload_scival_file(query_id):
 # reads in the scival data and uses the results to update the elasticsearch index
 @scival_blueprint.route('/import/<query_id>', methods=['GET'])
 def import_scival_data(query_id):
+    print('importing Scival data')
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
     with open(location + '/out/' + query_id + '/' + 'scival_data.csv', 'r') as csvfile:
         scivals = []
-        linereader = csv.reader(csvfile, delimiter=',')
+        linereader = csv.DictReader(csvfile, delimiter=',')
         for row in linereader:
             if row.__len__() < 10:
-                continue
-            if row[0] == 'Title':
                 continue
             scival = Scival(row)
             elasticsearch_service.append_to_index(ScivalUpdate(scival), scival.eid, query_id)

@@ -2,152 +2,158 @@ class Scival:
 
     def __init__(self, row):
         if row.__len__() > 36:
-            if row[0] is not "-":
-                self._title = row[0]
+            if row['Title'] is not "-":
+                self._title = row['Title']
             else:
                 self._title = None
-            if row[1] is not "-":
-                self._authors = row[1]
+            if row['Authors'] is not "-":
+                self._authors = row['Authors']
             else:
                 self._authors = None
-            if row[2] is not "-":
-                self._number_of_authors = row[2]
+            if row['Number of Authors'] is not "-":
+                self._number_of_authors = row['Number of Authors']
             else:
                 self._number_of_authors = None
-            if row[3] is not "-":
-                self._scopus_author_ids = row[3].split(', ')
+            if row['Scopus Author Ids'] is not "-":
+                if row['Scopus Author Ids'] is not None:
+                    self._scopus_author_ids = row['Scopus Author Ids'].split(', ')
             else:
                 self._scopus_author_ids = []
-            if row[4] is not "-":
-                self._year = row[4]
+            if row['Year'] is not "-":
+                self._year = row['Year']
             else:
                 self._year = None
-            if row[5] is not "-":
-                self._scopus_source_title = row[5]
+            if row['Scopus Source title'] is not "-":
+                self._scopus_source_title = row['Scopus Source title']
             else:
                 self._scopus_source_title = None
-            if row[6] is not "-":
-                self._volume = row[6]
+            if row['Volume'] is not "-":
+                self._volume = row['Volume']
             else:
                 self._volume = None
-            if row[7] is not "-":
-                self._issue = row[7]
+            if row['Issue'] is not "-":
+                self._issue = row['Issue']
             else:
                 self._issue = None
-            if row[8] is not "-":
-                self._pages = row[8]
+            if row['Pages'] is not "-":
+                self._pages = row['Pages']
             else:
                 self._pages = None
-            if row[9] is not "-":
-                self._issn = row[9]
+            if row['ISSN'] is not "-":
+                self._issn = row['ISSN']
             else:
                 self._issn = None
-            if row[10] is not "-":
-                self._source_id = row[10]
+            if row['Source ID'] is not "-":
+                self._source_id = row['Source ID']
             else:
                 self._source_id = None
-            if row[11] is not "-":
-                self._source_type = row[11]
+            if row['Source-type'] is not "-":
+                self._source_type = row['Source-type']
             else:
                 self._source_type = None
-            if row[12] is not "-":
-                self._snip = row[12]
+            if row['SNIP 2017'] is not "-":
+                self._snip = row['SNIP 2017']
             else:
                 self._snip = None
-            if row[13] is not "-":
-                self._cite_score = row[13]
+            if row['CiteScore 2017'] is not "-":
+                self._cite_score = row['CiteScore 2017']
             else:
                 self._cite_score = None
-            if row[14] is not "-":
-                self._sjr = row[14]
+            if row['SJR 2017'] is not "-":
+                self._sjr = row['SJR 2017']
             else:
                 self._sjr = None
-            if row[15] is not "-":
-                self._field_weighted_view_impact = row[15]
+            if row['Field-Weighted View Impact'] is not "-":
+                self._field_weighted_view_impact = row['Field-Weighted View Impact']
             else:
                 self._field_weighted_view_impact = None
-            if row[16] is not "-":
-                self._views = row[16]
+            if row['Views'] is not "-":
+                self._views = row['Views']
             else:
                 self._views = None
-            if row[17] is not "-":
-                self._citations = row[17]
+            if row['Citations'] is not "-":
+                self._citations = row['Citations']
             else:
                 self._citations = None
-            if row[18] is not "-":
-                self._field_weighted_citation_impact = row[18]
+            if row['Field-Weighted Citation Impact'] is not "-":
+                self._field_weighted_citation_impact = row['Field-Weighted Citation Impact']
             else:
                 self._field_weighted_citation_impact = None
-            if row[19] is not "-":
-                self._output_in_top_percentiles = row[19]
+            if row['Outputs in Top Citation Percentiles, per percentile'] is not "-":
+                self._output_in_top_percentiles = row['Outputs in Top Citation Percentiles, per percentile']
             else:
                 self._output_in_top_percentiles = None
-            if row[20] is not "-":
-                self._field_weighted_output_in_top_citation_percentiles = row[20]
+            if row['Field-Weighted Outputs in Top Citation Percentiles, per percentile'] is not "-":
+                self._field_weighted_output_in_top_citation_percentiles = row['Field-Weighted Outputs in Top Citation Percentiles, per percentile']
             else:
                 self._field_weighted_output_in_top_citation_percentiles = None
-            if row[21] is not "-":
-                self._reference = row[21]
+            if row['Reference'] is not "-":
+                self._reference = row['Reference']
             else:
                 self._reference = None
-            if row[22] is not "-":
-                self._abstract_url = row[22]
+            if row['Abstract'] is not "-":
+                self._abstract_url = row['Abstract']
             else:
                 self._abstract_url = None
-            if row[23] is not "-":
-                self._doi = row[23]
+            if row['DOI'] is not "-":
+                self._doi = row['DOI']
             else:
                 self._doi = None
-            if row[24] is not "-":
-                self._publication_type = row[24]
+            if row['Publication-type'] is not "-":
+                self._publication_type = row['Publication-type']
             else:
                 self._publication_type = None
-            if row[25] is not "-":
-                self._eid = row[25]
+            if row['EID'] is not "-":
+                self._eid = row['EID']
             else:
                 self._eid = None
-            if row[26] is not "-":
-                self._pubmed_id = row[26]
+            if row['PubMed ID'] is not "-":
+                self._pubmed_id = row['PubMed ID']
             else:
                 self._pubmed_id = None
-            if row[27] is not "-":
-                self._institutions = row[27].split(', ')
+            if row['Institutions'] is not "-":
+                if row['Institutions'] is not None:
+                    self._institutions = row['Institutions'].split(', ')
             else:
                 self._institutions = None
-            if row[28] is not "-":
-                self._scopus_affil_ids = row[28].split(', ')
+            if row['Scopus affiliation IDs'] is not "-":
+                if row['Scopus affiliation IDs'] is not None:
+                    self._scopus_affil_ids = row['Scopus affiliation IDs'].split(', ')
             else:
                 self._scopus_affil_ids = None
-            if row[29] is not "-":
-                self._scopus_affil_names = row[29].split('; ')
+            if row['Scopus affiliation names'] is not "-":
+                if row['Scopus affiliation names'] is not None:
+                    self._scopus_affil_names = row['Scopus affiliation names'].split('; ')
             else:
                 self._scopus_affil_names = None
-            if row[30] is not "-":
-                self._country = row[30].split(', ')
+            if row['Country'] is not "-":
+                if row['Country'] is not None:
+                    self._country = row['Country'].split(', ')
             else:
                 self._country = None
-            if row[31] is not "-":
-                self._all_science_classification_code = row[31].split('; ')
+            if row['All Science Journal Classification (ASJC) Code'] is not "-":
+                if row['All Science Journal Classification (ASJC) Code'] is not None:
+                    self._all_science_classification_code = row['All Science Journal Classification (ASJC) Code'].split('; ')
             else:
                 self._all_science_classification_code = None
-            if row[32] is not "-":
-                self._all_science_classification_name = row[32].split('; ')
+            if row['All Science Journal Classification (ASJC) Field Name'] is not "-":
+                self._all_science_classification_name = row['All Science Journal Classification (ASJC) Field Name']
             else:
                 self._all_science_classification_name = None
-            if row[33] is not "-":
-                self._topic_cluster_name = row[33]
+            if row['Topic Cluster name'] is not "-":
+                self._topic_cluster_name = row['Topic Cluster name']
             else:
                 self._topic_cluster_name = None
-            if row[34] is not "-":
-                self._topic_cluster_number = row[34]
+            if row['Topic Cluster number'] is not "-":
+                self._topic_cluster_number = row['Topic Cluster number']
             else:
                 self._topic_cluster_number = None
-            if row[35] is not "-":
-                self._topic_name = row[35]
+            if row['Topic name'] is not "-":
+                self._topic_name = row['Topic name']
             else:
                 self.topic_name = None
-            if row[36] is not "-":
-                self.topic_number = row[36]
+            if row['Topic number'] is not "-":
+                self.topic_number = row['Topic number']
             else:
                 self.topic_number = None
         else:
