@@ -46,7 +46,6 @@ def calculate_overlap():
     if second_list.__len__() == 0:
         array = calculate_symmetric_overlap(list_ids)
         length_func = np.vectorize(get_length)
-        print(length_func(array))
         return Response({"status": "FINISHED"}, status=200)
     else:
         calculate_asymmetric_overlap(list_ids, second_list)

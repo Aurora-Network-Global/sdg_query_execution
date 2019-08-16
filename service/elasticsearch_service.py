@@ -66,7 +66,10 @@ class PropertyEncoder(json.JSONEncoder):
                       'volume', 'website', 'auid', 'indexed_name', 'surname', 'given_name', 'affiliation']
             for key in keys:
                 if key in fields:
-                    return_object[key] = getattr(input_object, key)
+                    try:
+                        return_object[key] = getattr(input_object, key)
+                    except KeyError:
+                        print('could not save key: ' + key)
         elif object_type == '_ScopusAuthor':
             fields = ['indexed_name', 'given_name', 'surname', 'initials', 'author_url', 'auid', 'scopusid', 'seq']
             for key in keys:

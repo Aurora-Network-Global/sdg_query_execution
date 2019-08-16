@@ -20,7 +20,6 @@ def list_projects():
             try:
                 with open(path_to_file) as json_file:
                     project = json.load(json_file)
-                    print(dir(project))
                     json_file.close()
                     projects.append(project)
             except FileNotFoundError:

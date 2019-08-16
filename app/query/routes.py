@@ -12,7 +12,6 @@ from . import query_blueprint
 def get_query(query_id):
     try:
         query = query_service.load_query(query_id)
-        print(query)
         return jsonify(query)
     except FileNotFoundError:
         query = Query()
