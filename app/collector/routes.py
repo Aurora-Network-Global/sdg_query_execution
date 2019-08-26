@@ -1,7 +1,7 @@
 from collections import Counter
 
-import scopus as scopus
 from flask import Response, request
+from pybliometrics import scopus
 
 from altmetric.Altmetric import Altmetric
 from model.AllResponses import AllResponses

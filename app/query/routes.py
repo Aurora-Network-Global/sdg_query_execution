@@ -1,5 +1,6 @@
-import scopus
+
 from flask import Response, request, jsonify
+from pybliometrics import scopus
 
 from model.Query import Query
 from model.Status import Status

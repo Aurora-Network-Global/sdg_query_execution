@@ -1,13 +1,17 @@
 #################
 #### imports ####
 #################
+import json
 import os
 import random
 
 from flask import send_file, Response, request, jsonify
+from pybliometrics import scopus
 
 from model.RelevanceMeasures import RelevanceMeasure
+import utilities.utils as utils
 from service import eids_service, project_service, relevance_measure_service
+from service.elasticsearch_service import PropertyEncoder
 from . import eids_blueprint
 from flask import current_app as app
 
@@ -58,6 +62,29 @@ def get_date_of_sample_eids(query_id):
     return str(eids_service.get_last_change(query_id, 'sample_'))
 
 
+@eids_blueprint.route("/publication_sample/<query_id>", methods=['GET'])
+def retrieve_sampled_publications(query_id):
+    with app.app_context():
+        location = app.config.get("LIBINTEL_DATA_DIR")
+    sample_size = int(request.args.get('sample_size'))
+    if sample_size is None:
+        sample_size = 100
+    # path to the file
+    eids = eids_service.load_eid_list(query_id)
+
+    number = eids.__len__()
+    random_sample_eids = []
+    if number > sample_size:
+        test_indices = random.sample(range(1, eids.__len__()), sample_size)
+        for index, value in enumerate(eids):
+            if index in test_indices:
+                random_sample_eids.append(value)
+    else:
+        random_sample_eids = eids
+    search_string = utils.generate_scopus_search_from_eid_list(random_sample_eids)
+    search = scopus.ScopusSearch(search_string, refresh=True, query_id=query_id)
+    sample_publications_json = json.dumps(search.results, cls=PropertyEncoder)
+    return Response(sample_publications_json, status=200, mimetype='application/json')
 
 
 # download the file with the missed EIDs from the search, stored in the working directory as missed_eids_list.txt

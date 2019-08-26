@@ -1,5 +1,3 @@
-
-
 # read in the JSON-data from the request and convert them to a scopus query string
 # (one could add alternative query targets here, for example transforming the individual query strings to a WoS-Search
 import numpy as np
@@ -83,6 +81,15 @@ def convert_search_to_altmetric_seach_string(search):
         affil_search = affil_search.replace(" OR ", ") OR AF-ID(")
         affil_search = affil_search.replace(" AND ", ") AND AF-ID(")
         search_string += affil_search
+    return search_string
+
+
+def generate_scopus_search_from_eid_list(eids):
+    print(eids)
+    search_string = 'EID('
+    for eid in eids:
+        search_string = search_string + eid + ' OR '
+    search_string = search_string[:-4] + ')'
     return search_string
 
 
