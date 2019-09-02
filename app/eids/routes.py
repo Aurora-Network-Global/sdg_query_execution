@@ -6,6 +6,7 @@ import os
 import random
 
 from flask import send_file, Response, request, jsonify
+from flask_cors import cross_origin
 from pybliometrics import scopus
 
 from model.RelevanceMeasures import RelevanceMeasure
@@ -62,6 +63,7 @@ def get_date_of_sample_eids(query_id):
     return str(eids_service.get_last_change(query_id, 'sample_'))
 
 
+@cross_origin('*')
 @eids_blueprint.route("/publication_sample/<query_id>", methods=['GET'])
 def retrieve_sampled_publications(query_id):
     with app.app_context():

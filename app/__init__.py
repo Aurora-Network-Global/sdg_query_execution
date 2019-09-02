@@ -1,6 +1,9 @@
 from flask import Flask
 from flask_cors import CORS
 
+from app.facettes import facettes_blueprint
+
+
 def create_app(config_filename=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_envvar("LIBINTEL_SETTINGS")
@@ -29,5 +32,6 @@ def register_blueprints(app):
     app.register_blueprint(query_blueprint, url_prefix='/query')
     app.register_blueprint(status_blueprint, url_prefix='/status')
     app.register_blueprint(keywords_blueprint, url_prefix='/keywords')
+    app.register_blueprint(facettes_blueprint, url_prefix='/facettes')
     app.register_blueprint(analysis_blueprint)
     app.register_blueprint(collector_blueprint)
