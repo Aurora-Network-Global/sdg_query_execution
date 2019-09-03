@@ -23,38 +23,53 @@ def upload_facettes_file(query_id):
 
 
 @cross_origin('*')
-@facettes_blueprint.route('/keyword_list/<query_id>')
-def retrieve_keyword_facettes_list(query_id):
-    with app.app_context():
-        location = app.config.get("LIBINTEL_DATA_DIR")
-    keyword_facettes = []
-    with open(location + '/out/' + query_id + '/' + 'facettes.csv', 'r', encoding='utf-8-sig') as csvfile:
-        linereader = csv.reader(csvfile, delimiter=',')
-        for row in linereader:
-            if row.__len__() < 16:
-                continue
-            keyword_facettes.append({
-                'journal': row[12],
-                'count': int(row[13])
-            })
-        csvfile.close()
-    return jsonify(keyword_facettes)
-
-
-@cross_origin('*')
 @facettes_blueprint.route('/journal_list/<query_id>')
 def retrieve_journal_facettes_list(query_id):
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
     journal_facettes = []
-    with open(location + '/out/' + query_id + '/' + 'journal_facettes.csv', 'r', encoding='utf-8-sig') as csvfile:
+    with open(location + '/out/' + query_id + '/' + 'facettes.csv', 'r', encoding='utf-8-sig') as csvfile:
         linereader = csv.reader(csvfile, delimiter=',')
         for row in linereader:
             if row.__len__() < 16:
                 continue
-            journal_facettes.append({
+            # skip header line
+            if row[12] == 'SOURCE TITLE':
+                continue
+            # skip empty data
+            if row[12] == '':
+                 continue
+
+        journal_facettes.append({
+                'journal': row[12],
+                'count': int(row[13])
+            })
+        csvfile.close()
+    return jsonify(journal_facettes)
+
+
+@cross_origin('*')
+@facettes_blueprint.route('/keyword_list/<query_id>')
+def retrieve_keyword_facettes_list(query_id):
+    with app.app_context():
+        location = app.config.get("LIBINTEL_DATA_DIR")
+    keyword_facettes = []
+    with open(location + '/out/' + query_id + '/' + 'journal_facettes.csv', 'r', encoding='utf-8-sig') as csvfile:
+        linereader = csv.reader(csvfile, delimiter=',')
+        for row in linereader:
+            # skip first lines
+            if row.__len__() < 16:
+                continue
+            # skip header line
+            if row[14] == 'KEYWORD':
+                continue
+
+            # skip empty data
+            if row[14] == '':
+                continue
+            keyword_facettes.append({
                 'journal': row[14],
                 'count': int(row[15])
             })
         csvfile.close()
-    return jsonify(journal_facettes)
+    return jsonify(keyword_facettes)
