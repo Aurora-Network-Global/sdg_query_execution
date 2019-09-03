@@ -40,7 +40,7 @@ def retrieve_journal_facettes_list(query_id):
             if row[12] == '':
                  continue
 
-        journal_facettes.append({
+            journal_facettes.append({
                 'journal': row[12],
                 'count': int(row[13])
             })
@@ -54,7 +54,7 @@ def retrieve_keyword_facettes_list(query_id):
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
     keyword_facettes = []
-    with open(location + '/out/' + query_id + '/' + 'journal_facettes.csv', 'r', encoding='utf-8-sig') as csvfile:
+    with open(location + '/out/' + query_id + '/' + 'facettes.csv', 'r', encoding='utf-8-sig') as csvfile:
         linereader = csv.reader(csvfile, delimiter=',')
         for row in linereader:
             # skip first lines
