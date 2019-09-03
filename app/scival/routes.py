@@ -44,7 +44,7 @@ def import_scival_data(query_id):
     print('importing Scival data')
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
-    with open(location + '/out/' + query_id + '/' + 'scival_data.csv', 'r') as csvfile:
+    with open(location + '/out/' + query_id + '/' + 'scival_data.csv', 'r', encoding='utf-8-sig') as csvfile:
         scivals = []
         linereader = csv.DictReader(csvfile, delimiter=',')
         for row in linereader:
