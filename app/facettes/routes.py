@@ -25,6 +25,7 @@ def upload_facettes_file(query_id):
 @cross_origin('*')
 @facettes_blueprint.route('/journal_list/<query_id>')
 def retrieve_journal_facettes_list(query_id):
+    sample_size = int(request.args.get('sample_size'))
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
     journal_facettes = []
@@ -45,12 +46,13 @@ def retrieve_journal_facettes_list(query_id):
                 'count': int(row[13])
             })
         csvfile.close()
-    return jsonify(journal_facettes)
+    return jsonify(journal_facettes[:sample_size])
 
 
 @cross_origin('*')
 @facettes_blueprint.route('/keyword_list/<query_id>')
 def retrieve_keyword_facettes_list(query_id):
+    sample_size = int(request.args.get('sample_size'))
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
     keyword_facettes = []
@@ -68,8 +70,8 @@ def retrieve_keyword_facettes_list(query_id):
             if row[14] == '':
                 continue
             keyword_facettes.append({
-                'journal': row[14],
+                'keyword': row[14],
                 'count': int(row[15])
             })
         csvfile.close()
-    return jsonify(keyword_facettes)
+    return jsonify(keyword_facettes[:sample_size])
