@@ -65,7 +65,7 @@ def get_date_of_sample_eids(query_id):
 
 @cross_origin('*')
 @eids_blueprint.route("/publication_sample/<query_id>", methods=['GET'])
-def retrieve_sampled_publications(query_id):
+def retrieve_sampled_publications(query_id, session_id):
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
     sample_size = int(request.args.get('sample_size'))
@@ -73,6 +73,10 @@ def retrieve_sampled_publications(query_id):
         sample_size = 100
     # path to the file
     eids = eids_service.load_eid_list(query_id)
+
+    session_id = request.args.get('session')
+    if session_id is not None:
+        eids_service.save_eid_list(query_id, eids, session_id)
 
     number = eids.__len__()
     random_sample_eids = []
