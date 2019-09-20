@@ -39,7 +39,9 @@ def retrieve_journal_facettes_list(query_id):
                 continue
             # skip empty data
             if row[12] == '':
-                 continue
+                continue
+            if row[13] == '':
+                continue
 
             journal_facettes.append({
                 'journal': row[12],
@@ -68,6 +70,8 @@ def retrieve_keyword_facettes_list(query_id):
 
             # skip empty data
             if row[14] == '':
+                continue
+            if row[15] == '':
                 continue
             keyword_facettes.append({
                 'keyword': row[14],
