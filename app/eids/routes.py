@@ -1,5 +1,5 @@
 #################
-#### imports ####
+#    imports    #
 #################
 import json
 import os
@@ -18,7 +18,7 @@ from flask import current_app as app
 
 
 ################
-#### routes ####
+#    routes    #
 ################
 
 # download the file with the EIDs from the search, stored in the working directory as eids_list.txt
@@ -66,17 +66,25 @@ def get_date_of_sample_eids(query_id):
 @cross_origin('*')
 @eids_blueprint.route("/publication_sample/<query_id>", methods=['GET'])
 def retrieve_sampled_publications(query_id):
-    with app.app_context():
-        location = app.config.get("LIBINTEL_DATA_DIR")
+    session_id = request.args.get('session')
     sample_size = int(request.args.get('sample_size'))
     if sample_size is None:
         sample_size = 100
+    if session_id is None:
+        session_id = 'default_session_'
+    try:
+        random_sample_eids = eids_service.load_eid_list(query_id, session_id)
+    except:
+        random_sample_eids = generate_sample_publication_list(query_id, sample_size, session_id)
+    search_string = utils.generate_scopus_search_from_eid_list(random_sample_eids)
+    search = scopus.ScopusSearch(search_string, refresh=True, query_id=query_id)
+    sample_publications_json = json.dumps(search.results, cls=PropertyEncoder)
+    return Response(sample_publications_json, status=200, mimetype='application/json')
+
+
+def generate_sample_publication_list(query_id, sample_size, session_id):
     # path to the file
     eids = eids_service.load_eid_list(query_id)
-
-    session_id = request.args.get('session')
-    if session_id is not None:
-        eids_service.save_eid_list(query_id, eids, session_id)
 
     number = eids.__len__()
     random_sample_eids = []
@@ -87,10 +95,8 @@ def retrieve_sampled_publications(query_id):
                 random_sample_eids.append(value)
     else:
         random_sample_eids = eids
-    search_string = utils.generate_scopus_search_from_eid_list(random_sample_eids)
-    search = scopus.ScopusSearch(search_string, refresh=True, query_id=query_id)
-    sample_publications_json = json.dumps(search.results, cls=PropertyEncoder)
-    return Response(sample_publications_json, status=200, mimetype='application/json')
+    eids_service.save_eid_list(query_id, random_sample_eids, session_id)
+    return random_sample_eids
 
 
 # download the file with the missed EIDs from the search, stored in the working directory as missed_eids_list.txt
