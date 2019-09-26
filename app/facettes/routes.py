@@ -4,6 +4,7 @@ import csv
 from flask import Response, request, jsonify
 from flask_cors import cross_origin
 
+from service import facettes_service
 from . import facettes_blueprint
 from flask import current_app as app
 
@@ -48,7 +49,17 @@ def retrieve_journal_facettes_list(query_id):
                 'count': int(row[13])
             })
         csvfile.close()
+    with open(location + '/out/' + query_id + '/' + 'journal_facettes.txt', 'w', encoding='utf-8') as facettes_file:
+        for journal_facette in journal_facettes:
+            facettes_file.write(journal_facette['journal'] + '\n')
+        facettes_file.close()
     return jsonify(journal_facettes[:sample_size])
+
+
+@facettes_blueprint.route('/generate_lists/<query_id>', methods=['POST'])
+def generate_lists(query_id):
+    facettes_service.generate_lists(query_id);
+    return Response('list files generated', status=204)
 
 
 @cross_origin('*')
@@ -78,4 +89,8 @@ def retrieve_keyword_facettes_list(query_id):
                 'count': int(row[15])
             })
         csvfile.close()
+    with open(location + '/out/' + query_id + '/' + 'keyword_facettes.txt', 'w', encoding='utf-8') as facettes_file:
+        for keyword_facette in keyword_facettes:
+            facettes_file.write(keyword_facette['keyword'] + '\n')
+        facettes_file.close()
     return jsonify(keyword_facettes[:sample_size])

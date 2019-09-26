@@ -24,6 +24,7 @@ def register_blueprints(app):
     from app.collector import collector_blueprint
     from app.analysis import analysis_blueprint
     from app.keywords import keywords_blueprint
+    from app.survey_analyzer import survey_analyzer_blueprint
 
     app.register_blueprint(eids_blueprint, url_prefix='/eids')
     app.register_blueprint(project_blueprint, url_prefix='/project')
@@ -33,5 +34,6 @@ def register_blueprints(app):
     app.register_blueprint(status_blueprint, url_prefix='/status')
     app.register_blueprint(keywords_blueprint, url_prefix='/keywords')
     app.register_blueprint(facettes_blueprint, url_prefix='/facettes')
+    app.register_blueprint(survey_analyzer_blueprint, url_prefix='/survey_analyzer')
     app.register_blueprint(analysis_blueprint)
     app.register_blueprint(collector_blueprint)
