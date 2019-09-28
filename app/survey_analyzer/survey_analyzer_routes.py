@@ -4,6 +4,7 @@ import os
 
 from flask_cors import cross_origin
 
+from SurveyGizmoSurvey.SurveyGizmoSurvey import SurveyGizmoSurvey
 from app.survey_analyzer import survey_analyzer_blueprint
 
 from flask import current_app as app, request, Response
@@ -29,7 +30,6 @@ def upload_results_file(query_id):
     return Response("OK", status=204)
 
 
-# reads in the scival data and uses the results to update the elasticsearch index
 @survey_analyzer_blueprint.route('/import/<query_id>', methods=['GET'])
 def import_survey_results_data(query_id):
     print('importing survey results')
@@ -62,4 +62,23 @@ def import_survey_results_data(query_id):
         survey_result_service.save_survey_results(query_id, json.dumps(survey_results, cls=HiddenEncoder))
     return json.dumps(survey_results, cls=HiddenEncoder)
 
+
+@survey_analyzer_blueprint.route('/collect/<query_id>', methods=['GET'])
+def collect_survey_results_data(query_id):
+    survey_id = request.args.get('survey_id')
+    print('collecting survey results for survey id' + survey_id)
+    survey = SurveyGizmoSurvey(survey_id)
+    survey_results = survey.get_survey_results()
+    try:
+        keywords_facettes = facettes_service.load_facettes_list(query_id)
+        journal_facettes = facettes_service.load_facettes_list(query_id, 'journal')
+    except:
+        facettes_service.generate_lists(query_id)
+        keywords_facettes = facettes_service.load_facettes_list(query_id)
+        journal_facettes = facettes_service.load_facettes_list(query_id, 'journal')
+    for result in survey_results:
+        result.replace_keywords(keywords_facettes)
+        result.replace_journals(journal_facettes)
+    survey_result_service.save_survey_results(query_id, json.dumps(survey_results, cls=HiddenEncoder))
+    return json.dumps(survey_results, cls=HiddenEncoder)
 

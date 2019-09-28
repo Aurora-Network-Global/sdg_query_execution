@@ -30,3 +30,4 @@ def save_survey_results(query_id, json_string, prefix=''):
         os.makedirs(out_dir)
     with open(out_dir + '/' + prefix + 'survey_result.json', 'w') as json_file:
         json_file.write(json_string)
+

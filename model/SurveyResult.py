@@ -1,26 +1,30 @@
 class SurveyResult:
 
-    def __init__(self, row):
-        self._session = row[9]
-        self._judgements = []
-        for i in range(25, 124):
-            self._judgements.append({'eid': row[100 + i], 'judgement': ('Yes' in row[i])})
-        self._unselected_keywords = []
-        self._selected_keywords = []
-        for i in range(227, 326):
-            if row[i] is '':
-                self._unselected_keywords.append(i - 226)
-            else:
-                self._selected_keywords.append(i - 226)
-        self._suggested_keywords = row[328]
-        self._suggested_journals = row[435]
+    def __init__(self, row=None):
         self._unselected_journals = []
         self._selected_journals = []
-        for i in range(334, 433):
-            if row[i] is '':
-                self._unselected_journals.append(i - 333)
-            else:
-                self._selected_journals.append(i - 333)
+        self._judgements = []
+        self._unselected_keywords = []
+        self._selected_keywords = []
+        self._session = ''
+        self._suggested_keywords = []
+        self._suggested_journals = []
+        if row is not None:
+            self._session = row[9]
+            for i in range(29, 128):
+                self._judgements.append({'eid': row[100 + i], 'judgement': ('Yes' in row[i])})
+            for i in range(227, 326):
+                if row[i] is '':
+                    self._unselected_keywords.append(i - 226)
+                else:
+                    self._selected_keywords.append(i - 226)
+            self._suggested_keywords = row[328].split('\n')
+            self._suggested_journals = row[435].split('\n')
+            for i in range(334, 433):
+                if row[i] is '':
+                    self._unselected_journals.append(i - 333)
+                else:
+                    self._selected_journals.append(i - 333)
 
     def __getstate__(self):
         state = self.__dict__.copy()
