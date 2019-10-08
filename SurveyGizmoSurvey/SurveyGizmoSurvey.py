@@ -60,11 +60,11 @@ class SurveyGizmoSurvey:
                 single_result._session = datum['session_id']
                 try:
                     single_result._suggested_keywords = result[str(self._keyword_suggestion_number)]['answer'].split('\n')
-                except KeyError:
+                except:
                     print('no keyword suggestions given.')
                 try:
                     single_result._suggested_journals = result[str(self._journal_suggestion_number)]['answer'].split('\n')
-                except KeyError:
+                except:
                     print('no journal suggestions given')
 
                 for selected_journal_option in result[str(self._journal_question_number)]['options']:
