@@ -20,7 +20,7 @@ class SurveyGizmoSurvey:
         if r.status_code == 200:
             pages = r.json()['data']['pages']
             for page in pages:
-                title = page['title']['English'].toLowerCase()
+                title = page['title']['English'].lower()
                 if 'publications contributing to this sdg' in title:
                     for question in page['questions']:
                         if 'MATRIX' in question['type']:
