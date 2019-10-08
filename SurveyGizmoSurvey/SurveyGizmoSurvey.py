@@ -20,12 +20,12 @@ class SurveyGizmoSurvey:
         if r.status_code == 200:
             pages = r.json()['data']['pages']
             for page in pages:
-                title = page['title']['English']
-                if 'Publications Contributing to this SDG' in title:
+                title = page['title']['English'].toLowerCase()
+                if 'publications contributing to this sdg' in title:
                     for question in page['questions']:
                         if 'MATRIX' in question['type']:
                             self._matrix_question_number = question['id']
-                elif 'Select Keywords' in title:
+                elif 'select the keywords' in title:
                     for question in page['questions']:
                         if 'CHECKBOX' in question['type']:
                             self._keywords_question_number = question['id']
@@ -34,7 +34,7 @@ class SurveyGizmoSurvey:
                                 self._keywords_options_number.append(option['id'])
                         elif 'ESSAY' in question['type']:
                             self._keyword_suggestion_number = question['id']
-                elif 'Select the Journals' in title:
+                elif 'select the journals' in title:
                     for question in page['questions']:
                         if 'CHECKBOX' in question['type']:
                             self._journal_question_number = question['id']
