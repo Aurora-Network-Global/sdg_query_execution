@@ -66,17 +66,16 @@ class SurveyGizmoSurvey:
                     single_result._suggested_journals = result[str(self._journal_suggestion_number)]['answer'].split('\n')
                 except:
                     print('no journal suggestions given')
-
-                for selected_journal_option in result[str(self._journal_question_number)]['options']:
-                    try:
+                try:
+                    for selected_journal_option in result[str(self._journal_question_number)]['options']:
                         single_result._selected_journals.append(result[str(self._journal_question_number)]['options'][str(selected_journal_option)]['answer'])
-                    except:
-                        print('no journals selected')
-                for selected_keyword_option in result[str(self._keywords_question_number)]['options']:
-                    try:
+                except:
+                    print('no journals selected')
+                try:
+                    for selected_keyword_option in result[str(self._keywords_question_number)]['options']:
                         single_result._selected_keywords.append(result[str(self._keywords_question_number)]['options'][str(selected_keyword_option)]['answer'])
-                    except:
-                        print('no keywords selected')
+                except:
+                    print('no keywords selected')
 
                 matrix_answers = result[str(self._matrix_question_number)]['subquestions']
                 for i in range(1, 100):
