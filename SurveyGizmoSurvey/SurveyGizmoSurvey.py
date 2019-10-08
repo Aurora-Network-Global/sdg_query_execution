@@ -83,9 +83,12 @@ class SurveyGizmoSurvey:
                         single_result._unselected_journals.append(i)
                     if i not in single_result._selected_keywords:
                         single_result._unselected_keywords.append(i)
-                    eid = result[str(self._matrix_question_number)]['subquestions'][list(matrix_answers)[i+100]]['answer']
-                    judgement = result[str(self._matrix_question_number)]['subquestions'][list(matrix_answers)[i]]['answer']
-                    single_result._judgements.append({'eid': eid, 'judgement': ('Yes' in judgement)})
+                    try:
+                        eid = result[str(self._matrix_question_number)]['subquestions'][list(matrix_answers)[i+100]]['answer']
+                        judgement = result[str(self._matrix_question_number)]['subquestions'][list(matrix_answers)[i]]['answer']
+                        single_result._judgements.append({'eid': eid, 'judgement': ('Yes' in judgement)})
+                    except:
+                        print('no data available for ' + str(i))
                 survey_results.append(single_result)
         return survey_results
 
