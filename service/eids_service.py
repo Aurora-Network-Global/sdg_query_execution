@@ -42,7 +42,7 @@ def load_judgement_file(project_id):
                 continue
             if line[0] == 'eid':
                 continue
-            judgement = {'eid': line[0], 'isRelevant': (line[1].strip() == 'true')}
+            judgement = {'eid': line[0], 'isRelevant': (line[1].strip().lower() == 'true')}
             judgement_list.append(judgement)
         return judgement_list
 
