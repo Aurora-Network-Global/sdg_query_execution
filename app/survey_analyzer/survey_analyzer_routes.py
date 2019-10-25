@@ -81,7 +81,7 @@ def collect_survey_results_data(query_id):
     for result in survey_results:
         result.replace_keywords(keywords_facettes)
         result.replace_journals(journal_facettes)
-        judgements.append(result.get_judgements())
+        judgements = judgements + result.get_judgements()
     survey_result_service.save_survey_results(query_id, json.dumps(survey_results, cls=HiddenEncoder))
     generate_judgement_file(judgements, query_id)
     return json.dumps(survey_results, cls=HiddenEncoder)
