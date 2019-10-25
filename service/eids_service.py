@@ -54,7 +54,7 @@ def generate_judgement_file(judgements, project_id):
     with open(path_to_file, 'w') as csvfile:
         csvfile.write('eid,isRelevant\n')
         for judgement in judgements:
-            csvfile.write(judgement['eid'] + ',' + judgement['judgement'] + '\n')
+            csvfile.write(judgement['eid'] + ',' + str(judgement['judgement']) + '\n')
         csvfile.close()
 
 
