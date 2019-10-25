@@ -42,9 +42,20 @@ def load_judgement_file(project_id):
                 continue
             if line[0] == 'eid':
                 continue
-            judgement = {'identifier': line[0], 'isRelevant': (line[1].strip() == 'true')}
+            judgement = {'eid': line[0], 'isRelevant': (line[1].strip() == 'true')}
             judgement_list.append(judgement)
         return judgement_list
+
+
+def generate_judgement_file(judgements, project_id):
+    with app.app_context():
+        location = app.config.get("LIBINTEL_DATA_DIR")
+    path_to_file = location + '/out/' + project_id + '/sample_judgement_eids_list.csv'
+    with open(path_to_file, 'w') as csvfile:
+        csvfile.write('eid,isRelevant\n')
+        for judgement in judgements:
+            csvfile.write(judgement['eid'] + ',' + judgement['judgement'] + '\n')
+        csvfile.close()
 
 
 def get_last_change(project_id, prefix=''):
@@ -53,4 +64,3 @@ def get_last_change(project_id, prefix=''):
     path_to_file = location + '/out/' + project_id + '/' + prefix + 'eids_list.txt'
     lastChange = os.path.getmtime(path_to_file)
     return lastChange
-

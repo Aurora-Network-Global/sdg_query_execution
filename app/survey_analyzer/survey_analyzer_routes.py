@@ -11,6 +11,7 @@ from flask import current_app as app, request, Response
 
 from model.SurveyResult import SurveyResult
 from service import facettes_service, survey_result_service
+from service.eids_service import generate_judgement_file
 from service.elasticsearch_service import HiddenEncoder
 
 
@@ -69,6 +70,7 @@ def collect_survey_results_data(query_id):
     print('collecting survey results for survey id' + survey_id)
     survey = SurveyGizmoSurvey(survey_id)
     survey_results = survey.get_survey_results()
+    judgements = []
     try:
         keywords_facettes = facettes_service.load_facettes_list(query_id)
         journal_facettes = facettes_service.load_facettes_list(query_id, 'journal')
@@ -79,6 +81,8 @@ def collect_survey_results_data(query_id):
     for result in survey_results:
         result.replace_keywords(keywords_facettes)
         result.replace_journals(journal_facettes)
+        judgements.append(result.get_judgements())
     survey_result_service.save_survey_results(query_id, json.dumps(survey_results, cls=HiddenEncoder))
+    generate_judgement_file(judgements, query_id)
     return json.dumps(survey_results, cls=HiddenEncoder)
 

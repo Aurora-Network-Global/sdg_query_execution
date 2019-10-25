@@ -37,6 +37,9 @@ class SurveyResult:
                 selected.append(paper['eid'])
         return selected
 
+    def get_judgements(self):
+        return self._judgements
+
     def get_unselected_papers(self):
         unselected = []
         for paper in self._judgements:
