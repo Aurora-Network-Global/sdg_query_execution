@@ -25,7 +25,7 @@ class SurveyGizmoSurvey:
                     for question in page['questions']:
                         if 'MATRIX' in question['type']:
                             self._matrix_question_number = question['id']
-                elif 'select the keywords' in title:
+                elif 'select keywords' in title:
                     for question in page['questions']:
                         if 'CHECKBOX' in question['type']:
                             self._keywords_question_number = question['id']
