@@ -4,6 +4,8 @@ import numpy as np
 
 from model.KeywordFrequency import KeywordFrequency
 from service import eids_service
+import nltk
+from nltk.corpus import stopwords
 
 
 def convert_search_to_scopus_search_string(search):
@@ -97,8 +99,12 @@ def generate_scopus_search_from_eid_list(eids):
 # word-frequency pairs.
 # THANKS TO William J. Turkel and Adam Crymble (https://programminghistorian.org/en/lessons/counting-frequencies)
 def wordlist_to_freq_dict(wordlist):
-    wordfreq = [wordlist.count(p) for p in wordlist]
-    return dict(zip(wordlist, wordfreq))
+    clean_tokens = wordlist[:]
+    for token in wordlist:
+        if token in stopwords.words('english'):
+            clean_tokens.remove(token)
+    freq = nltk.FreqDist(clean_tokens)
+    return dict(zip(wordlist, freq))
 
 
 # Sort a dictionary of word-frequency pairs in

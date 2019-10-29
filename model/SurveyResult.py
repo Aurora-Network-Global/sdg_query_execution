@@ -1,3 +1,6 @@
+from nltk.corpus import stopwords
+
+
 class SurveyResult:
 
     def __init__(self, row=None):
@@ -19,6 +22,10 @@ class SurveyResult:
                 else:
                     self._selected_keywords.append(i - 226)
             self._suggested_keywords = row[328].split('\n')
+            clean_tokens = self._suggested_keywords[:]
+            for token in self._suggested_keywords:
+                if token in stopwords.words('english'):
+                    clean_tokens.remove(token)
             self._suggested_journals = row[435].split('\n')
             for i in range(334, 433):
                 if row[i] is '':

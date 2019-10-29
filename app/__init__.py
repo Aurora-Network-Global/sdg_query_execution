@@ -1,8 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
 
-from app.facettes import facettes_blueprint
-
 
 def create_app(config_filename=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -25,6 +23,8 @@ def register_blueprints(app):
     from app.analysis import analysis_blueprint
     from app.keywords import keywords_blueprint
     from app.survey_analyzer import survey_analyzer_blueprint
+    from app.crossref import crossref_blueprint
+    from app.facettes import facettes_blueprint
 
     app.register_blueprint(eids_blueprint, url_prefix='/eids')
     app.register_blueprint(project_blueprint, url_prefix='/project')
@@ -37,3 +37,4 @@ def register_blueprints(app):
     app.register_blueprint(survey_analyzer_blueprint, url_prefix='/survey_analyzer')
     app.register_blueprint(analysis_blueprint)
     app.register_blueprint(collector_blueprint)
+    app.register_blueprint(crossref_blueprint, url_prefix='/crossref')
