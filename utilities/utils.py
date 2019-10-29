@@ -99,6 +99,15 @@ def generate_scopus_search_from_eid_list(eids):
 # word-frequency pairs.
 # THANKS TO William J. Turkel and Adam Crymble (https://programminghistorian.org/en/lessons/counting-frequencies)
 def wordlist_to_freq_dict(wordlist):
+    wordfreq = [wordlist.count(p) for p in wordlist]
+    freqdict = dict(list(zip(wordlist,wordfreq)))
+    aux = [(freqdict[key], key) for key in freqdict]
+    aux.sort()
+    aux.reverse()
+    return aux
+
+
+def clean_up_wordlist(wordlist):
     clean_tokens = wordlist[:]
     for token in wordlist:
         if token in stopwords.words('english'):

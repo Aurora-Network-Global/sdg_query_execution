@@ -2,8 +2,6 @@ import requests
 from flask import current_app as app
 
 from model import SurveyResult
-from service import survey_result_service
-
 
 class SurveyGizmoSurvey:
     def __init__(self, survey_id):

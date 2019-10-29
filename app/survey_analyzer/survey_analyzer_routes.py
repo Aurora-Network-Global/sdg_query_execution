@@ -5,6 +5,7 @@ import os
 from flask_cors import cross_origin
 
 from SurveyGizmoSurvey.SurveyGizmoSurvey import SurveyGizmoSurvey
+from SurveyGizmoSurvey.SurveyGizmoSurveyStats import SurveyGizmoSurveyStats
 from app.survey_analyzer import survey_analyzer_blueprint
 
 from flask import current_app as app, request, Response
@@ -29,6 +30,15 @@ def upload_results_file(query_id):
             os.makedirs(path_to_save)
         file.save(path_to_save + 'survey_results.csv')
     return Response("OK", status=204)
+
+
+@survey_analyzer_blueprint.route('/stats/<survey_id>', methods=['GET'])
+def get_stats_for_survey(survey_id):
+    print('collecting survey stats for survey id' + survey_id)
+    survey_stats = SurveyGizmoSurveyStats(survey_id)
+    print(survey_stats.cities_frequencies   )
+    return json.dumps(survey_stats.cities_frequencies)
+
 
 
 @survey_analyzer_blueprint.route('/import/<query_id>', methods=['GET'])

@@ -30,8 +30,6 @@ def data_collection_execution(query_id):
 
     if status.total > 0:
         elasticsearch_service.delete_index(project['project_id'])
-        with Pool(6) as pool:
-            pool.map()
         for idx, eid in enumerate(eids):
             # update the progress status and save the status to disk
             status.progress = idx + 1
