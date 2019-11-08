@@ -25,6 +25,7 @@ def register_blueprints(app):
     from app.survey_analyzer import survey_analyzer_blueprint
     from app.crossref import crossref_blueprint
     from app.facettes import facettes_blueprint
+    from app.wheel import wheel_blueprint
 
     app.register_blueprint(eids_blueprint, url_prefix='/eids')
     app.register_blueprint(project_blueprint, url_prefix='/project')
@@ -38,3 +39,4 @@ def register_blueprints(app):
     app.register_blueprint(analysis_blueprint)
     app.register_blueprint(collector_blueprint)
     app.register_blueprint(crossref_blueprint, url_prefix='/crossref')
+    app.register_blueprint(wheel_blueprint, url_prefix='/wheel')

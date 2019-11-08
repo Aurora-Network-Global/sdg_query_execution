@@ -1,5 +1,7 @@
 # read in the JSON-data from the request and convert them to a scopus query string
 # (one could add alternative query targets here, for example transforming the individual query strings to a WoS-Search
+import random
+
 import numpy as np
 
 from model.KeywordFrequency import KeywordFrequency
@@ -100,7 +102,7 @@ def generate_scopus_search_from_eid_list(eids):
 # THANKS TO William J. Turkel and Adam Crymble (https://programminghistorian.org/en/lessons/counting-frequencies)
 def wordlist_to_freq_dict(wordlist):
     wordfreq = [wordlist.count(p) for p in wordlist]
-    freqdict = dict(list(zip(wordlist,wordfreq)))
+    freqdict = dict(list(zip(wordlist, wordfreq)))
     aux = [(freqdict[key], key) for key in freqdict]
     aux.sort()
     aux.reverse()
@@ -182,3 +184,20 @@ def calculate_asymmetric_overlap(primary, secondary):
                 else:
                     overlap_map[i, i].append(entry)
     return overlap_map
+
+
+def get_sdg_classification(doi):
+    print("retrieving sdg_classification for doi" + doi)
+    classifications = [
+        0.50 + random.uniform(-0.4, 0.4),
+        0.8 + random.uniform(-0.2, 0.2),
+        0.90 + random.uniform(-0.1, 0.1),
+        0.25 + random.uniform(-0.2, 0.2),
+        0.2 + random.uniform(-0.2, 0.2),
+        0.1 + random.uniform(-0.2, 0.2),
+        0.80 + random.uniform(-0.2, 0.2),
+        0.4 + random.uniform(-0.4, 0.4),
+        0.20 + random.uniform(-0.2, 0.2),
+        0, 0, 0, 0, 0, 0, 0, 0]
+    random.shuffle(classifications)
+    return classifications
