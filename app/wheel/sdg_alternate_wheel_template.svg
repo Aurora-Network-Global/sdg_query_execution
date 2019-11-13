@@ -43,7 +43,7 @@
 	<path id="17" fill="#14496B" fill-opacity="1" d="{{wheel.colored_slices[16].svg_path}}"/>
 </g>
 <g id="score">
-	<text transform="matrix(1.0623 0 0 1 172.8853 335.7852)" font-family="'Arial'" font-size="124">{{wheel.factors | sum() | round(2)}}</text>
+	<text transform="matrix(1.0623 0 0 1 172.8853 335.7852)" font-family="'Arial'" font-size="124">{{'%0.2f' | format(wheel.factors | sum())}}</text>
 </g>
 </g>
 </svg>

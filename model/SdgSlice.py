@@ -49,7 +49,6 @@ class SdgSlice:
         self._svg_element = self.generate_svg_element("black", 1)
 
     def generate_svg_path(self):
-        print('svg : ' + self._point_one.to_string())
         movement_string = 'M ' + self._point_one.to_string()
         first_line = 'L ' + self._point_two.to_string()
         outer_circle = 'A ' + str(self._outer_radius + self._slice_offset) + ', ' + str(
@@ -69,14 +68,12 @@ class SdgSlice:
 
     def rotate(self, angle):
         self._point_one.rotate(angle)
-        print('rotate : ' + self._point_one.to_string())
         self._point_two.rotate(angle)
         self._point_three.rotate(angle)
         self._point_four.rotate(angle)
 
     def polar_shift(self, angle, amount):
         self._point_one.polar_shift(angle, amount)
-        print('shift : ' + self._point_one.to_string())
         self._point_two.polar_shift(angle, amount)
         self._point_three.polar_shift(angle, amount)
         self._point_four.polar_shift(angle, amount)
