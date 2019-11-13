@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="595.28px" height="595.28px" viewBox="0 0 595.28 595.28" enable-background="new 0 0 595.28 595.28" xml:space="preserve">
+<g id="viewport">
+<g id="grau">
+	<path id="grey_1" fill="#EBEBEB" d="{{wheel.grey_slices[0].svg_path}}"/>
+	<path id="grey_2" fill="#EBEBEB" d="{{wheel.grey_slices[1].svg_path}}"/>
+	<path id="grey_3" fill="#EBEBEB" d="{{wheel.grey_slices[2].svg_path}}"/>
+	<path id="grey_4" fill="#EBEBEB" d="{{wheel.grey_slices[3].svg_path}}"/>
+	<path id="grey_5" fill="#EBEBEB" d="{{wheel.grey_slices[4].svg_path}}"/>
+	<path id="grey_6" fill="#EBEBEB" d="{{wheel.grey_slices[5].svg_path}}"/>
+	<path id="grey_7" fill="#EBEBEB" d="{{wheel.grey_slices[6].svg_path}}"/>
+	<path id="grey_8" fill="#EBEBEB" d="{{wheel.grey_slices[7].svg_path}}"/>
+	<path id="grey_9" fill="#EBEBEB" d="{{wheel.grey_slices[8].svg_path}}"/>
+	<path id="grey_10" fill="#EBEBEB" d="{{wheel.grey_slices[9].svg_path}}"/>
+	<path id="grey_11" fill="#EBEBEB" d="{{wheel.grey_slices[10].svg_path}}"/>
+	<path id="grey_12" fill="#EBEBEB" d="{{wheel.grey_slices[11].svg_path}}"/>
+	<path id="grey_13" fill="#EBEBEB" d="{{wheel.grey_slices[12].svg_path}}"/>
+	<path id="grey_14" fill="#EBEBEB" d="{{wheel.grey_slices[13].svg_path}}"/>
+	<path id="grey_15" fill="#EBEBEB" d="{{wheel.grey_slices[14].svg_path}}"/>
+	<path id="grey_16" fill="#EBEBEB" d="{{wheel.grey_slices[15].svg_path}}"/>
+	<path id="grey_17" fill="#EBEBEB" d="{{wheel.grey_slices[16].svg_path}}"/>
+</g>
+<g id="farbe">
+	<path id="1" fill="#C42231" fill-opacity="1" d="{{wheel.colored_slices[0].svg_path}}"/>
+	<path id="2" fill="#DDA73A" fill-opacity="1" d="{{wheel.colored_slices[1].svg_path}}"/>
+	<path id="3" fill="#4E9E45" fill-opacity="1" d="{{wheel.colored_slices[2].svg_path}}"/>
+	<path id="4" fill="#C31F2D" fill-opacity="1" d="{{wheel.colored_slices[3].svg_path}}"/>
+	<path id="5" fill="#C63A21" fill-opacity="1" d="{{wheel.colored_slices[4].svg_path}}"/>
+	<path id="6" fill="#40A8C8" fill-opacity="1" d="{{wheel.colored_slices[5].svg_path}}"/>
+	<path id="7" fill="#EBBD15" fill-opacity="1" d="{{wheel.colored_slices[6].svg_path}}"/>
+	<path id="8" fill="#A21C44" fill-opacity="1" d="{{wheel.colored_slices[7].svg_path}}"/>
+	<path id="9" fill="#CD5E22" fill-opacity="1" d="{{wheel.colored_slices[8].svg_path}}"/>
+	<path id="10" fill="#C51C75" fill-opacity="1" d="{{wheel.colored_slices[9].svg_path}}"/>
+	<path id="11" fill="#DB8F20" fill-opacity="1" d="{{wheel.colored_slices[10].svg_path}}"/>
+	<path id="12" fill="#BF8D2C" fill-opacity="1" d="{{wheel.colored_slices[11].svg_path}}"/>
+	<path id="13" fill="#407F46" fill-opacity="1" d="{{wheel.colored_slices[12].svg_path}}"/>
+	<path id="14" fill="#1F97D4" fill-opacity="1" d="{{wheel.colored_slices[13].svg_path}}"/>
+	<path id="15" fill="#59BA47" fill-opacity="1" d="{{wheel.colored_slices[14].svg_path}}"/>
+	<path id="16" fill="#136A9F" fill-opacity="1" d="{{wheel.colored_slices[15].svg_path}}"/>
+	<path id="17" fill="#14496B" fill-opacity="1" d="{{wheel.colored_slices[16].svg_path}}"/>
+</g>
+<g id="score">
+	<text transform="matrix(1.0623 0 0 1 172.8853 335.7852)" font-family="'Arial'" font-size="124">{{wheel.factors | sum() | round(2)}}</text>
+</g>
+</g>
+</svg>

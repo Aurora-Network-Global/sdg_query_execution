@@ -5,6 +5,7 @@ import random
 import numpy as np
 
 from model.KeywordFrequency import KeywordFrequency
+from model.SdgWheel import SdgWheel
 from service import eids_service
 import nltk
 from nltk.corpus import stopwords
@@ -201,3 +202,22 @@ def get_sdg_classification(doi):
         0, 0, 0, 0, 0, 0, 0, 0]
     random.shuffle(classifications)
     return classifications
+
+
+def get_sdg_wheel(doi):
+    print("retrieving sdg_classification for doi" + doi)
+    classifications = [
+        0.50 + random.uniform(-0.4, 0.4),
+        0.8 + random.uniform(-0.2, 0.2),
+        0.90 + random.uniform(-0.1, 0.1),
+        0.25 + random.uniform(-0.2, 0.2),
+        0.2 + random.uniform(-0.2, 0.2),
+        0.1 + random.uniform(-0.1, 0.1),
+        0.80 + random.uniform(-0.2, 0.2),
+        0.4 + random.uniform(-0.4, 0.4),
+        0.20 + random.uniform(-0.2, 0.2),
+        0, 0, 0, 0, 0, 0, 0, 0]
+    random.shuffle(classifications)
+    sdg_wheel = SdgWheel(classifications)
+    return sdg_wheel
+

@@ -20,3 +20,13 @@ def build_wheel_for_doi(doi):
     template_file = 'sdg_wheel_template.svg'
     template = template_env.get_template(template_file)
     return Response(template.render(wheel=wheel), mimetype='image/svg+xml')
+
+
+@wheel_blueprint.route("/alternate/doi/<doi>", methods=['GET'])
+def build_alternate_wheel_for_doi(doi):
+    wheel = utils.get_sdg_wheel(doi)
+    template_loader = jinja2.FileSystemLoader(searchpath="./app/wheel/")
+    template_env = jinja2.Environment(loader=template_loader)
+    template_file = 'sdg_alternate_wheel_template.svg'
+    template = template_env.get_template(template_file)
+    return Response(template.render(wheel=wheel), mimetype='image/svg+xml')
