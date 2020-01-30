@@ -4,4 +4,4 @@ The relevance measures Blueprint handles the creation and retrieval of relevance
 from flask import Blueprint
 relevance_measures_blueprint = Blueprint('relevance_measures', __name__, template_folder='templates')
 
-from . import routes
+from . import relevance_measures_routes

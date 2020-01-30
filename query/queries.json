@@ -1,0 +1,82 @@
+[
+  {
+    "identifier": "",
+    "title": "",
+    "description": "",
+    "license": "",
+    "creator": "",
+    "contributor": "",
+    "date-modified": "",
+    "query-definitions": [
+      {
+        "@syntax": "",
+        "subquery-identifier": "",
+        "subquery-description": "",
+        "query-lines": [
+          {
+            "@field": "",
+            "query-line": ""
+          }
+        ],
+        "filter": [
+          {
+            "@field": "",
+            "affiliation": ""
+          },
+          {
+            "@field": "",
+            "people": ""
+          },
+          {
+            "@field": "",
+            "subject_area": ""
+          },
+          {
+            "@field": "",
+            "funding": ""
+          },
+          {
+            "@field": "",
+            "document": ""
+          },
+          {
+            "@field": "",
+            "timerange": {
+              "start": "",
+              "end": ""
+            }
+          }
+        ]
+      }
+    ],
+    "filter": [
+      {
+        "@field": "",
+        "affiliation": ""
+      },
+      {
+        "@field": "",
+        "people": ""
+      },
+      {
+        "@field": "",
+        "subject_area": ""
+      },
+      {
+        "@field": "",
+        "funding": ""
+      },
+      {
+        "@field": "",
+        "document": ""
+      },
+      {
+        "@field": "",
+        "timerange": {
+          "start": "",
+          "end": ""
+        }
+      }
+    ]
+  }
+]

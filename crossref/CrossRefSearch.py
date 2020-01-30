@@ -7,11 +7,11 @@ from model.Author import Author
 
 
 class CrossRefSearch:
+    """A class representing the results of querying the crossref search API"""
 
     @property
     def doi(self):
         return self._doi
-
 
     def __init__(self, reference):
         with app.app_context():

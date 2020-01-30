@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+   <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+         <!-- XML Schema Generated from XML Document on Thu Jan 23 2020 10:31:00 GMT+0100 (Mitteleuropäische Normalzeit) -->
+         <!-- with XmlGrid.net Free Online Service http://xmlgrid.net -->
+         <xs:element name="query">
+               <xs:complexType>
+                     <xs:sequence>
+                           <xs:element name="dc:identifier" type="xs:int"></xs:element>
+                           <xs:element name="dc:title" type="xs:string"></xs:element>
+                           <xs:element name="dc:description" type="xs:string"></xs:element>
+                           <xs:element name="dc:license" type="xs:string">
+                                 <xs:complexType>
+                                       <xs:attribute name="href" type="xs:string"></xs:attribute>
+                                 </xs:complexType>
+                           </xs:element>
+                           <xs:element name="dc:creator" type="xs:string"></xs:element>
+                           <xs:element name="dc:contributor" type="xs:string"></xs:element>
+                           <xs:element name="dc:date-modified" type="xs:date"></xs:element>
+                           <xs:element name="query-definitions">
+                                 <xs:complexType>
+                                       <xs:sequence>
+                                             <xs:element name="query-definition" maxOccurs="unbounded">
+                                                   <xs:complexType>
+                                                         <xs:sequence>
+                                                               <xs:element name="subquery-identifier" type="xs:int"></xs:element>
+                                                               <xs:element name="subquery-descriptions">
+                                                                     <xs:complexType>
+                                                                           <xs:sequence>
+                                                                                 <xs:element name="subquery-description" maxOccurs="unbounded" type="xs:string"></xs:element>
+                                                                           </xs:sequence>
+                                                                     </xs:complexType>
+                                                               </xs:element>
+                                                               <xs:element name="query-lines">
+                                                                     <xs:complexType>
+                                                                           <xs:sequence>
+                                                                                 <xs:element name="query-line" type="xs:string">
+                                                                                       <xs:complexType>
+                                                                                             <xs:attribute name="field" type="xs:string"></xs:attribute>
+                                                                                       </xs:complexType>
+                                                                                 </xs:element>
+                                                                           </xs:sequence>
+                                                                     </xs:complexType>
+                                                               </xs:element>
+                                                         </xs:sequence>
+                                                   </xs:complexType>
+                                             </xs:element>
+                                             <xs:element name="filters">
+                                                   <xs:complexType>
+                                                         <xs:sequence>
+                                                               <xs:element name="filter">
+                                                                     <xs:complexType>
+                                                                           <xs:attribute name="type" type="xs:string"></xs:attribute>
+                                                                           <xs:attribute name="field" type="xs:string"></xs:attribute>
+                                                                     </xs:complexType>
+                                                               </xs:element>
+                                                               <xs:element name="timerange">
+                                                                     <xs:complexType>
+                                                                           <xs:sequence>
+                                                                                 <xs:element name="start" type="xs:int"></xs:element>
+                                                                                 <xs:element name="end" type="xs:int"></xs:element>
+                                                                           </xs:sequence>
+                                                                           <xs:attribute name="field" type="xs:string"></xs:attribute>
+                                                                     </xs:complexType>
+                                                               </xs:element>
+                                                         </xs:sequence>
+                                                   </xs:complexType>
+                                             </xs:element>
+                                       </xs:sequence>
+                                       <xs:attribute name="syntax" type="xs:string"></xs:attribute>
+                                 </xs:complexType>
+                           </xs:element>
+                     </xs:sequence>
+                     <xs:attribute name="xmlns:dc" type="xs:string"></xs:attribute>
+                     <xs:attribute name="xmlns:aqd" type="xs:string"></xs:attribute>
+               </xs:complexType>
+         </xs:element>
+   </xs:schema>

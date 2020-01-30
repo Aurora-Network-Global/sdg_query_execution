@@ -3,6 +3,7 @@ from flask import current_app as app
 
 
 class Unpaywall:
+    """A class representing the results of querying the Unpaywall-API for a given DOI."""
 
     @property
     def doi(self):

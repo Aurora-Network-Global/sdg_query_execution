@@ -1,12 +1,28 @@
 from flask import Flask
 from flask_cors import CORS
+import py_eureka_client.eureka_client as eureka_client
 
 
 def create_app(config_filename=None):
     app = Flask(__name__, instance_relative_config=True)
-    app.config.from_envvar("LIBINTEL_SETTINGS")
+
+    # read the environment parameter to retrieve the path to the configuration file
+    if config_filename is None:
+        app.config.from_envvar("LIBINTEL_SETTINGS")
+    # check whether the query executor is part of a microservice architecture.
+    # If it is, the configuration property 'EUREKA_URL' needs to be set.
+    if app.config.get("EUREKA_URL") is not None:
+        server_url = app.config.get("EUREKA_URL")
+        server_port = app.config.get("EUREKA_PORT")
+        eureka_client.init(eureka_server=server_url, app_name="query_executor",
+                                           instance_port=5000)
+
+    # enable CORS support
     CORS(app)
+
+    # register all blueprints
     register_blueprints(app)
+
     return app
 
 
@@ -26,6 +42,7 @@ def register_blueprints(app):
     from app.crossref import crossref_blueprint
     from app.facettes import facettes_blueprint
     from app.wheel import wheel_blueprint
+    from app.query_viewer import query_viewer_blueprint
 
     app.register_blueprint(eids_blueprint, url_prefix='/eids')
     app.register_blueprint(project_blueprint, url_prefix='/project')
@@ -40,3 +57,5 @@ def register_blueprints(app):
     app.register_blueprint(collector_blueprint)
     app.register_blueprint(crossref_blueprint, url_prefix='/crossref')
     app.register_blueprint(wheel_blueprint, url_prefix='/wheel')
+    app.register_blueprint(query_viewer_blueprint, url_prefix='/viewer')
+

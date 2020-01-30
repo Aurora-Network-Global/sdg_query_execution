@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="queries.xsl"?>
+<aqd:queries xmlns:dc="http://dublincore.org/documents/dcmi-namespace/"
+             xmlns:aqd="http://aurora-network.global/queries/namespace/">
+    <aqd:query>
+        <dc:identifier>2</dc:identifier>
+        <dc:title>SDG02</dc:title>
+        <dc:description>Goal 2 aims to end hunger and all forms of malnutrition by 2030. It also commits to universal
+            access
+            to
+            safe, nutritious and sufficient food at all times of the year. This will require sustainable food production
+            systems
+            and resilient agricultural practices, equal access to land, technology and markets and international
+            cooperation
+            on
+            investments in infrastructure and technology to boost agricultural productivity.
+        </dc:description>
+        <dc:license href="http://creativecommons.org/licenses/by/4.0/">CC-BY v4 INT</dc:license>
+        <dc:creator>...</dc:creator>
+        <dc:contributor>René Otten (VU), Maurice Vanderfeesten (VU), Eike Spielberg (UDE), Felix Schmdit (UDE)
+        </dc:contributor>
+        <dc:date-modified>2019-11-07</dc:date-modified>
+        <aqd:query-definitions syntax="SCOPUS">
+            <aqd:query-definition>
+                <aqd:subquery-identifier>1</aqd:subquery-identifier>
+                <aqd:subquery-descriptions>
+                    <aqd:subquery-description>
+                        <!-- the 2.2 identifier can be constructed by the index of the query and the index of the subquery  -->
+                        By 2030, end hunger and ensure access by all people, in particular the poor and people in
+                        vulnerable
+                        situations,
+                        including infants, to safe, nutritious and sufficient food all year round
+                    </aqd:subquery-description>
+                    <aqd:subquery-description>
+                        2.1.1
+                        Prevalence of undernourishment
+                    </aqd:subquery-description>
+                    <aqd:subquery-description>
+                        2.1.2
+                        Prevalence of moderate or severe food insecurity in the population, based on the Food Insecurity
+                        Experience
+                        Scale (FIES)
+                    </aqd:subquery-description>
+                </aqd:subquery-descriptions>
+                <aqd:query-lines field="TITLE-ABS-KEY">
+                    <aqd:query-line >
+                        "Food security"
+                        OR "nutrition"
+                        OR "global food"
+                    </aqd:query-line>
+                    <aqd:query-line>
+                        “vitamin deficienc*"
+                    </aqd:query-line>
+                    <aqd:query-line>
+                        ( "hunger" )
+                        W/3
+                        ( "sustainab*"
+                        OR "malnutrition"
+                        OR "malnourish*"
+                        OR "undernourish*"
+                        OR "improved nutrition" )
+                    </aqd:query-line>
+                </aqd:query-lines>
+            </aqd:query-definition>
+            <aqd:query-definition syntax="SCOPUS">
+                <aqd:subquery-identifier>2</aqd:subquery-identifier>
+                <aqd:subquery-descriptions>
+                    <aqd:subquery-description>
+                        By 2030, end all forms of malnutrition, including achieving, by 2025, the internationally agreed
+                        targets
+                        on
+                        stunting and wasting in children under 5 years of age, and address the nutritional needs of
+                        adolescent
+                        girls,
+                        pregnant and lactating women and older persons
+                    </aqd:subquery-description>
+                    <aqd:subquery-description>
+                        2.2.1
+                        Prevalence of stunting (height for age less than -2 standard deviation from the median of the
+                        World
+                        Health
+                        Organization (WHO) Child Growth Standards) among children under 5 years of age
+                    </aqd:subquery-description>
+                    <aqd:subquery-description>
+                        2.2.2
+                        Prevalence of malnutrition (weight for height greater than +2 or less than -2 standard deviation
+                        from
+                        the median
+                        of the WHO Child Growth Standards) among children under 5 years of age, by type (wasting and
+                        overweight)
+                    </aqd:subquery-description>
+                </aqd:subquery-descriptions>
+                <aqd:query-lines>
+                    <aqd:query-line field="TITLE-ABS-KEY">
+                        "child hunger"
+                    </aqd:query-line>
+                </aqd:query-lines>
+            </aqd:query-definition>
+            <aqd:filter>
+                <aqd:affiliation field="AF-ID">62012345</aqd:affiliation>
+                <aqd:timerange field="PUBYEAR">
+                    <aqd:start>2009</aqd:start>
+                    <aqd:end>2019</aqd:end>
+                </aqd:timerange>
+                <aqd:people field="AU-ID">123456789</aqd:people>
+                <aqd:funding field="FUND-SPONSOR">DFG</aqd:funding>
+                <aqd:document field="DOI">10.1010/10245671154</aqd:document>
+            </aqd:filter>
+        </aqd:query-definitions>
+    </aqd:query>
+</aqd:queries>

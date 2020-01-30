@@ -1,0 +1,309 @@
+<aqd:query xmlns:aqd="http://aurora-network.global/queries/namespace/"
+           xmlns:dc="http://dublincore.org/documents/dcmi-namespace/">
+    <dc:identifier>2</dc:identifier>
+    <dc:title>2</dc:title>
+    <dc:creator>2</dc:creator>
+    <dc:contributor>2</dc:contributor>
+    <dc:licence>2</dc:licence>
+    <aqd:query_defintions syntax="SCOPUS">
+        <aqd:filter>
+            <aqd:people field="AU-ID">123456789</aqd:people>
+            <aqd:affiliation field="AF-ID">62012345</aqd:affiliation>
+            <aqd:funding field="FUND-SPONSOR">DFG</aqd:funding>
+            <aqd:subjectarea field=""/>
+            <aqd:document field="DOI">10.1010/10245671154</aqd:document>
+            <aqd:topic field=""/>
+            <aqd:timerange field="PUBYEAR">
+                <aqd:start>2009</aqd:start>
+                <aqd:end>2019</aqd:end>
+            </aqd:timerange>
+        </aqd:filter>
+        <aqd:query_defintion>
+            <aqd:subquery_identifier>1</aqd:subquery_identifier>
+            <aqd:subquery_descriptions>
+                <aqd:subquery_description>By 2030, end hunger and ensure access by all people, in particular the poor
+                    and people in vulnerable situations, including infants, to safe, nutritious and sufficient food all
+                    year round
+                </aqd:subquery_description>
+                <aqd:subquery_description>2.1.1
+                    Prevalence of undernourishment
+                </aqd:subquery_description>
+                <aqd:subquery_description>2.1.2
+                    Prevalence of moderate or severe food insecurity in the population, based on the Food Insecurity
+                    Experience Scale (FIES)
+                </aqd:subquery_description>
+            </aqd:subquery_descriptions>
+            <aqd:query_lines>
+                <aqd:query_line field="">"Food security" OR "nutrition" OR "global food"</aqd:query_line>
+                <aqd:query_line field="">"vitamin deficienc*"</aqd:query_line>
+                <aqd:query_line field="">( "hunger" ) W/3 ( "sustainab*" OR "malnutrition" OR "malnourish*" OR
+                    "undernourish*" OR "improved nutrition" )
+                </aqd:query_line>
+            </aqd:query_lines>
+            <aqd:filter>
+                <aqd:people field="AU-ID">123456789</aqd:people>
+                <aqd:affiliation field="AF-ID">62012345</aqd:affiliation>
+                <aqd:funding field="FUND-SPONSOR">DFG</aqd:funding>
+                <aqd:subjectarea field=""/>
+                <aqd:document field="DOI">10.1010/10245671154</aqd:document>
+                <aqd:topic field=""/>
+                <aqd:timerange field="PUBYEAR">
+                    <aqd:start>2009</aqd:start>
+                    <aqd:end>2019</aqd:end>
+                </aqd:timerange>
+            </aqd:filter>
+        </aqd:query_defintion>
+        <aqd:query_defintion>
+            <aqd:subquery_identifier>2</aqd:subquery_identifier>
+            <aqd:subquery_descriptions>
+                <aqd:subquery_description>By 2030, end all forms of malnutrition, including achieving, by 2025, the
+                    internationally agreed targets on stunting and wasting in children under 5 years of age, and address
+                    the nutritional needs of adolescent girls, pregnant and lactating women and older persons
+                </aqd:subquery_description>
+                <aqd:subquery_description>2.2.1
+                    Prevalence of stunting (height for age &lt;-2 standard deviation from the median of the World Health
+                    Organization (WHO) Child Growth Standards) among children under 5 years of age
+                </aqd:subquery_description>
+                <aqd:subquery_description>2.2.2
+                    Prevalence of malnutrition (weight for height &gt;+2 or &lt;-2 standard deviation from the median of
+                    the WHO Child Growth Standards) among children under 5 years of age, by type (wasting and
+                    overweight)
+                </aqd:subquery_description>
+            </aqd:subquery_descriptions>
+            <aqd:query_lines>
+                <aqd:query_line field="">"child hunger"</aqd:query_line>
+            </aqd:query_lines>
+            <aqd:filter>
+                <aqd:people field="AU-ID">123456789</aqd:people>
+                <aqd:affiliation field="AF-ID">62012345</aqd:affiliation>
+                <aqd:funding field="FUND-SPONSOR">DFG</aqd:funding>
+                <aqd:subjectarea field=""/>
+                <aqd:document field="DOI">10.1010/10245671154</aqd:document>
+                <aqd:topic field=""/>
+                <aqd:timerange field="PUBYEAR">
+                    <aqd:start>2009</aqd:start>
+                    <aqd:end>2019</aqd:end>
+                </aqd:timerange>
+            </aqd:filter>
+        </aqd:query_defintion>
+        <aqd:query_defintion>
+            <aqd:subquery_identifier>3</aqd:subquery_identifier>
+            <aqd:subquery_descriptions>
+                <aqd:subquery_description>By 2030, double the agricultural productivity and incomes of small-scale food
+                    producers, in particular women, indigenous peoples, family farmers, pastoralists and fishers,
+                    including through secure and equal access to land, other productive resources and inputs, knowledge,
+                    financial services, markets and opportunities for value addition and non-farm employment
+                </aqd:subquery_description>
+                <aqd:subquery_description>2.3.1
+                    Volume of production per labour unit by classes of farming/pastoral/forestry enterprise size
+                </aqd:subquery_description>
+                <aqd:subquery_description>2.3.2
+                    Average income of small-scale food producers, by sex and indigenous status
+                </aqd:subquery_description>
+            </aqd:subquery_descriptions>
+            <aqd:query_lines>
+                <aqd:query_line field="TITLE-ABS-KEY"/>
+            </aqd:query_lines>
+            <aqd:filter>
+                <aqd:people field="AU-ID">123456789</aqd:people>
+                <aqd:affiliation field="AF-ID">62012345</aqd:affiliation>
+                <aqd:funding field="FUND-SPONSOR">DFG</aqd:funding>
+                <aqd:subjectarea field=""/>
+                <aqd:document field="DOI">10.1010/10245671154</aqd:document>
+                <aqd:topic field=""/>
+                <aqd:timerange field="PUBYEAR">
+                    <aqd:start>2009</aqd:start>
+                    <aqd:end>2019</aqd:end>
+                </aqd:timerange>
+            </aqd:filter>
+        </aqd:query_defintion>
+        <aqd:query_defintion>
+            <aqd:subquery_identifier>4</aqd:subquery_identifier>
+            <aqd:subquery_descriptions>
+                <aqd:subquery_description>By 2030, ensure sustainable food production systems and implement resilient
+                    agricultural practices that increase productivity and production, that help maintain ecosystems,
+                    that strengthen capacity for adaptation to climate change, extreme weather, drought, flooding and
+                    other disasters and that progressively improve land and soil quality
+                </aqd:subquery_description>
+                <aqd:subquery_description>2.4.1
+                    Proportion of agricultural area under productive and sustainable agriculture
+                </aqd:subquery_description>
+            </aqd:subquery_descriptions>
+            <aqd:query_lines>
+                <aqd:query_line field="TITLE-ABS-KEY">( "sustainable food production"
+                    W/3 "agricultur*" )
+                    OR ( "agricultur*"
+                    W/6 "sustainab*" )
+                    OR ( "food production"
+                    W/3 "sustainab*" )
+                    OR ( "future" AND "high*" W/3 "food demand" )
+                    "sustainable agriculture"
+                </aqd:query_line>
+            </aqd:query_lines>
+            <aqd:filter>
+                <aqd:people field="AU-ID">123456789</aqd:people>
+                <aqd:affiliation field="AF-ID">62012345</aqd:affiliation>
+                <aqd:funding field="FUND-SPONSOR">DFG</aqd:funding>
+                <aqd:subjectarea field=""/>
+                <aqd:document field="DOI">10.1010/10245671154</aqd:document>
+                <aqd:topic field=""/>
+                <aqd:timerange field="PUBYEAR">
+                    <aqd:start>2009</aqd:start>
+                    <aqd:end>2019</aqd:end>
+                </aqd:timerange>
+            </aqd:filter>
+        </aqd:query_defintion>
+        <aqd:query_defintion>
+            <aqd:subquery_identifier>5</aqd:subquery_identifier>
+            <aqd:subquery_descriptions>
+                <aqd:subquery_description>By 2020, maintain the genetic diversity of seeds, cultivated plants and farmed
+                    and domesticated animals and their related wild species, including through soundly managed and
+                    diversified seed and plant banks at the national, regional and international levels, and promote
+                    access to and fair and equitable sharing of benefits arising from the utilization of genetic
+                    resources and associated traditional knowledge, as internationally agreed
+                </aqd:subquery_description>
+                <aqd:subquery_description>2.5.1
+                    Number of plant and animal genetic resources for food and agriculture secured in either medium or
+                    long-term conservation facilities
+                </aqd:subquery_description>
+                <aqd:subquery_description>2.5.2
+                    Proportion of local breeds classified as being at risk, not-at-risk or at unknown level of risk of
+                    extinction
+                </aqd:subquery_description>
+            </aqd:subquery_descriptions>
+            <aqd:query_lines>
+                <aqd:query_line field="TITLE-ABS-KEY"/>
+            </aqd:query_lines>
+            <aqd:filter>
+                <aqd:people field="AU-ID">123456789</aqd:people>
+                <aqd:affiliation field="AF-ID">62012345</aqd:affiliation>
+                <aqd:funding field="FUND-SPONSOR">DFG</aqd:funding>
+                <aqd:subjectarea field=""/>
+                <aqd:document field="DOI">10.1010/10245671154</aqd:document>
+                <aqd:topic field=""/>
+                <aqd:timerange field="PUBYEAR">
+                    <aqd:start>2009</aqd:start>
+                    <aqd:end>2019</aqd:end>
+                </aqd:timerange>
+            </aqd:filter>
+        </aqd:query_defintion>
+        <aqd:query_defintion>
+            <aqd:subquery_identifier>a</aqd:subquery_identifier>
+            <aqd:subquery_descriptions>
+                <aqd:subquery_description>Increase investment, including through enhanced international cooperation, in
+                    rural infrastructure, agricultural research and extension services, technology development and plant
+                    and livestock gene banks in order to enhance agricultural productive capacity in developing
+                    countries, in particular least developed countries
+                </aqd:subquery_description>
+                <aqd:subquery_description>2.a.1
+                    The agriculture orientation index for government expenditures
+                </aqd:subquery_description>
+                <aqd:subquery_description>2.a.2
+                    Total official flows (official development assistance plus other official flows) to the agriculture
+                    sector
+                </aqd:subquery_description>
+            </aqd:subquery_descriptions>
+            <aqd:query_lines>
+                <aqd:query_line field="TITLE-ABS-KEY">"Rural Development"
+                    OR (
+                    ( "development" )
+                    W/3
+                    ( "food"
+                    OR "aid" )
+                    )
+                </aqd:query_line>
+            </aqd:query_lines>
+            <aqd:filter>
+                <aqd:people field="AU-ID">123456789</aqd:people>
+                <aqd:affiliation field="AF-ID">62012345</aqd:affiliation>
+                <aqd:funding field="FUND-SPONSOR">DFG</aqd:funding>
+                <aqd:subjectarea field=""/>
+                <aqd:document field="DOI">10.1010/10245671154</aqd:document>
+                <aqd:topic field=""/>
+                <aqd:timerange field="PUBYEAR">
+                    <aqd:start>2009</aqd:start>
+                    <aqd:end>2019</aqd:end>
+                </aqd:timerange>
+            </aqd:filter>
+        </aqd:query_defintion>
+        <aqd:query_defintion>
+            <aqd:subquery_identifier>b</aqd:subquery_identifier>
+            <aqd:subquery_descriptions>
+                <aqd:subquery_description>Correct and prevent trade restrictions and distortions in world agricultural
+                    markets, including through the parallel elimination of all forms of agricultural export subsidies
+                    and all export measures with equivalent effect, in accordance with the mandate of the Doha
+                    Development Round
+                </aqd:subquery_description>
+                <aqd:subquery_description>2.b.1
+                    Producer Support Estimate OR ( )
+                </aqd:subquery_description>
+                <aqd:subquery_description>2.b.2
+                    Agricultural export subsidies
+                </aqd:subquery_description>
+            </aqd:subquery_descriptions>
+            <aqd:query_lines>
+                <aqd:query_line field="TITLE-ABS-KEY"/>
+            </aqd:query_lines>
+            <aqd:filter>
+                <aqd:people field="AU-ID">123456789</aqd:people>
+                <aqd:affiliation field="AF-ID">62012345</aqd:affiliation>
+                <aqd:funding field="FUND-SPONSOR">DFG</aqd:funding>
+                <aqd:subjectarea field=""/>
+                <aqd:document field="DOI">10.1010/10245671154</aqd:document>
+                <aqd:topic field=""/>
+                <aqd:timerange field="PUBYEAR">
+                    <aqd:start>2009</aqd:start>
+                    <aqd:end>2019</aqd:end>
+                </aqd:timerange>
+            </aqd:filter>
+        </aqd:query_defintion>
+        <aqd:query_defintion>
+            <aqd:subquery_identifier>c</aqd:subquery_identifier>
+            <aqd:subquery_descriptions>
+                <aqd:subquery_description>Adopt measures to ensure the proper functioning of food commodity markets and
+                    their derivatives and facilitate timely access to market information, including on food reserves, in
+                    order to help limit extreme food price volatility
+                </aqd:subquery_description>
+                <aqd:subquery_description>2.c.1
+                    Indicator of food price anomalies
+                </aqd:subquery_description>
+            </aqd:subquery_descriptions>
+            <aqd:query_lines>
+                <aqd:query_line field="TITLE-ABS-KEY"/>
+            </aqd:query_lines>
+            <aqd:filter>
+                <aqd:people field="AU-ID">123456789</aqd:people>
+                <aqd:affiliation field="AF-ID">62012345</aqd:affiliation>
+                <aqd:funding field="FUND-SPONSOR">DFG</aqd:funding>
+                <aqd:subjectarea field=""/>
+                <aqd:document field="DOI">10.1010/10245671154</aqd:document>
+                <aqd:topic field=""/>
+                <aqd:timerange field="PUBYEAR">
+                    <aqd:start>2009</aqd:start>
+                    <aqd:end>2019</aqd:end>
+                </aqd:timerange>
+            </aqd:filter>
+        </aqd:query_defintion>
+        <aqd:query_defintion>
+            <aqd:subquery_identifier>9</aqd:subquery_identifier>
+            <aqd:subquery_descriptions>
+                <aqd:subquery_description>description</aqd:subquery_description>
+            </aqd:subquery_descriptions>
+            <aqd:query_lines>
+                <aqd:query_line field="TITLE-ABS-KEY">"Test Whether it works"</aqd:query_line>
+            </aqd:query_lines>
+            <aqd:filter>
+                <aqd:people field="AU-ID">123456789</aqd:people>
+                <aqd:affiliation field="AF-ID">62012345</aqd:affiliation>
+                <aqd:funding field="FUND-SPONSOR">DFG</aqd:funding>
+                <aqd:subjectarea field=""/>
+                <aqd:document field="DOI">10.1010/10245671154</aqd:document>
+                <aqd:topic field=""/>
+                <aqd:timerange field="PUBYEAR">
+                    <aqd:start>2009</aqd:start>
+                    <aqd:end>2019</aqd:end>
+                </aqd:timerange>
+            </aqd:filter>
+        </aqd:query_defintion>
+    </aqd:query_defintions>
+</aqd:query>

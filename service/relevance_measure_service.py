@@ -11,7 +11,7 @@ def save_relevance_measures(project_id, relevance_measures):
         location = app.config.get("LIBINTEL_DATA_DIR")
     path_to_file = location + '/out/' + project_id + '/relevance_measures.json'
     with open(path_to_file, 'w') as json_file:
-        json_file.write(json.dumps(relevance_measures))
+        json_file.write(json.dumps(relevance_measures, default=lambda o: o.__getstate__()))
         json_file.close()
 
 
@@ -23,9 +23,8 @@ def load_relevance_measure(project_id):
         try:
             relevance_measure = json.load(json_file)
             json_file.close()
-            return relevance_measure
+            return RelevanceMeasure(**relevance_measure)
         except FileNotFoundError:
             return {}
         except JSONDecodeError:
             return {}
-

@@ -5,4 +5,4 @@ from flask import Blueprint
 
 scival_blueprint = Blueprint('scival', __name__, template_folder='templates')
 
-from . import routes
+from . import scival_routes

@@ -1,4 +1,6 @@
 class Scival:
+    """A class representing the results of analyzing publication sets with Scival by importing rows from a
+    spreadsheet."""
 
     def __init__(self, row):
         if row.__len__() > 36:

@@ -12,6 +12,7 @@ from nltk.corpus import stopwords
 
 
 def convert_search_to_scopus_search_string(search):
+    """uses the stored query to construct a search string for Scopus"""
     search_string = ""
     if search["author_name"]:
         if search_string != "":
@@ -29,7 +30,6 @@ def convert_search_to_scopus_search_string(search):
         if search_string != "":
             search_string += " AND "
         search_string += "PUBYEAR BEF " + search["end_year"] + ""
-
     if search["title"]:
         if search_string != "":
             search_string += " AND "
@@ -45,8 +45,9 @@ def convert_search_to_scopus_search_string(search):
     if search["affiliation_id"]:
         if search_string != "":
             search_string += " AND "
-        affil_search = '(AF-ID(' + search["affiliation_id"] + '))'
+        affil_search = '(AF-ID(' + search["affiliation_id"].replace("\n", "") + '))'
         affil_search = affil_search.replace(" OR ", ") OR AF-ID(")
+        affil_search = affil_search.replace(" OR", ") OR AF-ID(")
         affil_search = affil_search.replace(" AND ", ") AND AF-ID(")
         search_string += affil_search
     return search_string
@@ -54,6 +55,7 @@ def convert_search_to_scopus_search_string(search):
 
 # TO DO: apply Altmeric search fields to procedure. Up to now only copy of Scopus procedure.
 def convert_search_to_altmetric_seach_string(search):
+    """Uses the stored query to construct a search string for Altmetric"""
     search_string = ""
     if search["author_name"]:
         if search_string != "":
@@ -90,6 +92,7 @@ def convert_search_to_altmetric_seach_string(search):
 
 
 def generate_scopus_search_from_eid_list(eids):
+    """constructs a search string for Scopus based to retrieve data for a list of EIDs"""
     print(eids)
     search_string = 'EID('
     for eid in eids:
@@ -102,6 +105,9 @@ def generate_scopus_search_from_eid_list(eids):
 # word-frequency pairs.
 # THANKS TO William J. Turkel and Adam Crymble (https://programminghistorian.org/en/lessons/counting-frequencies)
 def wordlist_to_freq_dict(wordlist):
+    """Given a list of words, return a dictionary of word-frequency pairs.
+    THANKS TO William J. Turkel and Adam Crymble (https://programminghistorian.org/en/lessons/counting-frequencies)
+    """
     wordfreq = [wordlist.count(p) for p in wordlist]
     freqdict = dict(list(zip(wordlist, wordfreq)))
     aux = [(freqdict[key], key) for key in freqdict]
@@ -112,6 +118,7 @@ def wordlist_to_freq_dict(wordlist):
 
 def clean_up_wordlist(wordlist):
     clean_tokens = wordlist[:]
+
     for token in wordlist:
         if token in stopwords.words('english'):
             clean_tokens.remove(token)

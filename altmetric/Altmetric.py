@@ -4,6 +4,8 @@ from flask import current_app as app
 
 
 class Altmetric:
+    """A class representing the results when querying the altmetric API.
+    Currently only the free API is supported but further support will be implemented. """
 
     def __init__(self, doi):
         with app.app_context():

@@ -4,6 +4,7 @@ from flask import current_app as app
 
 
 def save_counter(project_id, counter, prefix=''):
+    """saves the counter as json file on disk. a prefix can be given to distinguish different types of counter files"""
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
     path_to_file = location + '/out/' + project_id + '/' + prefix + 'counter.json'
@@ -13,6 +14,7 @@ def save_counter(project_id, counter, prefix=''):
 
 
 def load_counter(project_id, prefix=''):
+    """retrieves a counter json file from disk. a prefix can be given to distinguish different types of counter files"""
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
     path_to_file = location + '/out/' + project_id + '/' + prefix + 'counter.json'

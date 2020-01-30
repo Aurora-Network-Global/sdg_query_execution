@@ -4,17 +4,20 @@ from flask import current_app as app
 from model import SurveyResult
 
 class SurveyGizmoSurvey:
+
+    @property
+    def survey_results(self):
+        return self.get_survey_results()
+
     def __init__(self, survey_id):
         with app.app_context():
             self._key = app.config.get("SURVEY_GIZMO_API_KEY")
             self._secret = app.config.get("SURVEY_GIZMO_API_SECRET")
-            self._survey_gizmo_url = app.config.get("SURVEY_GIZMO_URL")
+        self._survey_gizmo_url = "https://restapi.surveygizmo.eu/v5"
 
         self._base_url = self._survey_gizmo_url + '/survey/' + survey_id
         url = self._base_url + '?api_token=' + self._key + '&api_token_secret=' + self._secret
-        print('requesting url: ' + url)
         r = requests.get(url)
-        print(r.status_code)
         if r.status_code == 200:
             pages = r.json()['data']['pages']
             for page in pages:
@@ -46,12 +49,9 @@ class SurveyGizmoSurvey:
 
     def get_survey_results(self):
         url = self._base_url + '/surveyresponse' + '?api_token=' + self._key + '&api_token_secret=' + self._secret + '&filter[value][0]=Complete&filter[field][0]=status&filter[operator][0]==&filter[field][1]=is_test_data&filter[operator][1]==&filter[value][1]=0'
-        print('getting singel result from ' + url)
         r = requests.get(url)
         survey_results = []
-        print(r.status_code)
         if r.status_code == 200:
-            print(r.json()['data'].__len__())
             for datum in r.json()['data']:
                 result = datum['survey_data']
                 single_result = SurveyResult.SurveyResult()
@@ -86,7 +86,7 @@ class SurveyGizmoSurvey:
                         judgement = result[str(self._matrix_question_number)]['subquestions'][list(matrix_answers)[i]]['answer']
                         single_result._judgements.append({'eid': eid, 'judgement': ('Yes' in judgement)})
                     except:
-                        print('no data available for ' + str(i))
+                        pass
                 survey_results.append(single_result)
         return survey_results
 

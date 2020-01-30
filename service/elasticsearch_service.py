@@ -8,22 +8,36 @@ from model.UpdateContainer import UpdateContainer
 es = Elasticsearch()
 
 
-def send_to_index(all_responses: AllResponses, query_id):
+def send_to_index(all_responses: AllResponses, project_id):
     all_responses_json = json.dumps(all_responses, cls=PropertyEncoder)
-    res = es.index(query_id, 'all_data', all_responses_json, all_responses.id, request_timeout=600)
-    print('saved to index ' + query_id)
+    res = es.index(project_id, 'all_data', all_responses_json, all_responses.id, request_timeout=600)
+    print('saved to index ' + project_id)
     return res
 
 
-def append_to_index(document, eid, query_id):
+def get_number_of_records(project_id):
+    es.indices.refresh(project_id)
+    return es.cat.count(project_id, params={"format": "json"})[0]['count']
+
+
+def append_to_index(document, eid, project_id):
     update_container = UpdateContainer(document)
     update_json = json.dumps(update_container, cls=HiddenEncoder)
     try:
-        res = es.update(index=query_id, doc_type="all_data", id=eid, body=update_json)
+        res = es.update(index=project_id, doc_type="all_data", id=eid, body=update_json)
         return res
     except:
         print('could not send scival update')
 
+
+def save_survey_judgement(judgement, project_id):
+    try:
+        update = '{"doc": { "accepted": ' + str(judgement['judgement']).lower() + '}}'
+        print(update)
+        res = es.update(index=project_id, doc_type="all_data", id=judgement['eid'], body=update)
+        return res
+    except:
+        print('could not send scival update')
 
 
 def delete_index(project_id):
