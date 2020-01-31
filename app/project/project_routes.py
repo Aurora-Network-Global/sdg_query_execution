@@ -3,6 +3,7 @@
 #################
 
 import json
+import re
 
 from flask import Response, request
 
@@ -47,11 +48,15 @@ def create_new_project():
     """
     project_json = request.get_json(silent=True)
     project = Project(**project_json)
-    try:
-        project_service.create_project(project)
-        return json.dumps(project, default=lambda o: o.__getstate__())
-    except IOError:
+    if re.match('\d+.json', project.project_id):
+        try:
+            project_service.create_project(project)
+            return json.dumps(project, default=lambda o: o.__getstate__())
+        except IOError:
+            return Response("could not create project", status=500)
+    else:
         return Response("could not create project", status=500)
+
 
 # loads a project by the project ID
 @project_blueprint.route("/single/<project_id>", methods=['DELETE'])
