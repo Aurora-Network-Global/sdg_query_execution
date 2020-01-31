@@ -48,6 +48,8 @@ def load_all_projects():
                     projects.add_project(Project(**project))
             except FileNotFoundError:
                 continue
+            except TypeError:
+                continue
     return projects
 
 
