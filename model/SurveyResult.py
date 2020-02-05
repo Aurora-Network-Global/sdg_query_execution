@@ -1,73 +1,140 @@
-from nltk.corpus import stopwords
-
-
 class SurveyResult:
 
-    def __init__(self, row=None):
-        self._unselected_journals = []
-        self._selected_journals = []
-        self._judgements = []
-        self._unselected_keywords = []
-        self._selected_keywords = []
-        self._session = ''
-        self._suggested_keywords = []
-        self._suggested_journals = []
-        if row is not None:
-            self._session = row[9]
-            for i in range(29, 128):
-                self._judgements.append({'eid': row[100 + i], 'judgement': ('Yes' in row[i])})
-            for i in range(227, 326):
-                if row[i] is '':
-                    self._unselected_keywords.append(i - 226)
-                else:
-                    self._selected_keywords.append(i - 226)
-            self._suggested_keywords = row[328].split('\n')
-            clean_tokens = self._suggested_keywords[:]
-            for token in self._suggested_keywords:
-                if token in stopwords.words('english'):
-                    clean_tokens.remove(token)
-            self._suggested_journals = row[435].split('\n')
-            for i in range(334, 433):
-                if row[i] is '':
-                    self._unselected_journals.append(i - 333)
-                else:
-                    self._selected_journals.append(i - 333)
+    @property
+    def selected_journals(self):
+        return self._selected_journals
+
+    @selected_journals.setter
+    def selected_journals(self, selected_journals):
+        self._selected_journals = selected_journals
+
+    @property
+    def unselected_journals(self):
+        return self._unselected_journals
+
+    @unselected_journals.setter
+    def unselected_journals(self, unselected_journals):
+        self._unselected_journals = unselected_journals
+
+    @property
+    def suggested_journals(self):
+        return self._suggested_journals
+
+    @suggested_journals.setter
+    def suggested_journals(self, suggested_journals):
+        self._suggested_journals = suggested_journals
+
+    @property
+    def selected_keywords(self):
+        return self._selected_keywords
+
+    @selected_keywords.setter
+    def selected_keywords(self, selected_keywords):
+        self._selected_keywords = selected_keywords
+
+    @property
+    def unselected_keywords(self):
+        return self._unselected_keywords
+
+    @unselected_keywords.setter
+    def unselected_keywords(self, unselected_keywords):
+        self._unselected_keywords = unselected_keywords
+
+    @property
+    def suggested_keywords(self):
+        return self._suggested_keywords
+
+    @suggested_keywords.setter
+    def suggested_keywords(self, suggested_keywords):
+        self._suggested_keywords = suggested_keywords
+
+    @property
+    def suggested_glossaries(self):
+        return self._suggested_glossaries
+
+    @suggested_glossaries.setter
+    def suggested_glossaries(self, suggested_glossaries):
+        self._suggested_glossaries = suggested_glossaries
+
+    @property
+    def judgements(self):
+        return self._judgements
+
+    @judgements.setter
+    def judgements(self, judgements):
+        self._judgements = judgements
+
+    @property
+    def session(self):
+        return self._session
+
+    @session.setter
+    def session(self, session):
+        self._session = session
+
+    @property
+    def city(self):
+        return self._city
+
+    @city.setter
+    def city(self, city):
+        self._city = city
+
+    def __init__(self, selected_journals=None,
+                 unselected_journals=None,
+                 selected_keywords=None,
+                 unselected_keywords=None,
+                 judgements=None,
+                 suggested_keywords=None,
+                 suggested_glossaries=None,
+                 suggested_journals=None,
+                 session='',
+                 city=''):
+        if unselected_journals is None:
+            self._unselected_journals = []
+        else:
+            self._unselected_journals = unselected_journals
+        if selected_journals is None:
+            self._selected_journals = []
+        else:
+            self._selected_journals = selected_journals
+        if unselected_keywords is None:
+            self._unselected_keywords = []
+        else:
+            self._unselected_keywords = unselected_keywords
+        if selected_keywords is None:
+            self._selected_keywords = []
+        else:
+            self._selected_keywords = selected_keywords
+        if suggested_keywords is None:
+            self._suggested_keywords = []
+        else:
+            self._suggested_keywords = suggested_keywords
+        if suggested_journals is None:
+            self._suggested_journals = []
+        else:
+            self._suggested_journals = suggested_journals
+        if suggested_glossaries is None:
+            self._suggested_glossaries = []
+        else:
+            self._suggested_glossaries = suggested_glossaries
+        if judgements is None:
+            self._judgements = []
+        else:
+            self._judgements = judgements
+        self._session = session
+        self._city = city
 
     def __getstate__(self):
         state = self.__dict__.copy()
         return state
 
-    def get_selected_papers(self):
+    def get_paper_selection(self):
         selected = []
+        unselected = []
         for paper in self._judgements:
             if paper['judgement']:
                 selected.append(paper['eid'])
-        return selected
-
-    def get_judgements(self):
-        return self._judgements
-
-    def get_unselected_papers(self):
-        unselected = []
-        for paper in self._judgements:
-            if not paper['judgement']:
+            else:
                 unselected.append(paper['eid'])
-        return unselected
-
-    def replace_keywords(self, keywords):
-        for i in range(0, self._selected_keywords.__len__()-1):
-            index = int(self._unselected_keywords[i])
-            self._selected_keywords[i] = keywords[index]
-        for i in range(0, self._unselected_keywords.__len__()-1):
-            index = int(self._unselected_keywords[i])
-            self._unselected_keywords[i] = keywords[index]
-
-    def replace_journals(self, journals):
-        for i in range(0, self._selected_journals.__len__()-1):
-            index = int(self._unselected_journals[i])
-            self._selected_journals[i] = journals[index]
-        for i in range(0, self._unselected_journals.__len__() - 1):
-            index = int(self._unselected_journals[i])
-            self._unselected_journals[i] = journals[index]
-
-
+        return selected, unselected

@@ -8,7 +8,6 @@ import os
 
 from flask_cors import cross_origin
 
-from SurveyGizmoSurvey.SurveyGizmoSurvey import SurveyGizmoSurvey
 from SurveyGizmoSurvey.SurveyGizmoSurveyStats import SurveyGizmoSurveyStats
 from app.survey_analyzer import survey_analyzer_blueprint
 
@@ -17,14 +16,16 @@ from pybliometrics import scopus
 
 from model.AllResponses import AllResponses
 from model.SurveyResult import SurveyResult
-from service import facettes_service, survey_result_service, elasticsearch_service, project_service
-from service.eids_service import generate_judgement_file
+from service import facettes_service, survey_service, elasticsearch_service, project_service
 from service.elasticsearch_service import HiddenEncoder
 
 
 ################
 #    routes    #
 ################
+from service.survey_service import collect_survey_data
+from utilities.utils import replace_index_by_clear_name
+
 
 @cross_origin('localhost:4200')
 @survey_analyzer_blueprint.route('/upload/<project_id>', methods=['POST'])
@@ -94,8 +95,18 @@ def import_survey_results_data(project_id):
             result.replace_journals(journal_facettes)
             survey_results.append(result)
         csvfile.close()
-        survey_result_service.save_survey_results(project_id, json.dumps(survey_results, cls=HiddenEncoder))
+        survey_service.save_survey_results(project_id, json.dumps(survey_results, cls=HiddenEncoder))
     return json.dumps(survey_results, cls=HiddenEncoder)
+
+
+@survey_analyzer_blueprint.route('/setSurveyId/<project_id>', methods=['POST'])
+def set_survey_id(project_id):
+    survey_id = request.form['survey_id']
+    project = project_service.load_project(project_id)
+    project.survey_id = survey_id
+    project_service.save_project(project)
+    print('connecting project {} with survey {}'.format(project_id, survey_id))
+    return Response('survey ID saved', status=204)
 
 
 @survey_analyzer_blueprint.route('/collect/<project_id>', methods=['GET'])
@@ -105,30 +116,18 @@ def collect_survey_results_data(project_id):
     :param project_id: the ID of the current project
     :return: a JSON formatted list of SurveyGizmo survey results
     """
-    survey_id = request.args.get('survey_id')
     project = project_service.load_project(project_id)
-    print('collecting survey results for survey id {}'.format(survey_id))
-    survey = SurveyGizmoSurvey(survey_id)
-    survey_results = survey.get_survey_results()
-    judgements = []
-    try:
-        keywords_facettes = facettes_service.load_facettes_list(project_id)
-        journal_facettes = facettes_service.load_facettes_list(project_id, 'journal')
-    except:
-        facettes_service.generate_lists(project_id)
-        keywords_facettes = facettes_service.load_facettes_list(project_id)
-        journal_facettes = facettes_service.load_facettes_list(project_id, 'journal')
-    for result in survey_results:
-        result.replace_keywords(keywords_facettes)
-        result.replace_journals(journal_facettes)
-        judgements = judgements + result.get_judgements()
-    for judgement in judgements:
-        scopus_abstract = scopus.AbstractRetrieval(judgement['eid'], view="FULL")
-        response = AllResponses(judgement['eid'], project.name, project.project_id)
-        response.scopus_abstract_retrieval = scopus_abstract
-        response.accepted = judgement['judgement']
-        elasticsearch_service.send_to_index(response, project_id)
-    survey_result_service.save_survey_results(project_id, json.dumps(survey_results, cls=HiddenEncoder))
-    generate_judgement_file(judgements, project_id)
-    return json.dumps(survey_results, cls=HiddenEncoder)
+    survey = survey_service.collect_survey_data(project)
+    survey_service.save_survey(survey)
+    elasticsearch_service.save_survey(survey)
+    return Response(json.dumps(survey.survey_results, cls=HiddenEncoder), status=200)
 
+@survey_analyzer_blueprint.route('/load/<project_id>', methods=['GET'])
+def load_survey_results_data(project_id):
+    """
+    loads the survey data from disc.
+    :param project_id: the ID of the current project
+    :return: a JSON formatted list of survey results
+    """
+    survey_results = survey_service.load_survey_results(project_id)
+    return Response(json.dumps(survey_results, cls=HiddenEncoder), status=200)

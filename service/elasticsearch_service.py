@@ -3,6 +3,7 @@ import json
 from elasticsearch import Elasticsearch
 
 from model import AllResponses
+from model.Survey import Survey
 from model.UpdateContainer import UpdateContainer
 
 es = Elasticsearch()
@@ -12,6 +13,13 @@ def send_to_index(all_responses: AllResponses, project_id):
     all_responses_json = json.dumps(all_responses, cls=PropertyEncoder)
     res = es.index(project_id, 'all_data', all_responses_json, all_responses.id, request_timeout=600)
     print('saved to index ' + project_id)
+    return res
+
+
+def save_survey(survey: Survey):
+    survey_json = json.dumps(survey, cls=HiddenEncoder)
+    res = es.index('survey_' + survey.project_id, 'all_data', survey_json, survey.survey_id, request_timeout=600)
+    print('saved to index ' + survey.project_id)
     return res
 
 
