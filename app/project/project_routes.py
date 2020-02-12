@@ -48,7 +48,7 @@ def create_new_project():
     """
     project_json = request.get_json(silent=True)
     project = Project(**project_json)
-    if re.match('\d+.json', project.project_id):
+    if re.match('\d+', project.project_id):
         try:
             project_service.create_project(project)
             return json.dumps(project, default=lambda o: o.__getstate__())
