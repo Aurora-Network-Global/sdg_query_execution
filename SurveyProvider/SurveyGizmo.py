@@ -83,14 +83,12 @@ class SurveyGizmo:
                     longitude = datum['longitude']
                     session = datum['session_id']
                     try:
-                        suggested_keywords = result[str(self._keyword_suggestion_number)]['answer'].split('\n')\
-                            .replace('\r', '')
+                        suggested_keywords = result[str(self._keyword_suggestion_number)]['answer'].split('\n')
                     except KeyError:
                         suggested_keywords = []
 
                     try:
-                        suggested_journals = result[str(self._journal_suggestion_number)]['answer'].split('\n')\
-                        .replace('\r', '')
+                        suggested_journals = result[str(self._journal_suggestion_number)]['answer'].split('\n')
                     except KeyError:
                         suggested_journals = []
 
