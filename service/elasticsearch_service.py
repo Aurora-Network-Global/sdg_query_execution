@@ -52,6 +52,10 @@ def delete_index(project_id):
     es.indices.delete(project_id, ignore=[400, 404])
 
 
+def delete_survey_index(survey):
+    es.indices.delete('survey_' + survey.project_id, ignore=[400, 404])
+
+
 class HiddenEncoder(json.JSONEncoder):
     def default(self, o):
         return_object = {}

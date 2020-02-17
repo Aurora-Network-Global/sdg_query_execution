@@ -71,14 +71,14 @@ def collect_survey_data(project):
         replace_index_by_clear_name(result.selected_journals, journals_facettes)
         replace_index_by_clear_name(result.unselected_journals, journals_facettes)
         judgements = judgements + result.judgements
-    for judgement in judgements:
-        try:
-            scopus_abstract = scopus.AbstractRetrieval(judgement['eid'], view="FULL")
-            response = AllResponses(judgement['eid'], project.name, project.project_id)
-            response.scopus_abstract_retrieval = scopus_abstract
-            response.accepted = judgement['judgement']
-            elasticsearch_service.send_to_index(response, project.project_id)
-        except:
-            print('could not get scopus data')
-    generate_judgement_file(judgements, project.project_id)
+    # for judgement in judgements:
+        #     try:
+            # scopus_abstract = scopus.AbstractRetrieval(judgement['eid'], view="FULL")
+            # response = AllResponses(judgement['eid'], project.name, project.project_id)
+            # response.scopus_abstract_retrieval = scopus_abstract
+            # response.accepted = judgement['judgement']
+            # elasticsearch_service.send_to_index(response, project.project_id)
+        # except:
+            # print('could not get scopus data')
+    # generate_judgement_file(judgements, project.project_id)
     return gizmo_survey.survey

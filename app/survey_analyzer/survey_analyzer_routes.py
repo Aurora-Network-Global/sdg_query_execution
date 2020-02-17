@@ -60,6 +60,7 @@ def collect_survey_results_data(project_id):
     project = project_service.load_project(project_id)
     survey = survey_service.collect_survey_data(project)
     survey_service.save_survey(survey)
+    elasticsearch_service.delete_survey_index(survey)
     elasticsearch_service.save_survey(survey)
     return Response(json.dumps(survey.survey_results, cls=HiddenEncoder), status=200)
 
