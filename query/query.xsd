@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:dc="http://purl.org/dc/terms"
+           xmlns:dc="http://purl.org/dc/terms/"
            xmlns:aqd="http://aurora-network.global/queries/namespace/"
            elementFormDefault="qualified"
            targetNamespace="http://aurora-network.global/queries/namespace/">
 
     <xs:import schemaLocation="https://www.dublincore.org/schemas/xmls/qdc/dcterms.xsd"
-               namespace="http://purl.org/dc/terms"/>
+               namespace="http://purl.org/dc/terms/"/>
 
     <xs:annotation>
         <xs:documentation xml:lang="en">
@@ -14,18 +14,19 @@
         </xs:documentation>
     </xs:annotation>
 
-    <!-- Definition of query set, holding multiple queries. -->
+    <!-- Definition of query set, holding multiple queries.
     <xs:element name="querySet" type="QuerySetType"/>
     <xs:complexType name="QuerySetType">
         <xs:sequence>
-            <xs:element ref="query" maxOccurs="unbounded"/>
+            <xs:element ref="aqd:query" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
+    -->
 
     <!-- main element of the query definition. -->
     <xs:element name="query">
         <xs:complexType>
-            <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
                 <xs:element ref="dc:title"/>
                 <xs:element ref="dc:creator"/>
                 <xs:element ref="dc:subject"/>
@@ -35,7 +36,7 @@
                 <xs:element ref="dc:identifier"/>
                 <xs:element ref="dc:rights"/>
                 <xs:element name="query-definitions" type="aqd:QueryDefintionsType"/>
-            </xs:sequence>
+            </xs:choice>
         </xs:complexType>
     </xs:element>
 
@@ -54,16 +55,16 @@
             <xs:element name="type" type="xs:string"/>
         </xs:sequence>
         <xs:attribute name="field" type="xs:string" use="required"/>
-        <xs:attribute name="type" type="xs:string"/>
+        <xs:attribute name="type" type="xs:string" use="optional"/>
     </xs:complexType>
 
     <!-- Definition of filters. Consisting of individual filters and a timerange. -->
     <xs:complexType name="FiltersType">
-        <xs:sequence>
-            <xs:element name="timerange" type="TimerangeType"/>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="timerange" type="aqd:TimerangeType"/>
             <xs:element name="filter" type="aqd:FilterType" maxOccurs="unbounded"
                         minOccurs="0"/>
-        </xs:sequence>
+        </xs:choice>
     </xs:complexType>
 
     <!-- Definition of the descriptions element. giving context to the query lines. -->
@@ -77,9 +78,13 @@
     <!-- Definition of a single query line. -->
     <xs:complexType name="QueryLinesType">
         <xs:sequence>
-            <xs:element name="query-line" type="xs:string" maxOccurs="unbounded">
+            <xs:element name="query-line" maxOccurs="unbounded">
                 <xs:complexType>
-                    <xs:attribute name="field" type="xs:string"/>
+                    <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                            <xs:attribute name="value" type="xs:string" />
+                        </xs:extension>
+                    </xs:simpleContent>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
@@ -87,11 +92,11 @@
 
     <!-- Definition of the subquery, consisting of a number of individual topics. -->
     <xs:complexType name="QueryDefintionsType">
-        <xs:sequence>
-            <xs:element name="query-definition" type="aqd:QueryDefinitionType" maxOccurs="unbounded"/>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
             <xs:element name="filters" type="aqd:FiltersType"/>
-        </xs:sequence>
-        <xs:attribute name="syntax" type="xs:string">
+            <xs:element name="query-definition" type="aqd:QueryDefinitionType" maxOccurs="unbounded"/>
+        </xs:choice>
+        <xs:attribute name="syntax">
             <xs:simpleType>
                 <xs:restriction base="xs:string">
                     <xs:enumeration value="SCOPUS"/>
@@ -106,12 +111,12 @@
     <!-- Definition of the a query definition, consisting of an individual identifier, query lines, descriptions, and
      possibly filters. -->
     <xs:complexType name="QueryDefinitionType">
-        <xs:sequence>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
             <xs:element name="subquery-identifier" type="xs:int"/>
             <xs:element name="subquery-descriptions" type="aqd:SubqueryDescriptionsType"/>
             <xs:element name="query-lines" type="aqd:QueryLinesType"/>
             <xs:element name="filters" type="aqd:FiltersType" minOccurs="0"/>
-        </xs:sequence>
+        </xs:choice>
     </xs:complexType>
 
 </xs:schema>

@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_cors import CORS
 import py_eureka_client.eureka_client as eureka_client
@@ -12,18 +14,32 @@ def create_app(config_filename=None):
     # check whether the query executor is part of a microservice architecture.
     # If it is, the configuration property 'EUREKA_URL' needs to be set.
     if app.config.get("EUREKA_URL") is not None:
+        print('registering with eureka server', flush=True)
         server_url = app.config.get("EUREKA_URL")
         server_port = app.config.get("EUREKA_PORT")
-        eureka_client.init(eureka_server=server_url, app_name="query_executor",
-                                           instance_port=5000)
+        instance_port = int(os.environ.get("BIBLIOMETRICS_PORT", default=5000))
+        eureka_client.init(eureka_server=server_url, app_name="query-executor",
+                                           instance_port=instance_port)
 
+    print('enabling CORS support', flush=True)
     # enable CORS support
     CORS(app)
 
     # register all blueprints
+    print('registering blueprints', flush=True)
     register_blueprints(app)
+    base_location = app.config.get("LIBINTEL_DATA_DIR")
+    create_folders(base_location)
 
     return app
+
+
+def create_folders(base_location):
+    if not os.path.exists(base_location):
+        os.makedirs(base_location)
+    project_folder = base_location + '/out/'
+    if not os.path.exists(project_folder):
+        os.makedirs(project_folder)
 
 
 def register_blueprints(app):

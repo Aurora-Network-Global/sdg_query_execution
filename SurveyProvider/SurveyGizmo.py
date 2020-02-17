@@ -5,19 +5,18 @@ from model.Survey import Survey
 from model.SurveyResult import SurveyResult
 
 
-class SurveyGizmoSurvey:
+class SurveyGizmo:
+    """
+    A class that retrieves survey data from a Survey Gizmo survey
+    """
 
     @property
     def survey(self):
+        """
+        the survey object as obtained from Survey Gizmo
+        :return: the survey object
+        """
         return self._survey
-
-    @property
-    def survey_structure(self):
-        return self._survey_structure
-
-    @property
-    def survey_data(self):
-        return self._survey_data
 
     def __init__(self, survey_id, project_id):
         # get the credentials from the config
@@ -79,14 +78,19 @@ class SurveyGizmoSurvey:
                 for datum in data:
                     city = datum['city']
                     result = datum['survey_data']
+                    country = datum['country']
+                    latitude = datum['latitude']
+                    longitude = datum['longitude']
                     session = datum['session_id']
                     try:
-                        suggested_keywords = result[str(self._keyword_suggestion_number)]['answer'].split('\n')
+                        suggested_keywords = result[str(self._keyword_suggestion_number)]['answer'].split('\n')\
+                            .replace('\r', '')
                     except KeyError:
                         suggested_keywords = []
 
                     try:
-                        suggested_journals = result[str(self._journal_suggestion_number)]['answer'].split('\n')
+                        suggested_journals = result[str(self._journal_suggestion_number)]['answer'].split('\n')\
+                        .replace('\r', '')
                     except KeyError:
                         suggested_journals = []
 

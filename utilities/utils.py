@@ -231,4 +231,4 @@ def get_sdg_wheel(doi):
 
 def replace_index_by_clear_name(list_of_indices, clear_names):
     for index, value in enumerate(list_of_indices):
-        list_of_indices[index] = clear_names[index]
+        list_of_indices[index] = clear_names[value]
