@@ -17,8 +17,10 @@ def send_to_index(all_responses: AllResponses, project_id):
 
 
 def save_survey(survey: Survey):
-    survey_json = json.dumps(survey, cls=HiddenEncoder)
-    res = es.index('survey_' + survey.project_id, 'all_data', survey_json, survey.survey_id, request_timeout=600)
+    index = 'survey_' + survey.project_id + '_' + survey.survey_id
+    for result in survey.survey_results:
+        survey_json = json.dumps(result, cls=HiddenEncoder)
+        res = es.index(index, 'all_data', survey_json, result.session, request_timeout=600)
     print('saved to index ' + survey.project_id)
     return res
 

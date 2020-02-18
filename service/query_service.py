@@ -264,7 +264,6 @@ def save_query_to_xml(project_id, query):
 
 
 def filter_from_json(json, old_query=False):
-
     if (old_query):
         return convert(json)
     try:
@@ -277,11 +276,12 @@ def filter_from_json(json, old_query=False):
         query_filters=None,
         timerange=timerange
     )
-    for filter in json['query_filters']:
-        if filter['filter_term'] is not '':
-            filters.add_filter(QueryFilter(filter_field=filter['filter_field'],
-                                           filter_type=filter['filter_type'],
-                                           filter_term=filter['filter_term']))
+    if json is not None:
+        for filter in json['query_filters']:
+            if filter['filter_term'] is not '':
+                filters.add_filter(QueryFilter(filter_field=filter['filter_field'],
+                                               filter_type=filter['filter_type'],
+                                               filter_term=filter['filter_term']))
     return filters
 
 
