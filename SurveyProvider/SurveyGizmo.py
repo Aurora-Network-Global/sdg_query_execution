@@ -28,6 +28,7 @@ class SurveyGizmo:
         survey_structure_url = 'https://restapi.surveygizmo.eu/v5/survey/{}?api_token={}&api_token_secret={}'
         survey_data_url = 'https://restapi.surveygizmo.eu/v5/survey/{}/surveyresponse?api_token={}&api_token_secret={}&filter[value][0]=Complete&filter[field][0]=status&filter[operator][0]==&filter[field][1]=is_test_data&filter[field][1]==&filter[field][1]=0'
 
+        # retrieve the structure of the survey in order to identify the keys to the individual answer blocks
         r = requests.get(survey_structure_url.format(survey_id, self._key, self._secret))
         if r.status_code == 200:
             print('collected survey structure')
@@ -66,7 +67,17 @@ class SurveyGizmo:
                     for question in page['questions']:
                         if 'MULTI_TEXTBOX' in question['type']:
                             self._glossary_question_number = question['id']
-                            print('glossaries suggestion found : {}'.format(self._glossary_question_number))
+                            self._glossary_options_numbers = []
+                            for option in question['options']:
+                                self._glossary_options_numbers.append(option['id'])
+                elif 'add terminology to search queries' in title:
+                    for question in page['questions']:
+                        if 'MATRIX' in question['type']:
+                            self._add_terminology_to_search_number = question['id']
+                            self._add_terminology_options_numbers = []
+                            for sub_question in question['sub_questions']:
+                                if "ESSAY" in sub_question['type']:
+                                    self._add_terminology_options_numbers.append(sub_question['id'])
                 else:
                     continue
             r = requests.get(survey_data_url.format(survey_id, self._key, self._secret))
@@ -97,7 +108,7 @@ class SurveyGizmo:
                         for selected_journal_option in result[str(self._journal_question_number)]['options']:
                             selected_journals.append(
                                 int(result[str(self._journal_question_number)]['options'][str(selected_journal_option)][
-                                    'answer']))
+                                        'answer']))
                     except KeyError:
                         selected_journals = []
 
@@ -105,22 +116,33 @@ class SurveyGizmo:
                     try:
                         for selected_keyword_option in result[str(self._keywords_question_number)]['options']:
                             selected_keywords.append(
-                                int(result[str(self._keywords_question_number)]['options'][str(selected_keyword_option)][
-                                    'answer']))
+                                int(result[str(self._keywords_question_number)]['options'][
+                                        str(selected_keyword_option)][
+                                        'answer']))
                     except KeyError:
-                        print('no keywords selected')
+                        pass
 
                     glossaries = []
                     try:
-                        for suggestion in result[str(self._glossary_question_number)]['options']:
-                            glossaries.append(suggestion['answer'])
-                    except:
-                        print('no keywords selected')
+                        for option in self._glossary_options_numbers:
+                            answer = result[str(self._glossary_question_number)]['options'][str(option)]['answer']
+                            if len(answer) > 7:
+                                glossaries.append(answer)
+                    except KeyError:
+                        pass
 
+                    added_terminology = []
+                    try:
+                        subquestions = result[str(self._add_terminology_to_search_number)]['subquestions']
+                        for subquestion in subquestions:
+                            answer = result[str(self._add_terminology_to_search_number)]['subquestions'][subquestion]['answer']
+                            added_terminology.append(answer)
+                    except KeyError:
+                        pass
                     try:
                         matrix_answers = result[str(self._matrix_question_number)]['subquestions']
                     except KeyError:
-                        print('no matrix questions asked')
+                        pass
 
                     unselected_journals = []
                     unselected_keywords = []
@@ -131,9 +153,11 @@ class SurveyGizmo:
                         if i not in selected_keywords:
                             unselected_keywords.append(i)
                         try:
-                            eid = result[str(self._matrix_question_number)]['subquestions'][list(matrix_answers)[i + 100]][
+                            eid = \
+                            result[str(self._matrix_question_number)]['subquestions'][list(matrix_answers)[i + 100]][
                                 'answer']
-                            judgement = result[str(self._matrix_question_number)]['subquestions'][list(matrix_answers)[i]][
+                            judgement = \
+                            result[str(self._matrix_question_number)]['subquestions'][list(matrix_answers)[i]][
                                 'answer']
                             judgements.append({'eid': eid, 'judgement': ('Yes' in judgement)})
                         except KeyError:
@@ -147,7 +171,11 @@ class SurveyGizmo:
                                                        judgements=judgements,
                                                        session=session,
                                                        city=city,
-                                                       suggested_glossaries=glossaries))
+                                                       country=country,
+                                                       latitude=latitude,
+                                                       longitude=longitude,
+                                                       suggested_glossaries=glossaries,
+                                                       terminology_addition=added_terminology))
             self._survey = Survey(survey_id=survey_id,
                                   project_id=project_id,
                                   survey_results=survey_results)

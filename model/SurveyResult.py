@@ -89,7 +89,11 @@ class SurveyResult:
                  suggested_glossaries=None,
                  suggested_journals=None,
                  session='',
-                 city=''):
+                 city='',
+                 country='',
+                 longitude='',
+                 latitude='',
+                 terminology_addition=None):
         if unselected_journals is None:
             self._unselected_journals = []
         else:
@@ -122,6 +126,10 @@ class SurveyResult:
             self._judgements = []
         else:
             self._judgements = judgements
+        if terminology_addition is None:
+            self._terminology_addition = []
+        else:
+            self._terminology_addition = terminology_addition
         self._session = session
         self._city = city
 
