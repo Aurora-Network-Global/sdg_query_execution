@@ -10,6 +10,7 @@ from pybliometrics import scopus
 from model.RelevanceMeasures import RelevanceMeasure
 from model.Status import Status
 from query.Query import Query
+from query.QueryDefinitions import QueryDefinitions
 from service import project_service, query_service, status_service, eids_service, relevance_measure_service
 from . import query_blueprint
 
@@ -33,8 +34,8 @@ def get_query(project_id):
             query = query_service.import_old_query(project_id)
             query_service.save_query_to_xml(project_id, query)
         except FileNotFoundError:
-            print("no file found")
-            query = Query()
+            query_definitions = QueryDefinitions()
+            query = Query(query_definitions=query_definitions)
     return json.dumps(query.__getstate__(), default=lambda o: o.__getstate__())
 
 

@@ -11,7 +11,7 @@ from flask import current_app as app
 from model.ScopusQueries import ScopusQueries
 from query.QueryFilters import QueryFilters
 from query.Query import Query
-from query.QueryDefinitions import QueryDefintions
+from query.QueryDefinitions import QueryDefinitions
 from query.QueryDefintion import QueryDefinition
 from query.QueryFilter import QueryFilter
 from query.QueryLine import QueryLine
@@ -53,7 +53,7 @@ def convert(query_old):
         person_id_search = QueryLine(field='AU-ID', query_line=query_old['author_id'])
         query_lines.append(person_id_search)
     query_definition = QueryDefinition(query_lines=query_lines, identifier='1')
-    query_definitions = QueryDefintions(query_filters=query_filters, query_definition=[query_definition])
+    query_definitions = QueryDefinitions(query_filters=query_filters, query_definition=[query_definition])
     query = Query(title=query_old['title'], query_definitions=query_definitions)
     return query
 
@@ -155,10 +155,10 @@ def load_query_from_xml(project_id):
         syntax = get_attribute_value(query_definitions_xml, 'syntax')
         if syntax == '':
             syntax = 'SCOPUS'
-        query_definitions = QueryDefintions(query_definition=None,
-                                            query_filters=query_definitions_filter,
-                                            syntax=get_attribute_value(query_definitions_xml, 'syntax')
-                                            )
+        query_definitions = QueryDefinitions(query_definition=None,
+                                             query_filters=query_definitions_filter,
+                                             syntax=get_attribute_value(query_definitions_xml, 'syntax')
+                                             )
         for query_definition_xml in query_definitions_xml.findall('aqd:query-definition', namespaces):
             try:
                 query_definition_identifier = get_field_value(query_definition_xml, 'subquery-identifier')
@@ -295,9 +295,9 @@ def from_json(json):
                   title=json['title'],
                   description=json['description'])
     global_filter = filter_from_json(json['query_definitions']['query_filters'])
-    query_definitions = QueryDefintions(syntax=json['query_definitions']['syntax'],
-                                        query_filters=global_filter,
-                                        query_definition=None)
+    query_definitions = QueryDefinitions(syntax=json['query_definitions']['syntax'],
+                                         query_filters=global_filter,
+                                         query_definition=None)
     for query_definition in json['query_definitions']['query_definition']:
         descriptions = []
         for description in query_definition['descriptions']:

@@ -1,7 +1,7 @@
 from query.QueryFilters import QueryFilters
 
 
-class QueryDefintions:
+class QueryDefinitions:
     """A query definition holds a subset of the query. Each query can consist of a number of query
     definitions, which in turn hold several query lines for individual concepts. Filters defined in this class apply to
     the overall query and cen be extended by individual filters within each query definition."""

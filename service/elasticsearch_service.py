@@ -21,7 +21,7 @@ def save_survey(survey: Survey):
     for result in survey.survey_results:
         survey_json = json.dumps(result, cls=HiddenEncoder)
         res = es.index(index, 'all_data', survey_json, result.session, request_timeout=600)
-    print('saved to index ' + survey.project_id)
+    print('saved to index ' + index)
     return res
 
 

@@ -71,13 +71,12 @@ class SurveyGizmo:
                             for option in question['options']:
                                 self._glossary_options_numbers.append(option['id'])
                 elif 'add terminology to search queries' in title:
+                    self._pipes = {}
                     for question in page['questions']:
                         if 'MATRIX' in question['type']:
+                            for row_name in question['properties']['row_names']:
+                                self._pipes[row_name['id']] = row_name['title']['English']
                             self._add_terminology_to_search_number = question['id']
-                            self._add_terminology_options_numbers = []
-                            for sub_question in question['sub_questions']:
-                                if "ESSAY" in sub_question['type']:
-                                    self._add_terminology_options_numbers.append(sub_question['id'])
                 else:
                     continue
             r = requests.get(survey_data_url.format(survey_id, self._key, self._secret))
@@ -134,9 +133,14 @@ class SurveyGizmo:
                     added_terminology = []
                     try:
                         subquestions = result[str(self._add_terminology_to_search_number)]['subquestions']
-                        for subquestion in subquestions:
-                            answer = result[str(self._add_terminology_to_search_number)]['subquestions'][subquestion]['answer']
-                            added_terminology.append(answer)
+                        for subquestion in subquestions.values():
+                            try:
+                                answer = subquestion['answer']
+                                piped_value = self._pipes[subquestion['piped_value']]
+                                added_terminology.append(piped_value + ': ' + answer)
+                                print(piped_value + ': ' + answer)
+                            except KeyError:
+                                continue
                     except KeyError:
                         pass
                     try:
