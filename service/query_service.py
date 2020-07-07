@@ -286,7 +286,7 @@ def save_query_to_xml(project_id, query):
                                                                                                       " xmlns:aqd=").replace(
             " dc=", " xmlns:dc="))
     query_converter = QueryConverter(query)
-    save_scopus_queries(project_id, query.identifier, query_converter.scopus_queries)
+    save_scopus_queries(project_id, query_converter.scopus_queries)
 
 
 def filter_from_json(json, old_query=False):
