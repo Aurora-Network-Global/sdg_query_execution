@@ -66,6 +66,7 @@ def get_xml_file(project_id):
         with app.app_context():
             location = app.config.get("LIBINTEL_DATA_DIR")
         path_to_file = '{}/out/{}/query.xml'.format(location, project_id)
+        print('loading xml from ' + path_to_file)
         return send_file(path_to_file, attachment_filename='query.xml')
     except FileNotFoundError:
         return Response("File not found", status=404)
