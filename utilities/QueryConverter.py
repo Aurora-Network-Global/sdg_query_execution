@@ -36,7 +36,7 @@ class QueryConverter:
 
                     # generate query term for indiviudal query line
                     query_term = query_line.field + '(' + re.sub(' +', ' ',
-                                                                 query_line.query_line.replace('\n', '')) + ')'
+                                                                 query_line.query_line.replace('\n', '').replace('\t', '')) + ')'
 
                     # add query term to overall query string. if it is the first entry, connect by AND and open bracket,
                     # else add it by OR
@@ -61,8 +61,8 @@ class QueryConverter:
                     else:
                         scopus_queries.add_search_string(query_string + ')')
                         query_string = overall_filter_string + ' AND (' + query_term
-        scopus_queries.add_search_string(re.sub(' +', ' ', query_string + ')').replace('\n', ''))
-        scopus_queries.overall = re.sub(' +', ' ', overall_query_string + ')').replace('\n', '')
+        scopus_queries.add_search_string(re.sub(' +', ' ', query_string + ')').replace('\n', '').replace('\t', ''))
+        scopus_queries.overall = re.sub(' +', ' ', overall_query_string + ')').replace('\n', '').replace('\t', '')
         self._scopus_queries = scopus_queries
         return self._scopus_queries
 
