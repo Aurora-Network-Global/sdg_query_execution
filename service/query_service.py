@@ -72,10 +72,10 @@ def create_scopus_queries(project_id, query):
     save_scopus_queries(project_id, query.identifier, query_converter.scopus_queries)
 
 
-def load_scopus_queries(project_id, query_id):
+def load_scopus_queries(project_id):
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
-    path_to_file = '{}/out/{}/{}/query.xml'.format(location, project_id, query_id)
+    path_to_file = '{}/out/{}/query.xml'.format(location, project_id)
     query = load_xml_query_from_disc(path_to_file)
     query_converter = QueryConverter(query=query)
     save_scopus_queries(project_id, query.identifier, query_converter.scopus_queries)
@@ -149,10 +149,12 @@ def load_query(project_id, query_id):
 
 def getIdentifier(query_xml):
     try:
-        list_of_identifiers = query_xml.find('dc:identifier', namespaces)
+        list_of_identifiers = query_xml.findall('dc:identifier', namespaces)
+        if len(list_of_identifiers) == 1:
+            return list_of_identifiers[0].text.strip(' \t\n\r')
         for identifier in list_of_identifiers:
             if identifier.attrib['type'] == 'sdg':
-                return identifier.attrib['field'].strip(' \t\n\r')
+                return identifier.text.strip(' \t\n\r')
     except:
         return ''
 
@@ -163,6 +165,7 @@ def load_xml_query_from_disc(path_to_file):
     with open(path_to_file, 'r', encoding='utf-8') as xml_file:
         query_xml = element_tree.parse(xml_file).getroot()
         identifier = getIdentifier(query_xml)
+        print(identifier)
         query = Query(identifier=identifier,
                       query_definitions=None,
                       title=get_field_value(query_xml, 'title', 'dc'),
@@ -277,10 +280,10 @@ def save_query_to_xml(project_id, query):
         build_filter_element(filter_element, query.query_definitions.query_filters)
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
-    out_dir = '{}/out/{}/{}'.format(location, project_id, query.identifier)
+    out_dir = '{}/out/{}'.format(location, project_id)
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
-    with open(out_dir + '/query.xml', 'w') as xml_file:
+    with open(out_dir + '/query.xml', 'w', encoding='utf-8') as xml_file:
         xml_file.write(element_tree.tostring(query_element, encoding='unicode', method='xml').replace(" aqd=",
                                                                                                       " xmlns:aqd=").replace(
             " dc=", " xmlns:dc="))

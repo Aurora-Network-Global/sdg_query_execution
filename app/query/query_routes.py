@@ -5,7 +5,7 @@
 import json
 import os
 
-from flask import Response, request, jsonify
+from flask import Response, request, jsonify, send_file
 from pybliometrics import scopus
 
 from model.RelevanceMeasures import RelevanceMeasure
@@ -51,6 +51,22 @@ def get_xml_query(project_id):
     try:
         query = query_service.load_query_from_xml(project_id)
         return json.dumps(query.__getstate__(), default=lambda o: o.__getstate__())
+    except FileNotFoundError:
+        return Response("File not found", status=404)
+
+
+@query_blueprint.route("/xml_file/<project_id>", methods=['GET'])
+def get_xml_file(project_id):
+    """
+    retrieves a saved query from disk. If none is found, a new query is created and returned.
+    :param project_id: the ID of the current project
+    :return: a query in XML format is retrieved from disc. If none is found a status of 404 is returned.
+    """
+    try:
+        with app.app_context():
+            location = app.config.get("LIBINTEL_DATA_DIR")
+        path_to_file = '{}/out/{}/query.xml'.format(location, project_id)
+        return send_file(path_to_file, attachment_filename='query.xml')
     except FileNotFoundError:
         return Response("File not found", status=404)
 
