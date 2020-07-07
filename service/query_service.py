@@ -305,11 +305,14 @@ def filter_from_json(json, old_query=False):
         timerange=timerange
     )
     if json is not None:
-        for filter in json['query_filters']:
-            if filter['filter_term'] is not '':
-                filters.add_filter(QueryFilter(filter_field=filter['filter_field'],
+        try:
+            for filter in json['query_filters']:
+                if filter['filter_term'] is not '':
+                    filters.add_filter(QueryFilter(filter_field=filter['filter_field'],
                                                filter_type=filter['filter_type'],
                                                filter_term=filter['filter_term']))
+        except:
+            print('no filters given')
     return filters
 
 
