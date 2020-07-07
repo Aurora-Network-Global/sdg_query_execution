@@ -61,7 +61,13 @@ class QueryConverter:
                     else:
                         scopus_queries.add_search_string(query_string + ')')
                         query_string = overall_filter_string + ' AND (' + query_term
-        scopus_queries.add_search_string(re.sub(' +', ' ', query_string + ')').replace('\n', '').replace('\t', '').replace('\u2018', '"').replace('\u2019', '"'))
+        scopus_queries.add_search_string(re.sub(' +', ' ', query_string + ')')
+                                         .replace('\n', '')
+                                         .replace('\t', '')
+                                         .replace('\u201c', '"')
+                                         .replace('\u201d', '"')
+                                         .replace('\u2018', '"')
+                                         .replace('\u2019', '"'))
         scopus_queries.overall = re.sub(' +', ' ', overall_query_string + ')').replace('\n', '').replace('\t', '').replace('\u2018', '"').replace('\u2019', '"')
         self._scopus_queries = scopus_queries
         return self._scopus_queries
