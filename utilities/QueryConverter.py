@@ -68,7 +68,13 @@ class QueryConverter:
                                          .replace('\u201d', '"')
                                          .replace('\u2018', '"')
                                          .replace('\u2019', '"'))
-        scopus_queries.overall = re.sub(' +', ' ', overall_query_string + ')').replace('\n', '').replace('\t', '').replace('\u2018', '"').replace('\u2019', '"')
+        scopus_queries.overall = re.sub(' +', ' ', overall_query_string + ')')\
+            .replace('\n', '')\
+            .replace('\t', '') \
+            .replace('\u201c', '"')\
+            .replace('\u201d', '"')\
+            .replace('\u2018', '"')\
+            .replace('\u2019', '"')
         self._scopus_queries = scopus_queries
         return self._scopus_queries
 
