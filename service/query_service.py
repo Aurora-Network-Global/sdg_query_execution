@@ -165,7 +165,6 @@ def load_xml_query_from_disc(path_to_file):
     with open(path_to_file, 'r', encoding='utf-8') as xml_file:
         query_xml = element_tree.parse(xml_file).getroot()
         identifier = getIdentifier(query_xml)
-        print(identifier)
         query = Query(identifier=identifier,
                       query_definitions=None,
                       title=get_field_value(query_xml, 'title', 'dc'),
