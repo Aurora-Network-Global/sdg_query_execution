@@ -284,7 +284,7 @@ def save_query_to_xml(project_id, query):
     with open(out_dir + '/query.xml', 'w', encoding='utf-8') as xml_file:
         xml_file.write(element_tree.tostring(query_element, encoding='unicode', method='xml').replace(" aqd=",
                                                                                                       " xmlns:aqd=").replace(
-            " dc=", " xmlns:dc="))
+            " dc=", " xmlns:dc=").replace('/[\u2018\u2019]/g', "\""))
     query_converter = QueryConverter(query)
     save_scopus_queries(project_id, query_converter.scopus_queries)
 
