@@ -61,7 +61,7 @@ def convert(query_old):
 def save_scopus_queries(project_id, query_id, scopus_queries):
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
-    path_to_file = '{}/out/{}/{}//scopus_queries.json'.format(location, project_id, query_id)
+    path_to_file = '{}/out/{}/scopus_queries.json'.format(location, project_id, query_id)
     with open(path_to_file, 'w') as scopus_queries_file:
         scopus_queries_file.write(json.dumps(scopus_queries, default=lambda o: o.__getstate__()))
         scopus_queries_file.close()
@@ -141,7 +141,7 @@ def load_query_from_xml(project_id):
 def load_query(project_id, query_id):
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
-    path_to_file = '{}/out/{}/{}/query.xml'.format(location, project_id, query_id)
+    path_to_file = '{}/out/{}/query.xml'.format(location, project_id, query_id)
     if not os.path.exists(path_to_file):
         raise FileNotFoundError('query xml file does not exist')
     return load_xml_query_from_disc(path_to_file)
