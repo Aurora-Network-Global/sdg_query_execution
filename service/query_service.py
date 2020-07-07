@@ -58,10 +58,10 @@ def convert(query_old):
     return query
 
 
-def save_scopus_queries(project_id, scopus_queries):
+def save_scopus_queries(project_id, query_id, scopus_queries):
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
-    path_to_file = location + '/out/' + project_id + '/scopus_queries.json'
+    path_to_file = '{}/out/{}/{}//scopus_queries.json'.format(location, project_id, query_id)
     with open(path_to_file, 'w') as scopus_queries_file:
         scopus_queries_file.write(json.dumps(scopus_queries, default=lambda o: o.__getstate__()))
         scopus_queries_file.close()
@@ -69,16 +69,17 @@ def save_scopus_queries(project_id, scopus_queries):
 
 def create_scopus_queries(project_id, query):
     query_converter = QueryConverter(query=query)
-    save_scopus_queries(project_id, query_converter.scopus_queries)
+    save_scopus_queries(project_id, query.identifier, query_converter.scopus_queries)
 
 
-def load_scopus_queries(project_id):
+def load_scopus_queries(project_id, query_id):
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
-    path_to_file = location + '/out/' + project_id + '/scopus_queries.json'
-    with open(path_to_file) as json_file:
-        scopus_queries_json = json.load(json_file)
-        return ScopusQueries(**scopus_queries_json)
+    path_to_file = '{}/out/{}/{}/query.xml'.format(location, project_id, query_id)
+    query = load_xml_query_from_disc(path_to_file)
+    query_converter = QueryConverter(query=query)
+    save_scopus_queries(project_id, query.identifier, query_converter.scopus_queries)
+    return query_converter.scopus_queries
 
 
 def load_scopus_query_from_xml(project_id):
@@ -129,16 +130,40 @@ def get_filter_from_element(filter_element):
 
 
 def load_query_from_xml(project_id):
-    element_tree.register_namespace('aqd', namespaces['aqd'])
-    element_tree.register_namespace('dc', namespaces['dc'])
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
-    path_to_file = location + '/out/' + project_id + '/query.xml'
+    path_to_file = '{}/out/{}/query.xml'.format(location, project_id)
     if not os.path.exists(path_to_file):
         raise FileNotFoundError('query xml file does not exist')
-    with open(path_to_file, 'r') as xml_file:
+    return load_xml_query_from_disc(path_to_file)
+
+
+def load_query(project_id, query_id):
+    with app.app_context():
+        location = app.config.get("LIBINTEL_DATA_DIR")
+    path_to_file = '{}/out/{}/{}/query.xml'.format(location, project_id, query_id)
+    if not os.path.exists(path_to_file):
+        raise FileNotFoundError('query xml file does not exist')
+    return load_xml_query_from_disc(path_to_file)
+
+
+def getIdentifier(query_xml):
+    try:
+        list_of_identifiers = query_xml.find('dc:identifier', namespaces)
+        for identifier in list_of_identifiers:
+            if identifier.attrib['type'] == 'sdg':
+                return identifier.attrib['field'].strip(' \t\n\r')
+    except:
+        return ''
+
+
+def load_xml_query_from_disc(path_to_file):
+    element_tree.register_namespace('aqd', namespaces['aqd'])
+    element_tree.register_namespace('dc', namespaces['dc'])
+    with open(path_to_file, 'r', encoding='utf-8') as xml_file:
         query_xml = element_tree.parse(xml_file).getroot()
-        query = Query(identifier=get_field_value(query_xml, 'identifier', 'dc'),
+        identifier = getIdentifier(query_xml)
+        query = Query(identifier=identifier,
                       query_definitions=None,
                       title=get_field_value(query_xml, 'title', 'dc'),
                       description=get_field_value(query_xml, 'description', 'dc'),
@@ -252,7 +277,7 @@ def save_query_to_xml(project_id, query):
         build_filter_element(filter_element, query.query_definitions.query_filters)
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
-    out_dir = location + '/out/' + project_id
+    out_dir = '{}/out/{}/{}'.format(location, project_id, query.identifier)
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
     with open(out_dir + '/query.xml', 'w') as xml_file:
@@ -260,7 +285,7 @@ def save_query_to_xml(project_id, query):
                                                                                                       " xmlns:aqd=").replace(
             " dc=", " xmlns:dc="))
     query_converter = QueryConverter(query)
-    save_scopus_queries(project_id, query_converter.scopus_queries)
+    save_scopus_queries(project_id, query.identifier, query_converter.scopus_queries)
 
 
 def filter_from_json(json, old_query=False):

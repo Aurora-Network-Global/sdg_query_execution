@@ -56,6 +56,10 @@ class Project:
     def isReferencesCollected(self):
         return self._isReferencesCollected
 
+    @property
+    def queries(self):
+        return self._queries
+
     @name.setter
     def name(self, name):
         self._name = name
@@ -116,6 +120,10 @@ class Project:
     def survey_id(self, survey_id):
         self._survey_id = survey_id
 
+    @queries.setter
+    def queries(self, queries):
+        self._queries = queries
+
     def __init__(self,
                  project_id="",
                  name="",
@@ -133,7 +141,8 @@ class Project:
                  isIndexPresent=False,
                  isReferencesCollecting=False,
                  isReferencesCollected=False,
-                 survey_id=''
+                 survey_id='',
+                 queries=None
                  ):
         self._project_id = project_id
         self._name = name
@@ -152,6 +161,13 @@ class Project:
         self._isReferencesCollecting = isReferencesCollecting
         self._isReferencesCollected = isReferencesCollected
         self._survey_id = survey_id
+        if queries is None:
+            self._queries = []
+        else:
+            self._queries = queries
+
+    def add_query(self, query):
+        self._queries.append(query)
 
     def __getstate__(self):
         state = self.__dict__.copy()

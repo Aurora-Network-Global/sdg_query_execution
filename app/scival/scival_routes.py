@@ -50,7 +50,7 @@ def upload_scival_file(project_id):
         if not os.path.exists(path_to_save):
             os.makedirs(path_to_save)
         file.save(path_to_save + 'scival_data.csv')
-        project['isScivalData'] = True
+        project.isQueryDefined = True
         project_service.save_project(project)
         import_scival_data(project_id)
     return Response("OK", status=204)

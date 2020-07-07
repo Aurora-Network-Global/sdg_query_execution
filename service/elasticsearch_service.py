@@ -6,7 +6,7 @@ from model import AllResponses
 from model.Survey import Survey
 from model.UpdateContainer import UpdateContainer
 
-es = Elasticsearch()
+es = Elasticsearch('localhost:9200')
 
 
 def send_to_index(all_responses: AllResponses, project_id):

@@ -1,6 +1,8 @@
 import os
 
+from elasticsearch import Elasticsearch
 from flask import Flask
+from flask_bootstrap import Bootstrap
 from flask_cors import CORS
 import py_eureka_client.eureka_client as eureka_client
 
@@ -23,7 +25,12 @@ def create_app(config_filename=None):
 
     print('enabling CORS support', flush=True)
     # enable CORS support
-    CORS(app)
+    CORS(app, origins='*')
+
+    if app.config.get('LIBINTEL_ELASTICSEARCH_URL'):
+        app.elasticsearch = Elasticsearch(app.config.get('LIBINTEL_ELASTICSEARCH_URL'))
+
+    Bootstrap(app)
 
     # register all blueprints
     print('registering blueprints', flush=True)
@@ -59,8 +66,11 @@ def register_blueprints(app):
     from app.facettes import facettes_blueprint
     from app.wheel import wheel_blueprint
     from app.query_viewer import query_viewer_blueprint
+    from app.main import main_blueprint
+    from app.identifiers import identifiers_blueprint
 
     app.register_blueprint(eids_blueprint, url_prefix='/eids')
+    app.register_blueprint(identifiers_blueprint, url_prefix='/identifiers')
     app.register_blueprint(project_blueprint, url_prefix='/project')
     app.register_blueprint(relevance_measures_blueprint)
     app.register_blueprint(scival_blueprint, url_prefix='/scival')
@@ -70,6 +80,7 @@ def register_blueprints(app):
     app.register_blueprint(facettes_blueprint, url_prefix='/facettes')
     app.register_blueprint(survey_analyzer_blueprint, url_prefix='/survey_analyzer')
     app.register_blueprint(analysis_blueprint)
+    app.register_blueprint(main_blueprint)
     app.register_blueprint(collector_blueprint)
     app.register_blueprint(crossref_blueprint, url_prefix='/crossref')
     app.register_blueprint(wheel_blueprint, url_prefix='/wheel')

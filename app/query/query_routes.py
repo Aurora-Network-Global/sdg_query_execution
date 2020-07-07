@@ -3,6 +3,7 @@
 ################
 
 import json
+import os
 
 from flask import Response, request, jsonify
 from pybliometrics import scopus
@@ -11,6 +12,7 @@ from model.RelevanceMeasures import RelevanceMeasure
 from model.Status import Status
 from query.Query import Query
 from query.QueryDefinitions import QueryDefinitions
+from flask import current_app as app
 from service import project_service, query_service, status_service, eids_service, relevance_measure_service
 from . import query_blueprint
 
@@ -163,3 +165,25 @@ def query_execution(project_id):
 
     return Response({"status": "FINISHED"}, status=204)
 
+
+# uploads the scival data and saves it as scival_data.csv in the working directory
+@query_blueprint.route('/save_xml_upload/<project_id>', methods=['POST'])
+def upload_xml_file(project_id):
+    """
+    retrieves the query xml file from the request and saves it to disc
+    :param project_id: the ID of the current project
+    :return: returns a status of 204 when the file could be saved
+    """
+    with app.app_context():
+        location = app.config.get("LIBINTEL_DATA_DIR")
+    print("saving query xml file for " + project_id)
+    if request.method == 'POST':
+        project = project_service.load_project(project_id)
+        file = request.files['query_xml']
+        path_to_save = location + '/out/' + project_id + '/'
+        if not os.path.exists(path_to_save):
+            os.makedirs(path_to_save)
+        file.save(path_to_save + 'query.xml')
+        project.isQueryDefined = True
+        project_service.save_project(project)
+    return Response("OK", status=204)

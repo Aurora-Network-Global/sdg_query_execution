@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Query Execution</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/primeng.css') }}">
+</head>
+<body>
+<div class="content-start">
+    <div class="jumbotron">
+        <h1><a href="https://aurora-network.global/"><img src="{{ url_for('static', filename='img/logo.png') }}"> </a> :: Query Executor
+        </h1>
+    </div>
+    <div class="container-fluid">
+        <div class="ui-g">
+            <div class="ui-g-5 ui-g-offset-1">
+                <div class="tile centered">
+                    <h2>New query</h2>
+                    <p>Type in a short title for the query, then press "Create".</p>
+                    <span class="ui-float-label">
+        <input id="username-input" type="text" size="30" autofocus class="form-control">
+        <label for="username-input">Short name</label>
+        <button type="button" class="ui-button-success" ></button>
+      </span>
+                </div>
+            </div>
+            <div class="ui-g-5">
+                <div class="tile centered">
+                    <h2>Continue with query</h2>
+                    <p>Select one of the already defined queries, the press "Go to query"</p>
+                    <p-dropdown filter="true" [options]="projects" [(ngModel)]="projectService.activeProject"
+                                placeholder="Select a Project" optionLabel="name" [showClear]="true"
+                                (onChange)="router.navigate(['/queries', projectService.activeProject.project_id])"></p-dropdown>
+                    <button pButton type="button" label="Go to query" class="ui-button-success"
+                            [routerLink]="['/queries', projectService.activeProject.project_id]"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer class="footer-start">
+    <p>The project <a class="footer-link"
+                      href="https://aurora-network.global/project/sdg-analysis-bibliometrics-relevance/">SDG analysis:
+        bibliometrics of relevance</a> is part of the <a class="footer-link" href="https://aurora-network.global/">
+        Aurora Universities Network</a> --- <a class="footer-link" href="/assets/static/project.html">Learn more</a> ---
+    </p>
+</footer>
+</body>
+</html>

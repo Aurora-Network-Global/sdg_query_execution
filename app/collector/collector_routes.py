@@ -32,11 +32,17 @@ def data_collection_execution(project_id):
     :parameter project_id the id of the current project
 
     """
+
+    mode = ''
+
+    if request.args.get('mode') is not None:
+        mode = request.args.get('mode')
+
     # load project, set status bools, and load and eid list. initialize missed eid list
     project = project_service.load_project(project_id)
     project.isDataCollecting = True
     project.isDataCollected = False
-    eids = eids_service.load_eid_list(project_id)
+    eids = eids_service.load_eid_list(project_id, mode)
     missed_eids = []
 
     with app.app_context():

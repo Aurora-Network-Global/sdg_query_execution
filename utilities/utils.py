@@ -232,3 +232,14 @@ def get_sdg_wheel(doi):
 def replace_index_by_clear_name(list_of_indices, clear_names):
     for index, value in enumerate(list_of_indices):
         list_of_indices[index] = clear_names[value]
+
+
+def get_path(location, project_id, query_id, filename, prefix=''):
+    if prefix == '':
+        path = '{}/out/{}/{}/{}'.format(location, project_id, query_id, filename)
+    else:
+        path = '{}/out/{}/{}/{}_{}'.format(location, project_id, query_id, prefix, filename)
+    if path[-1] == '/':
+        path = path[:-1]
+    return path
+

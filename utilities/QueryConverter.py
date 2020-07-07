@@ -32,25 +32,32 @@ class QueryConverter:
         query_length = query_string.__len__()
         for query_definition in self._query.query_definitions.query_definition:
             for query_line in query_definition.query_lines:
-                if query_line.query_line is not "":
-                    query_line_string = query_line.field + '(' + re.sub(' +', ' ', query_line.query_line.replace('\n', '')) + ')'
-                    overall_query_string = query_line.field + '(' + re.sub(' +', ' ', query_line.query_line.replace('\n', '')) + ')'
-                    if (query_length + query_line_string.__len__()) < 2800:
-                        if query_string is overall_filter_string:
-                            if query_string is not '':
-                                query_string = query_string + ' AND ('
-                                overall_query_string = overall_query_string + ' AND ('
-                            else:
-                                query_string = query_string + '('
-                                overall_query_string = overall_query_string + '('
-                        else:
-                            query_string = query_string + ' OR '
-                            overall_query_string = overall_query_string + ' OR '
-                        query_string = query_string + query_line_string
+                if query_line.query_line is not '':
+
+                    # generate query term for indiviudal query line
+                    query_term = query_line.field + '(' + re.sub(' +', ' ',
+                                                                 query_line.query_line.replace('\n', '')) + ')'
+
+                    # add query term to overall query string. if it is the first entry, connect by AND and open bracket,
+                    # else add it by OR
+                    if overall_query_string is overall_filter_string:
+                        overall_query_string += ' AND (' + query_term
                     else:
-                        overall_query_string = overall_query_string + ' AND ('
+                        overall_query_string += ' OR ' + query_term
+
+                    # add the query term to the query string. these are designed to be below the limit of 2800
+                    # for the scopus api. If the addition of the query term would exceed this limit, the line is closed
+                    # and added to the scopus search strings, otherwise it is added to the current search line.
+                    if (query_length + len(query_term)) < 2800:
+                        # add query term to query string. if it is the first entry, connect by AND and open bracket,
+                        # else add it by OR
+                        if query_string is overall_filter_string:
+                            query_string += ' AND (' + query_term
+                        else:
+                            query_string += ' OR ' + query_term
+                    else:
                         scopus_queries.add_search_string(query_string + ')')
-                        query_string = overall_filter_string + ' AND (' + query_line_string
+                        query_string = overall_filter_string + ' AND (' + query_term
         scopus_queries.add_search_string(query_string + ')')
         scopus_queries.overall = overall_query_string + ')'
         self._scopus_queries = scopus_queries
@@ -66,16 +73,16 @@ def get_filter_string(query_filters):
                 string = string + ' AND ' + query_filters.timerange.field + ' BEF ' + query_filters.timerange.end
             string = string + ')'
     for query_filter in query_filters.query_filters:
-        if string != "":
-            string += " AND "
+        if string != '':
+            string += ' AND '
         if query_filter.filter_type is 'subjectarea':
-            string += "("
-            for i, subjects in enumerate(query_filter.filter_term.split(" OR ")):
+            string += '('
+            for i, subjects in enumerate(query_filter.filter_term.split(' OR ')):
                 if i > 0:
-                    string += " OR "
-                string += " LIMIT-TO(SUBJAREA, \"" + query_filter.filter_term + "\")"
-            string += ")"
-        else:
-            string += "("
-            string += query_filter.filter_field + "(" + query_filter.filter_term + ")"
+                    string += ' OR '
+                string += ' LIMIT-TO(SUBJAREA, \'' + query_filter.filter_term + '\')'
+            string += ')'
+        elif query_filter.filter_type:
+            string += '(' + query_filter.filter_field + '(' + query_filter.filter_term + '))'
+            string = string.replace(' OR ', ') OR ' + query_filter.filter_field + '(')
     return string

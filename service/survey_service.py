@@ -1,16 +1,41 @@
+import csv
 import json
 import os
 
 from flask import current_app as app
-from pybliometrics import scopus
 
 from SurveyProvider.SurveyGizmo import SurveyGizmo
-from model.AllResponses import AllResponses
 from model.Survey import Survey
 from service import facettes_service, elasticsearch_service
 from service.eids_service import generate_judgement_file
 from utilities.HiddenEncoder import HiddenEncoder
 from utilities.utils import replace_index_by_clear_name
+
+
+def load_judgement_file(project_id, query_id):
+    path_to_file = get_path_to_judgement_file(project_id, query_id)
+    judgement_list = []
+    with open(path_to_file, 'r') as csvfile:
+        linereader = csv.reader(csvfile, delimiter=',')
+        for line in linereader:
+            if line.__len__() < 2:
+                continue
+            if line[0] == 'identifier':
+                continue
+            if line[0] == 'eid':
+                continue
+            judgement = {'eid': line[0], 'isRelevant': (line[1].strip().lower() == 'true')}
+            judgement_list.append(judgement)
+        return judgement_list
+
+
+def generate_judgement_file(judgements, project_id, query_id):
+    path_to_file = get_path_to_judgement_file(project_id, query_id)
+    with open(path_to_file, 'w') as csvfile:
+        csvfile.write('eid,isRelevant\n')
+        for judgement in judgements:
+            csvfile.write(judgement['eid'] + ',' + str(judgement['judgement']) + '\n')
+        csvfile.close()
 
 
 def save_survey(survey, prefix=''):
@@ -71,14 +96,12 @@ def collect_survey_data(project):
         replace_index_by_clear_name(result.selected_journals, journals_facettes)
         replace_index_by_clear_name(result.unselected_journals, journals_facettes)
         judgements = judgements + result.judgements
-    # for judgement in judgements:
-        #     try:
-            # scopus_abstract = scopus.AbstractRetrieval(judgement['eid'], view="FULL")
-            # response = AllResponses(judgement['eid'], project.name, project.project_id)
-            # response.scopus_abstract_retrieval = scopus_abstract
-            # response.accepted = judgement['judgement']
-            # elasticsearch_service.send_to_index(response, project.project_id)
-        # except:
-            # print('could not get scopus data')
-    # generate_judgement_file(judgements, project.project_id)
+    generate_judgement_file(judgements, project.project_id)
     return gizmo_survey.survey
+
+
+def get_path_to_judgement_file(project_id, query_id):
+    with app.app_context():
+        location = app.config.get("LIBINTEL_DATA_DIR")
+    path_to_file = '{}/out/{}/{}/sample_judgement_identifier_list.csv'.format(location, project_id, query_id)
+    return path_to_file

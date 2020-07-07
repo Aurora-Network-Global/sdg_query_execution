@@ -3,6 +3,7 @@ from flask import current_app as app
 
 from model.Survey import Survey
 from model.SurveyResult import SurveyResult
+from service import eids_service
 
 
 class SurveyGizmo:
@@ -30,6 +31,7 @@ class SurveyGizmo:
 
         # retrieve the structure of the survey in order to identify the keys to the individual answer blocks
         r = requests.get(survey_structure_url.format(survey_id, self._key, self._secret))
+        judgment_eids = []
         if r.status_code == 200:
             print('collected survey structure')
             self._survey_structure = r.json()
@@ -157,12 +159,9 @@ class SurveyGizmo:
                         if i not in selected_keywords:
                             unselected_keywords.append(i)
                         try:
-                            eid = \
-                            result[str(self._matrix_question_number)]['subquestions'][list(matrix_answers)[i + 100]][
-                                'answer']
-                            judgement = \
-                            result[str(self._matrix_question_number)]['subquestions'][list(matrix_answers)[i]][
-                                'answer']
+                            eid = result[str(self._matrix_question_number)]['subquestions'][list(matrix_answers)[i + 100]]['answer']
+                            judgment_eids.append(eid)
+                            judgement = result[str(self._matrix_question_number)]['subquestions'][list(matrix_answers)[i]]['answer']
                             judgements.append({'eid': eid, 'judgement': ('Yes' in judgement)})
                         except KeyError:
                             pass
@@ -183,3 +182,4 @@ class SurveyGizmo:
             self._survey = Survey(survey_id=survey_id,
                                   project_id=project_id,
                                   survey_results=survey_results)
+            eids_service.save_eid_list(project_id, set(judgment_eids), 'judgement')

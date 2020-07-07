@@ -74,3 +74,26 @@ def create_project(project):
     if not os.path.exists(path):
         os.makedirs(path)
     return project
+
+
+def add_query_reference(project_id, query_reference):
+    project = load_project(project_id)
+    project.add_query(query_reference)
+    save_project(project)
+    return project
+
+
+def delete_query(project_id, query_id):
+    """deletes a query folder from disc"""
+    with app.app_context():
+        location = app.config.get("LIBINTEL_DATA_DIR")
+    path = '{}/out/{}/{}'.format(location, project_id, query_id)
+    shutil.rmtree(path, ignore_errors=False, onerror=None)
+
+
+def remove_query_from_project(project_id, query_id):
+    project = load_project(project_id)
+    project.queries = [query_reference for query_reference in project.queries if query_reference['query_id'] != query_id]
+    delete_query(project_id, query_id)
+    save_project(project)
+    return project
