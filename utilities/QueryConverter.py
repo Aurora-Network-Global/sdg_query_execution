@@ -41,7 +41,10 @@ class QueryConverter:
                     # add query term to overall query string. if it is the first entry, connect by AND and open bracket,
                     # else add it by OR
                     if overall_query_string is overall_filter_string:
-                        overall_query_string += ' AND (' + query_term
+                        if overall_query_string == '':
+                            overall_query_string = '(' + query_term
+                        else:
+                            overall_query_string += ' AND (' + query_term
                     else:
                         overall_query_string += ' OR ' + query_term
 
