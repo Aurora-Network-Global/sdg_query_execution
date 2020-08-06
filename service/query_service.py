@@ -286,6 +286,7 @@ def save_query_to_xml(project_id, query):
                                                                                                       " xmlns:aqd=").replace(
             " dc=", " xmlns:dc=").replace('\u2018', '"').replace('\u2019', '"').replace('\u201c', '"').replace('\u201d', '"'))
     query_converter = QueryConverter(query)
+    query_converter.calculate_scopus_queries()
     save_scopus_queries(project_id, query_converter.scopus_queries)
 
 
