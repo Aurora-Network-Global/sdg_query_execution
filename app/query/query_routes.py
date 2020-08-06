@@ -148,9 +148,10 @@ def query_execution(project_id):
     for search_string in scopus_queries.search_strings:
         print('executing search {}'.format(search_string))
         search = scopus.ScopusSearch(search_string, refresh=True)
-        for result in search.results:
-            # add EID if it is not already in the list (from a former search)
-            eids.append(result.eid)
+        if search.results is not None:
+            for result in search.results:
+                # add EID if it is not already in the list (from a former search)
+                eids.append(result.eid)
 
     # convert to set in order to remove duplicates
     eids = set(eids)
