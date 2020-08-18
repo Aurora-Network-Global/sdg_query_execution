@@ -46,7 +46,8 @@ def data_collection_execution(project_id):
     missed_eids = []
 
     with app.app_context():
-        keys = app.config.get("LIBINTEL_SCOPUS_KEYS")
+        keys = app.config.get("SCOPUS_API_KEY")
+        print('loaded API key ' + keys)
 
     # initialize status, set to collecting and save status
     status = Status("DATA_COLLECTING")
@@ -55,6 +56,7 @@ def data_collection_execution(project_id):
 
     if status.total > 0:
         elasticsearch_service.delete_index(project.project_id)
+        print(keys)
         if type(keys) is tuple:
 
             # the number of threads is given by the number of available API keys
