@@ -20,5 +20,8 @@ def get_collection_progress(project_id):
     :return: a JSON formatted status object depicting the number of collected entries
     """
     status = status_service.load_status(project_id)
-    status.progress = elasticsearch_service.get_number_of_records(project_id=project_id)
+    try:
+        status.progress = elasticsearch_service.get_number_of_records(project_id=project_id)
+    except:
+        status.progress = 0
     return json.dumps(status, default=lambda o: o.__getstate__())
