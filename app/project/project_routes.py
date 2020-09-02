@@ -6,6 +6,7 @@ import json
 import re
 
 from flask import Response, request
+from flask import current_app as app
 
 import service.project_service as project_service
 from model.Project import Project
@@ -37,8 +38,10 @@ def get_project(project_id):
     """
     try:
         project = project_service.load_project(project_id)
+        app.logger.info('project {}: loaded'.format(project_id))
         return json.dumps(project, default=lambda o: o.__getstate__())
     except FileNotFoundError:
+        app.logger.warn('project {}: could not load project'.format(project_id))
         return Response("File not found", status=404)
 
 
@@ -66,6 +69,7 @@ def save_query_for_project(project_id):
     query_json = request.get_json(silent=True)
     query = query_service.from_json(query_json)
     query_service.save_query_to_xml(project_id, query)
+    app.logger.info('project {}: saved'.format(project_id))
     return Response('query saved', status=204)
 
 
@@ -78,6 +82,7 @@ def delete_query_from_project(project_id, query_id):
     :return: the project associated with that ID
     """
     project = project_service.remove_query_from_project(project_id=project_id, query_id=query_id)
+    app.logger.info('project {}: deleted'.format(project_id))
     return json.dumps(project, default=lambda o: o.__getstate__())
 
 
@@ -93,11 +98,13 @@ def create_new_project():
         print('valid ID')
         try:
             project_service.create_project(project)
+            app.logger.info('project {}: created'.format(project.project_id))
             return json.dumps(project, default=lambda o: o.__getstate__())
         except IOError:
+            app.logger.error('project {}: could not create project'.format(project.project_id))
             return Response("could not create project", status=500)
     else:
-        print('ID not valid')
+        app.logger.error('project {}: invalid ID'.format(project.project_id))
         return Response("could not create project", status=500)
 
 

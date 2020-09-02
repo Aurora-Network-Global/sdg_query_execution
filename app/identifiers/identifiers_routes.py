@@ -36,10 +36,11 @@ def download_standard_identifier_file(project_id, query_id):
         location = app.config.get("LIBINTEL_DATA_DIR")
     # path to the file
     path_to_file = utils.get_path(location=location, project_id=project_id, query_id=query_id, filename='identifier_list.txt')
-    print('sending file ' + path_to_file)
+    app.logger.info('project {}: sending file {}'.format(project_id, path_to_file))
     try:
         return send_file(path_to_file, attachment_filename='eids_list.txt')
     except FileNotFoundError:
+        app.logger.error('project {}: could not send file {}'.format(project_id, path_to_file))
         return Response('no list of eids', status=404)
 
 
@@ -58,10 +59,11 @@ def download_identifier_file(project_id, query_id, prefix):
     # path to the file
     path_to_file = utils.get_path(location=location, project_id=project_id, query_id=query_id, filename='identifier_list.txt',
                                   prefix=prefix)
-    print('sending file ' + path_to_file)
+    app.logger.info('project {}: sending file {}'.format(project_id, path_to_file))
     try:
         return send_file(path_to_file, attachment_filename='eids_list.txt')
     except FileNotFoundError:
+        app.logger.error('project {}: could not send file {}'.format(project_id, path_to_file))
         return Response('no list of eids', status=404)
 
 
@@ -152,8 +154,9 @@ def get_eids_list_length(project_id):
     prefix = request.args.get('prefix')
     try:
         eids = eids_service.load_eid_list(project_id, prefix)
-        return Response(str(eids.__len__()), status=200)
+        return Response(str(len(eids)), status=200)
     except FileNotFoundError:
+        app.logger.error('project {}: could not send {} eid file'.format(project_id, prefix))
         return Response("File not found", status=404)
 
 
@@ -163,7 +166,7 @@ def get_ids_list_length(project_id, query_id):
     prefix = request.args.get('prefix')
     try:
         eids = identifier_service.load_id_list(project_id, query_id, prefix)
-        return Response(str(eids.__len__()), status=200)
+        return Response(str(len(eids)), status=200)
     except FileNotFoundError:
         return Response("File not found", status=404)
 
@@ -179,8 +182,8 @@ def check_test_eids(project_id):
     relevance_measure = relevance_measure_service.load_relevance_measure(project_id)
     if relevance_measure is None:
         relevance_measure = RelevanceMeasure()
-    relevance_measure.number_of_search_results = eids.__len__()
-    relevance_measure.number_test_entries = test_eids.__len__()
+    relevance_measure.number_of_search_results = len(eids)
+    relevance_measure.number_test_entries = len(test_eids)
     for test_eid in test_eids:
         if test_eid in eids:
             relevance_measure.number_test_entries_found = relevance_measure.number_test_entries_found + 1
@@ -202,6 +205,7 @@ def download_sample_eids(project_id):
     try:
         return send_file(path_to_file, attachment_filename='test_sample_eids_list.txt')
     except FileNotFoundError:
+        app.logger.error('project {}: could not send file {}'.format(project_id, path_to_file))
         return Response('no list of missed eids', status=404)
 
 
@@ -255,9 +259,9 @@ def check_sample_eids(project_id):
     relevance_measure = relevance_measure_service.load_relevance_measure(project_id)
     if relevance_measure is None:
         relevance_measure = RelevanceMeasure()
-    relevance_measure.number_of_search_results = eids.__len__()
+    relevance_measure.number_of_search_results = len(eids)
     judgement_list = eids_service.load_judgement_file(project_id)
-    relevance_measure['number_sample_entries'] = judgement_list.__len__()
+    relevance_measure['number_sample_entries'] = len(judgement_list)
     for judgement in judgement_list:
         if judgement['isRelevant']:
             relevance_measure['number_positive_sample_entries'] = \
@@ -273,7 +277,7 @@ def execute_query(project_id, query_id):
     :param project_id: the ID of the current project
     :return: 'finished' with a status of 204 when the query was executed successfully
     """
-    print('running project {}'.format(project_id))
+    app.logger.info('project {}: running query {}'.format(project_id, query_id))
     # reads the saved Scopus search string from disk
     scopus_queries = query_service.load_scopus_queries(project_id, query_id)
 
@@ -286,7 +290,7 @@ def execute_query(project_id, query_id):
     eids = scopus_service.execute_query(scopus_queries)
 
     # print the results to the command line for logging
-    print('found {} entries in Scopus'.format(len(eids)))
+    app.logger.info('project {}: found {} entries in Scopus'.format(project_id, len(eids)))
 
     # persist EIDs to file
     identifier_service.save_id_list(project_id=project_id, query_id=query_id, identifiers=eids)

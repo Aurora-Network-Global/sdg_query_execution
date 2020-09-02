@@ -38,6 +38,8 @@ def data_collection_execution(project_id):
     if request.args.get('mode') is not None:
         mode = request.args.get('mode')
 
+    app.logger.info('project {}: collecting data with mode {}'.format(project_id, mode))
+
     # load project, set status bools, and load and eid list. initialize missed eid list
     project = project_service.load_project(project_id)
     project.isDataCollecting = True
@@ -46,8 +48,7 @@ def data_collection_execution(project_id):
     missed_eids = []
 
     with app.app_context():
-        keys = app.config.get("SCOPUS_API_KEY")
-        print('loaded API key ' + keys)
+        keys = app.config.get("LIBINTEL_SCOPUS_KEYS")
 
     # initialize status, set to collecting and save status
     status = Status("DATA_COLLECTING")
@@ -56,11 +57,11 @@ def data_collection_execution(project_id):
 
     if status.total > 0:
         elasticsearch_service.delete_index(project.project_id)
-        print(keys)
         if type(keys) is tuple:
 
             # the number of threads is given by the number of available API keys
             number_of_threads = len(keys)
+            app.logger.info('project {}: collecting data in {} threads'.format(project_id, number_of_threads))
 
             # gather the individual chunks provided to each process
             length_of_chunks = math.ceil(status.total / number_of_threads)
@@ -86,14 +87,15 @@ def data_collection_execution(project_id):
             status_service.save_status(project_id, status)
 
             # print progress
-            print('processing entry ' + str(idx) + 'of ' + str(status.total) + ' entries: ' +
+            app.logger.info('project {}: processing entry ' + str(idx) + 'of ' + str(status.total) + ' entries: ' +
                   str(idx / status.total * 100) + '%')
 
             # retrieve data from scopus
             try:
                 scopus_abstract = scopus.AbstractRetrieval(identifier=eid, id_type='eid', view="FULL", refresh=True)
+                app.logger.info('project {}: collected scopus data for EID {}'.format(project_id, eid))
             except IOError:
-                print('could not collect data for EID ' + eid)
+                app.logger.error('project {}: could not collect scopus data for EID {}'.format(project_id, eid))
                 missed_eids.append(eid)
                 continue
 
@@ -113,8 +115,9 @@ def data_collection_execution(project_id):
 
             # send response to elastic search index
             elasticsearch_service.send_to_index(response, project.project_id)
+            app.logger.info('project {}: saved EID {} to elasticsearch'.format(project_id, eid))
     eids_service.save_eid_list(project_id=project.project_id, eids=missed_eids, prefix='missed_')
-
+    app.logger.info('project {}: all EID data collected'.format(project_id))
     status.status = "DATA_COLLECTED"
     status_service.save_status(project_id, status)
     project.isDataCollecting = False
@@ -155,8 +158,9 @@ def collect_data(eids, project_id, project_name, i, key, app):
             # retrieve data from scopus
             try:
                 scopus_abstract = scopus.AbstractRetrieval(identifier=eid, id_type='eid', view="FULL", refresh=True)
+                app.logger.info('project {}: collected scopus data for EID {}'.format(project_id, eid))
             except IOError:
-                print('could not collect data for EID ' + eid)
+                app.logger.error('project {}: could not collect scopus data for EID {}'.format(project_id, eid))
                 missed_eids.append(eid)
                 continue
 
@@ -176,7 +180,9 @@ def collect_data(eids, project_id, project_name, i, key, app):
 
             # send response to elastic search index
             elasticsearch_service.send_to_index(response, project_id)
+            app.logger.info('project {}: saved EID {} to elasticsearch'.format(project_id, eid))
         eids_service.save_eid_list(project_id=project_id, eids=missed_eids, prefix=(str(i) + '_missed_'))
+        app.logger.info('project {}: saved {} missed EIDs'.format(project_id, len(missed_eids)))
 
 
 @collector_blueprint.route('/collect_references/<project_id>', methods=['POST'])
@@ -211,17 +217,19 @@ def references_collection_execution(project_id):
             status_service.save_status(project_id, status)
 
             # print progress
-            print('processing entry ' + str(idx) + 'of ' + str(status.total) + ' entries: ' +
-                  str(idx / status.total * 100) + '%')
+            app.logger.info('project {}: processing entry ' + str(idx) + 'of ' + str(status.total) + ' entries: ' +
+                            str(idx / status.total * 100) + '%')
 
             # retrieve refereces from scopus
             try:
                 scopus_abstract = scopus.AbstractRetrieval(eid, view="FULL")
+                app.logger.info('project {}: collected scopus data for EID {}'.format(project_id, eid))
                 if scopus_abstract.references is not None:
                     references_eids = references_eids + scopus_abstract.references
                 else:
-                    print('no references given in scopus export.')
+                    app.logger.warn('project {}: no references given in scopus export for EID {}.'.format(project_id, eid))
             except IOError:
+                app.logger.error('project {}: could not collect scopus data for EID {}'.format(project_id, eid))
                 missed_eids.append(eid)
                 continue
     # transform references eids into tuple and calculate the occurences

@@ -33,10 +33,11 @@ def download_eids(project_id):
         location = app.config.get("LIBINTEL_DATA_DIR")
     # path to the file
     path_to_file = location + '/out/' + project_id + '/' + 'eids_list.txt'
-    print('sending file ' + path_to_file)
+    app.logger.info('project {}: sending file {}'.format(project_id, path_to_file))
     try:
         return send_file(path_to_file, attachment_filename='eids_list.txt')
     except FileNotFoundError:
+        app.logger.warn('project {}: could not send file {}'.format(project_id, path_to_file))
         return Response('no list of eids', status=404)
 
 
@@ -53,10 +54,11 @@ def download_standard_identifier_file(project_id, query_id):
         location = app.config.get("LIBINTEL_DATA_DIR")
     # path to the file
     path_to_file = '{}/out/{}/{}/eids_list.txt'.format(location, project_id, query_id)
-    print('sending file ' + path_to_file)
+    app.logger.info('project {}: sending file {}'.format(project_id, path_to_file))
     try:
         return send_file(path_to_file, attachment_filename='eids_list.txt')
     except FileNotFoundError:
+        app.logger.warn('project {}: could not send file {}'.format(project_id, path_to_file))
         return Response('no list of eids', status=404)
 
 
@@ -74,10 +76,11 @@ def download_identifier_file(project_id, query_id, prefix):
         location = app.config.get("LIBINTEL_DATA_DIR")
     # path to the file
     path_to_file = '{}/out/{}/{}/{}_eids_list.txt'.format(location, project_id, query_id, prefix)
-    print('sending file ' + path_to_file)
+    app.logger.info('project {}: sending file {}'.format(project_id, path_to_file))
     try:
         return send_file(path_to_file, attachment_filename='eids_list.txt')
     except FileNotFoundError:
+        app.logger.warn('project {}: could not send file {}'.format(project_id, path_to_file))
         return Response('no list of eids', status=404)
 
 
@@ -93,9 +96,11 @@ def download_missed_eids(project_id):
         location = app.config.get("LIBINTEL_DATA_DIR")
     # path to the file
     path_to_file = location + '/out/' + project_id + '/' + 'missed_eids_list.txt'
+    app.logger.info('project {}: sending file {}'.format(project_id, path_to_file))
     try:
         return send_file(path_to_file, attachment_filename='missed_eids_list.txt')
     except FileNotFoundError:
+        app.logger.warn('project {}: could not send file {}'.format(project_id, path_to_file))
         return Response('no list of missed eids', status=404)
 
 
@@ -149,6 +154,7 @@ def retrieve_sampled_publications(project_id):
     search_string = utils.generate_scopus_search_from_eid_list(random_sample_eids)
     search = scopus.ScopusSearch(search_string, refresh=True, project_id=project_id)
     sample_publications_json = json.dumps(search.results, cls=PropertyEncoder)
+    app.loggin.info('project {}: retrieved {} sample publications for session {}'.format(project_id, sample_size, session_id))
     return Response(sample_publications_json, status=200, mimetype='application/json')
 
 
@@ -178,8 +184,10 @@ def calculate_sample(project_id):
     sample_size = int(request.args.get('sample_size'))
     build_sample_list(project_id, sample_size)
     try:
+        app.logger.info('project {}: retrieved sample eid file'.format(project_id))
         return send_file(out_dir + 'sample_eids_list.txt', attachment_filename='sample_eids_list.txt')
     except FileNotFoundError:
+        app.logger.error('project {}: could not retrieve sample eid file'.format(project_id))
         return Response('no list of sample eids', status=404, mimetype='text/plain')
 
 

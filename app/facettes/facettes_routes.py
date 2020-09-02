@@ -26,7 +26,7 @@ def upload_facettes_file(project_id):
     """
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
-    print("saving facettes file for " + project_id)
+    app.logger.info("project {}: saving facettes file".format(project_id))
     file = request.files['facettes']
     path_to_save = location + '/out/' + project_id + '/'
     if not os.path.exists(path_to_save):
@@ -35,6 +35,7 @@ def upload_facettes_file(project_id):
         file.save(path_to_save + 'facettes.csv')
         return Response('facettes saved', status=204)
     except IOError:
+        app.logger.error('project {}: could not save facettes file.')
         return Response('could not write file', status=500)
 
 

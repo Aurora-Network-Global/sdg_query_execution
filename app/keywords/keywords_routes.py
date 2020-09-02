@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 from elasticsearch import Elasticsearch
 from flask import Response
+from flask import current_app as app
 
 from . import keywords_blueprint
 
