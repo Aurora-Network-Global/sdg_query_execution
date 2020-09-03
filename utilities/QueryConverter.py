@@ -29,10 +29,10 @@ class QueryConverter:
         overall_filter_string = clean_up_line(get_filter_string(self._query.query_definitions.query_filters))
         query_string = overall_filter_string
         overall_query_string = overall_filter_string
-        query_length = query_string.__len__()
+        query_length = len(query_string)
         for query_definition in self._query.query_definitions.query_definition:
+            query_string = ''
             for query_line in query_definition.query_lines:
-                query_term = ''
                 if query_line.query_line is not '':
 
                     # generate query term for indiviudal query line
@@ -58,9 +58,9 @@ class QueryConverter:
                     else:
                         scopus_queries.add_search_string(query_string + ')')
                         query_string = overall_filter_string + '(' + query_term
-                if query_term is not '':
-                    scopus_queries.add_search_string(query_string + ')')
-                    query_string = overall_filter_string + '(' + query_term
+            if query_term is not '':
+                scopus_queries.add_search_string(query_string + ')')
+                query_string = overall_filter_string + '(' + query_term
         scopus_queries.add_search_string(query_string + ')')
         scopus_queries.overall = overall_query_string + ')'
         self._scopus_queries = scopus_queries
