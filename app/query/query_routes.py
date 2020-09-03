@@ -160,7 +160,7 @@ def query_execution(project_id):
     for index, search_string in enumerate(scopus_queries.search_strings):
         app.logger.info('project {}: executing search {} - {}'.format(project_id, index, search_string))
         individual_eids = []
-        search = scopus.ScopusSearch(search_string, refresh=True, field='eid')
+        search = scopus.ScopusSearch(search_string, refresh=True, field='eid', view='STANDARD',  download=False)
         if search.results is not None:
             app.logger.info('project {}: result search {} - {} entries found'.format(project_id, index, len(search.results)))
             for result in search.results:
