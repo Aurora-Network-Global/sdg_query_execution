@@ -27,11 +27,10 @@ class QueryConverter:
     def calculate_scopus_queries(self):
         scopus_queries = ScopusQueries()
         overall_filter_string = clean_up_line(get_filter_string(self._query.query_definitions.query_filters))
-        query_string = overall_filter_string
         overall_query_string = overall_filter_string
-        query_length = len(query_string)
+        query_length = len(overall_filter_string)
         for query_definition in self._query.query_definitions.query_definition:
-            query_string = ''
+            query_string = overall_filter_string
             for query_line in query_definition.query_lines:
                 if query_line.query_line is not '':
 
