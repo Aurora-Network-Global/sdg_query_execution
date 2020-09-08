@@ -16,6 +16,7 @@ def send_to_index(all_responses: AllResponses, project_id):
         print('saved to index ' + project_id)
     except:
         print('could not convert ' + all_responses.id)
+        return None
     return res
 
 
