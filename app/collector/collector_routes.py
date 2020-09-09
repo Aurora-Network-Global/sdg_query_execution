@@ -94,7 +94,7 @@ def data_collection_execution(project_id):
             try:
                 scopus_abstract = scopus.AbstractRetrieval(identifier=eid, id_type='eid', view="FULL", refresh=True)
                 app.logger.info('project {}: collected scopus data for EID {}'.format(project_id, eid))
-            except IOError:
+            except:
                 app.logger.error('project {}: could not collect scopus data for EID {}'.format(project_id, eid))
                 missed_eids.append(eid)
                 continue
@@ -159,7 +159,7 @@ def collect_data(eids, project_id, project_name, i, key, app):
             try:
                 scopus_abstract = scopus.AbstractRetrieval(identifier=eid, id_type='eid', view="FULL", refresh=True)
                 app.logger.info('project {}: collected scopus data for EID {}'.format(project_id, eid))
-            except IOError:
+            except:
                 app.logger.error('project {}: could not collect scopus data for EID {}'.format(project_id, eid))
                 missed_eids.append(eid)
                 continue
