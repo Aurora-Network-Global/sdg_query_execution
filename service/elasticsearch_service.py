@@ -5,6 +5,7 @@ from elasticsearch import Elasticsearch
 from model import AllResponses
 from model.Survey import Survey
 from model.UpdateContainer import UpdateContainer
+from flask import current_app as app
 
 es = Elasticsearch('localhost:9200')
 
@@ -13,9 +14,9 @@ def send_to_index(all_responses: AllResponses, project_id):
     try:
         all_responses_json = json.dumps(all_responses, cls=PropertyEncoder)
         res = es.index(project_id, 'all_data', all_responses_json, all_responses.id, request_timeout=600)
-        print('saved to index ' + project_id)
+        app.logger.info('saved to index ' + project_id)
     except:
-        print('could not convert ' + all_responses.id)
+        app.logger.error('could not convert ' + all_responses.id)
         return None
     return res
 

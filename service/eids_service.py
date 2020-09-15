@@ -1,4 +1,5 @@
 import csv
+import glob
 import os
 
 from flask import current_app as app
@@ -13,6 +14,21 @@ def load_eid_list(project_id, prefix=''):
         eids = f.readlines()
         f.close()
         # remove whitespace characters like `\n` at the end of each line
+    return [x.strip() for x in eids]
+
+
+def load_all_files(project_id, prefix=''):
+    with app.app_context():
+        location = app.config.get("LIBINTEL_DATA_DIR")
+    # path to the file
+    base_path = location + '/out/' + project_id + '/'
+    eids =[]
+    for file in glob.glob(base_path + '*' + prefix + 'eids_list.txt'):
+        path_to_file = base_path + file
+        with open(path_to_file) as f:
+            eids = eids + f.readlines()
+            f.close()
+            # remove whitespace characters like `\n` at the end of each line
     return [x.strip() for x in eids]
 
 

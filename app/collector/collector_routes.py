@@ -56,7 +56,10 @@ def data_collection_execution(project_id):
     status_service.save_status(project_id, status)
 
     if status.total > 0:
-        elasticsearch_service.delete_index(project.project_id)
+        if mode != 'missed':
+            elasticsearch_service.delete_index(project.project_id)
+        else:
+            eids_service.deleteMissedEids()
         if type(keys) is tuple:
 
             # the number of threads is given by the number of available API keys
@@ -94,8 +97,8 @@ def data_collection_execution(project_id):
             try:
                 scopus_abstract = scopus.AbstractRetrieval(identifier=eid, id_type='eid', view="FULL", refresh=True)
                 app.logger.info('project {}: collected scopus data for EID {}'.format(project_id, eid))
-            except:
-                app.logger.error('project {}: could not collect scopus data for EID {}'.format(project_id, eid))
+            except Exception as inst:
+                app.logger.error('project {}: could not collect scopus data for EID {}, exception: {}'.format(project_id, eid, type(inst)))
                 missed_eids.append(eid)
                 continue
 
@@ -124,6 +127,7 @@ def data_collection_execution(project_id):
     project.isDataCollected = True
     project_service.save_project(project)
     return Response({"status": "FINISHED"}, status=204)
+
 
 
 # cuts lists into chunks
