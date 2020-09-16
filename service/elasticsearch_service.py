@@ -15,8 +15,8 @@ def send_to_index(all_responses: AllResponses, project_id):
         all_responses_json = json.dumps(all_responses, cls=PropertyEncoder)
         res = es.index(project_id, 'all_data', all_responses_json, all_responses.id, request_timeout=600)
         app.logger.info('saved to index ' + project_id)
-    except:
-        app.logger.error('could not convert ' + all_responses.id)
+    except Exception as exception:
+        app.logger.error('could not save {} to elasticsearch, reason: {}'.format(all_responses.id, exception.with_traceback()))
         return None
     return res
 
