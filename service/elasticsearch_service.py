@@ -104,7 +104,7 @@ class PropertyEncoder(json.JSONEncoder):
                     except TypeError:
                         print('could not save key: ' + key)
                     except AttributeError:
-                        app.logging.error('could not save key: ' + key)
+                        app.logger.error('could not save key: ' + key)
         elif object_type == '_ScopusAuthor':
             fields = ['indexed_name', 'given_name', 'surname', 'initials', 'author_url', 'auid', 'scopusid', 'seq']
             for key in keys:
