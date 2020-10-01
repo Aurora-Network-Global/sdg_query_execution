@@ -94,7 +94,7 @@ class PropertyEncoder(json.JSONEncoder):
                       'citedby-link', 'correspondence', 'coverDate', 'description', 'doi', 'eid', 'endingPage',
                       'funding', 'isbn', 'issn', 'identifier', 'idxterms', 'issueIdentifier',
                       'issuetitle', 'language', 'pageRange', 'publicationName', 'publisher', 'publisheraddress',
-                      'refcount', 'references', 'scopus_link', 'self_link', 'source_id',
+                      'refcount', 'references', 'scopus_link', 'self_link', 'source_id', 'title',
                       'sourcetitle_abbreviation', 'srctype', 'startingPage', 'subject_areas', 'url',
                       'volume', 'website', 'auid', 'indexed_name', 'surname', 'given_name', 'affiliation']
             for key in keys:
