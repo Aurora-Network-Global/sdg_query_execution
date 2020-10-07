@@ -16,7 +16,7 @@ def send_to_index(all_responses: AllResponses, project_id):
         res = es.index(project_id, 'all_data', all_responses_json, all_responses.id, request_timeout=600)
         app.logger.info('saved to index ' + project_id)
     except Exception as exception:
-        app.logger.error('could not save {} to elasticsearch, reason: {}'.format(all_responses.id, exception.with_traceback()))
+        app.logger.error('could not save {} to elasticsearch, reason: {}'.format(all_responses.id, type(exception)))
         return None
     return res
 
