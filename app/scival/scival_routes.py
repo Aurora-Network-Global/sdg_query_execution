@@ -41,7 +41,7 @@ def upload_scival_file(project_id):
     """
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
-    app.logging.info('project {}: saving scival file'.format(project_id))
+    app.logger.info('project {}: saving scival file'.format(project_id))
     if request.method == 'POST':
         project = project_service.load_project(project_id)
         file = request.files['scival-file']
@@ -63,7 +63,7 @@ def import_scival_data(project_id):
     :param project_id: the ID of the current project
     :return: a status of 200 when the data have been imported
     """
-    app.logging.info('project {}: importing Scival data'.format(project_id))
+    app.logger.info('project {}: importing Scival data'.format(project_id))
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
     with open(location + '/out/' + project_id + '/' + 'scival_data.csv', 'r', encoding='utf-8-sig') as csvfile:
@@ -77,5 +77,5 @@ def import_scival_data(project_id):
             elasticsearch_service.append_to_index(ScivalUpdate(scival), scival.eid, project_id)
             scivals.append(scival)
         csvfile.close()
-        app.logging.info('project {}: imported {} Scival data'.format(project_id, str(len(scivals))))
+        app.logger.info('project {}: imported {} Scival data'.format(project_id, str(len(scivals))))
     return Response("imported " + str(len(scivals)) + " Scival data", status=200)

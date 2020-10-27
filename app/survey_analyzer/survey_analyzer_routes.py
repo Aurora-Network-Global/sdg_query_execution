@@ -29,7 +29,7 @@ def upload_results_file(project_id):
     """
     with app.app_context():
         location = app.config.get("LIBINTEL_DATA_DIR")
-    app.logging.info("project {}: saving survey results file for ".format(project_id))
+    app.logger.info("project {}: saving survey results file for ".format(project_id))
     if request.method == 'POST':
         file = request.files['survey-result-file']
         path_to_save = location + '/out/' + project_id + '/'
@@ -45,7 +45,7 @@ def set_survey_id(project_id):
     project = project_service.load_project(project_id)
     project.survey_id = survey_id
     project_service.save_project(project)
-    app.logging.info('project {}: connecting with survey {}'.format(project_id, survey_id))
+    app.logger.info('project {}: connecting with survey {}'.format(project_id, survey_id))
     return Response('survey ID saved', status=204)
 
 
@@ -61,7 +61,7 @@ def collect_survey_results_data(project_id):
     survey_service.save_survey(survey)
     elasticsearch_service.delete_survey_index(survey)
     elasticsearch_service.save_survey(survey)
-    app.logging.info('project {}: collecting survey data'.format(project_id))
+    app.logger.info('project {}: collecting survey data'.format(project_id))
     return Response(json.dumps(survey.survey_results, cls=HiddenEncoder), status=200)
 
 

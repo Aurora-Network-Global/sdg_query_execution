@@ -154,7 +154,7 @@ def retrieve_sampled_publications(project_id):
     search_string = utils.generate_scopus_search_from_eid_list(random_sample_eids)
     search = scopus.ScopusSearch(search_string, refresh=True, project_id=project_id)
     sample_publications_json = json.dumps(search.results, cls=PropertyEncoder)
-    app.loggin.info('project {}: retrieved {} sample publications for session {}'.format(project_id, sample_size, session_id))
+    app.logger.info('project {}: retrieved {} sample publications for session {}'.format(project_id, sample_size, session_id))
     return Response(sample_publications_json, status=200, mimetype='application/json')
 
 
