@@ -129,8 +129,8 @@ class Scival:
             else:
                 self._scopus_affil_names = None
             if row['Country/Region'] is not "-":
-                if row['Country'] is not None:
-                    self._country = row['Country'].split(', ')
+                if row['Country/Region'] is not None:
+                    self._country = row['Country/Region'].split(', ')
             else:
                 self._country = None
             if row['All Science Journal Classification (ASJC) code'] is not "-":
