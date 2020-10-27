@@ -69,13 +69,15 @@ def import_scival_data(project_id):
     with open(location + '/out/' + project_id + '/' + 'scival_data.csv', 'r', encoding='utf-8-sig') as csvfile:
         scivals = []
         linereader = csv.DictReader(csvfile, delimiter=',')
-        count = 0
-        for row in linereader:
+        rows = list(linereader)
+        app.logger.info('project {}: importing {} lines of scival data'.format(project_id, str(len(rows))))
+        for index, row in enumerate(rows):
+            app.logger.info('project {}: processed entry {} of {} '.format(project_id, str(index), str(len(rows))))
             if len(row) < 10:
                 continue
             scival = Scival(row)
             elasticsearch_service.append_to_index(ScivalUpdate(scival), scival.eid, project_id)
             scivals.append(scival)
         csvfile.close()
-        app.logger.info('project {}: imported {} Scival data'.format(project_id, str(len(scivals))))
+        app.logger.info('project {}: imported {} Scival data out of  {}'.format(project_id, str(len(scivals)), str(len(rows))))
     return Response("imported " + str(len(scivals)) + " Scival data", status=200)
