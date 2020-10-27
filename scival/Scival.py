@@ -50,7 +50,7 @@ class Scival:
             else:
                 self._source_id = None
             if row['Source type'] is not "-":
-                self._source_type = row['Source-type']
+                self._source_type = row['Source type']
             else:
                 self._source_type = None
             if row['SNIP (publication year)'] is not "-":
@@ -102,7 +102,7 @@ class Scival:
             else:
                 self._doi = None
             if row['Publication type'] is not "-":
-                self._publication_type = row['Publication-type']
+                self._publication_type = row['Publication type']
             else:
                 self._publication_type = None
             if row['EID'] is not "-":
@@ -118,28 +118,28 @@ class Scival:
                     self._institutions = row['Institutions'].split(', ')
             else:
                 self._institutions = None
-            if row['Scopus affiliation IDs'] is not "-":
-                if row['Scopus affiliation IDs'] is not None:
-                    self._scopus_affil_ids = row['Scopus affiliation IDs'].split(', ')
+            if row['Scopus Affiliation IDs'] is not "-":
+                if row['Scopus Affiliation IDs'] is not None:
+                    self._scopus_affil_ids = row['Scopus Affiliation IDs'].split(', ')
             else:
                 self._scopus_affil_ids = None
-            if row['Scopus affiliation names'] is not "-":
-                if row['Scopus affiliation names'] is not None:
-                    self._scopus_affil_names = row['Scopus affiliation names'].split('; ')
+            if row['Scopus Affiliation names'] is not "-":
+                if row['Scopus Affiliation names'] is not None:
+                    self._scopus_affil_names = row['Scopus Affiliation names'].split('; ')
             else:
                 self._scopus_affil_names = None
-            if row['Country'] is not "-":
+            if row['Country/Region'] is not "-":
                 if row['Country'] is not None:
                     self._country = row['Country'].split(', ')
             else:
                 self._country = None
-            if row['All Science Journal Classification (ASJC) Code'] is not "-":
-                if row['All Science Journal Classification (ASJC) Code'] is not None:
-                    self._all_science_classification_code = row['All Science Journal Classification (ASJC) Code'].split('; ')
+            if row['All Science Journal Classification (ASJC) code'] is not "-":
+                if row['All Science Journal Classification (ASJC) code'] is not None:
+                    self._all_science_classification_code = row['All Science Journal Classification (ASJC) code'].split('; ')
             else:
                 self._all_science_classification_code = None
-            if row['All Science Journal Classification (ASJC) Field Name'] is not "-":
-                self._all_science_classification_name = row['All Science Journal Classification (ASJC) Field Name']
+            if row['All Science Journal Classification (ASJC) field name'] is not "-":
+                self._all_science_classification_name = row['All Science Journal Classification (ASJC) field name']
             else:
                 self._all_science_classification_name = None
             if row['Topic Cluster name'] is not "-":
