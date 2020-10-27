@@ -49,20 +49,20 @@ class Scival:
                 self._source_id = row['Source ID']
             else:
                 self._source_id = None
-            if row['Source-type'] is not "-":
+            if row['Source type'] is not "-":
                 self._source_type = row['Source-type']
             else:
                 self._source_type = None
-            if row['SNIP 2017'] is not "-":
-                self._snip = row['SNIP 2017']
+            if row['SNIP (publication year)'] is not "-":
+                self._snip = row['SNIP (publication year)']
             else:
                 self._snip = None
-            if row['CiteScore 2017'] is not "-":
-                self._cite_score = row['CiteScore 2017']
+            if row['CiteScore (publication year)'] is not "-":
+                self._cite_score = row['CiteScore (publication year)']
             else:
                 self._cite_score = None
-            if row['SJR 2017'] is not "-":
-                self._sjr = row['SJR 2017']
+            if row['SJR (publication year)'] is not "-":
+                self._sjr = row['SJR (publication year)']
             else:
                 self._sjr = None
             if row['Field-Weighted View Impact'] is not "-":
@@ -101,7 +101,7 @@ class Scival:
                 self._doi = row['DOI']
             else:
                 self._doi = None
-            if row['Publication-type'] is not "-":
+            if row['Publication type'] is not "-":
                 self._publication_type = row['Publication-type']
             else:
                 self._publication_type = None
