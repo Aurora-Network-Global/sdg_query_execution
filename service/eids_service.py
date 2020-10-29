@@ -80,3 +80,16 @@ def get_last_change(project_id, prefix=''):
     path_to_file = location + '/out/' + project_id + '/' + prefix + 'eids_list.txt'
     last_change = os.path.getmtime(path_to_file)
     return last_change
+
+
+def get_query_ids(project_id, prefix=''):
+    with app.app_context():
+        location = app.config.get("LIBINTEL_DATA_DIR")
+    folder = location + '/out/' + project_id
+    query_ids = []
+    for file in os.listdir(folder):
+            if 'eids_list.txt' in file:
+                query_id = file.replace('eids_list.txt', '')
+                if query_id != '':
+                    query_ids.append(query_id)
+    return query_ids

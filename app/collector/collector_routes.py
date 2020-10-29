@@ -4,7 +4,7 @@
 
 from collections import Counter
 import math
-from flask import Response, request, current_app as app
+from flask import Response, request, current_app as app, jsonify
 from pybliometrics import scopus
 
 from threading import Thread
@@ -12,9 +12,10 @@ from threading import Thread
 from altmetric.Altmetric import Altmetric
 from model.AllResponses import AllResponses
 from model.Status import Status
+from model.UpdateContainer import UpdateContainer
 from scival.Scival import Scival
 from service import project_service, status_service, eids_service, \
-    elasticsearch_service, counter_service
+    elasticsearch_service, counter_service, query_service
 from unpaywall.Unpaywall import Unpaywall
 from . import collector_blueprint
 
@@ -69,12 +70,12 @@ def data_collection_execution(project_id):
             # gather the individual chunks provided to each process
             length_of_chunks = math.ceil(status.total / number_of_threads)
             list_chunks = list(chunks(eids, length_of_chunks))
-
             # make asynchronous calls and delegate the individual collection to the individual threads
             for key_index, key in enumerate(keys):
-                thread = Thread(target=collect_data, args=(list_chunks[key_index], project.project_id, project.name, key_index, key,
-                                  app._get_current_object()))
-                thread.start()
+                if len(list_chunks) > key_index:
+                    thread = Thread(target=collect_data, args=(list_chunks[key_index], project.project_id, project.name, key_index, key,
+                                      app._get_current_object()))
+                    thread.start()
             return Response('finished', status=204)
 
         collect_data(eids=eids, project_id=project.project_id, project_name=project.name, i=0, key=keys, app=app._get_current_object())
@@ -255,3 +256,22 @@ def references_collection_execution(project_id):
     project_service.save_project(project)
 
     return Response({"status": "FINISHED"}, status=204)
+
+
+@collector_blueprint.route('/set_query_ids/<project_id>', methods=['Post'])
+def add_query_ids(project_id):
+    query_ids = query_service.load_scopus_queries(project_id).search_ids
+    for query_id in query_ids:
+        eids = eids_service.load_eid_list(project_id, prefix=query_id + '_')
+        for eid in eids:
+            record = elasticsearch_service.get_record(project_id, eid)
+            if query_id in record['query_id']:
+                continue
+            if record['query_id'] == '':
+                record['query_id'] = query_id
+            else:
+                record['query_id'] = record['query_id'] + '; ' + query_id
+            elasticsearch_service.append_to_index(record, eid, project_id)
+            app.logger.info('set query id {} to entry {}'.format(query_id, eid))
+    return Response({"status": "FINISHED"}, status=204)
+

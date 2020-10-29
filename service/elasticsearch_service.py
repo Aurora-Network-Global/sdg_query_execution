@@ -63,6 +63,11 @@ def delete_survey_index(survey):
     es.indices.delete('survey_' + survey.project_id, ignore=[400, 404])
 
 
+def get_record(project_id, identifier):
+    result = es.get(index=project_id, doc_type="all_data", id=identifier)
+    return result['_source']
+
+
 class HiddenEncoder(json.JSONEncoder):
     def default(self, o):
         return_object = {}
