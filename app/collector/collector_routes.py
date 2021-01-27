@@ -265,7 +265,7 @@ def add_query_ids(project_id):
         eids = eids_service.load_eid_list(project_id, prefix=query_id + '_')
         for eid in eids:
                 record = elasticsearch_service.get_record(project_id, eid)
-
+                print(record)
                 if query_id in record['query_id']:
                     continue
                 if record['query_id'] == '':
