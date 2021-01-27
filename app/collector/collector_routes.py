@@ -272,16 +272,17 @@ def add_query_ids(project_id):
                 record = elasticsearch_service.get_record(project_id, eid)
             except:
                 app.logger.warning('eid not in index: '.format(eid))
-                try:
-                    if query_id in record['query_id']:
-                        continue
-                    if record['query_id'] == '':
-                        record['query_id'] = query_id
-                    else:
-                        record['query_id'] = record['query_id'] + '; ' + query_id
-                except KeyError:
+                continue
+            try:
+                if query_id in record['query_id']:
+                    continue
+                if record['query_id'] == '':
                     record['query_id'] = query_id
+                else:
+                    record['query_id'] = record['query_id'] + '; ' + query_id
+            except KeyError:
+                record['query_id'] = query_id
 
-                elasticsearch_service.append_to_index(record, eid, project_id)
-                app.logger.info('set query id {} to entry {}'.format(query_id, eid))
+            elasticsearch_service.append_to_index(record, eid, project_id)
+            app.logger.info('set query id {} to entry {}'.format(query_id, eid))
     return Response({"status": "FINISHED"}, status=204)
