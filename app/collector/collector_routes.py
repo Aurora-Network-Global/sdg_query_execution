@@ -264,7 +264,6 @@ def add_query_ids(project_id):
     for query_id in query_ids:
         eids = eids_service.load_eid_list(project_id, prefix=query_id + '_')
         for eid in eids:
-            try:
                 record = elasticsearch_service.get_record(project_id, eid)
 
                 if query_id in record['query_id']:
@@ -275,7 +274,5 @@ def add_query_ids(project_id):
                     record['query_id'] = record['query_id'] + '; ' + query_id
                 elasticsearch_service.append_to_index(record, eid, project_id)
                 app.logger.info('set query id {} to entry {}'.format(query_id, eid))
-            except:
-                continue
     return Response({"status": "FINISHED"}, status=204)
 
