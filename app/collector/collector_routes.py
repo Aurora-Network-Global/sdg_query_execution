@@ -73,12 +73,14 @@ def data_collection_execution(project_id):
             # make asynchronous calls and delegate the individual collection to the individual threads
             for key_index, key in enumerate(keys):
                 if len(list_chunks) > key_index:
-                    thread = Thread(target=collect_data, args=(list_chunks[key_index], project.project_id, project.name, key_index, key,
-                                      app._get_current_object()))
+                    thread = Thread(target=collect_data,
+                                    args=(list_chunks[key_index], project.project_id, project.name, key_index, key,
+                                          app._get_current_object()))
                     thread.start()
             return Response('finished', status=204)
 
-        collect_data(eids=eids, project_id=project.project_id, project_name=project.name, i=0, key=keys, app=app._get_current_object())
+        collect_data(eids=eids, project_id=project.project_id, project_name=project.name, i=0, key=keys,
+                     app=app._get_current_object())
 
         # if only one API-Key is given, collect data sequentially
         for idx, eid in enumerate(eids):
@@ -92,14 +94,16 @@ def data_collection_execution(project_id):
 
             # print progress
             app.logger.info('project {}: processing entry ' + str(idx) + 'of ' + str(status.total) + ' entries: ' +
-                  str(idx / status.total * 100) + '%')
+                            str(idx / status.total * 100) + '%')
 
             # retrieve data from scopus
             try:
                 scopus_abstract = scopus.AbstractRetrieval(identifier=eid, id_type='eid', view="FULL", refresh=True)
                 app.logger.info('project {}: collected scopus data for EID {}'.format(project_id, eid))
             except Exception as inst:
-                app.logger.error('project {}: could not collect scopus data for EID {}, exception: {}'.format(project_id, eid, type(inst)))
+                app.logger.error(
+                    'project {}: could not collect scopus data for EID {}, exception: {}'.format(project_id, eid,
+                                                                                                 type(inst)))
                 missed_eids.append(eid)
                 continue
 
@@ -128,7 +132,6 @@ def data_collection_execution(project_id):
     project.isDataCollected = True
     project_service.save_project(project)
     return Response({"status": "FINISHED"}, status=204)
-
 
 
 # cuts lists into chunks
@@ -232,7 +235,8 @@ def references_collection_execution(project_id):
                 if scopus_abstract.references is not None:
                     references_eids = references_eids + scopus_abstract.references
                 else:
-                    app.logger.warn('project {}: no references given in scopus export for EID {}.'.format(project_id, eid))
+                    app.logger.warn(
+                        'project {}: no references given in scopus export for EID {}.'.format(project_id, eid))
             except IOError:
                 app.logger.error('project {}: could not collect scopus data for EID {}'.format(project_id, eid))
                 missed_eids.append(eid)
@@ -264,7 +268,10 @@ def add_query_ids(project_id):
     for query_id in query_ids:
         eids = eids_service.load_eid_list(project_id, prefix=query_id + '_')
         for eid in eids:
+            try:
                 record = elasticsearch_service.get_record(project_id, eid)
+            except:
+                app.logger.warning('eid not in index: '.format(eid))
                 try:
                     if query_id in record['query_id']:
                         continue
@@ -278,4 +285,3 @@ def add_query_ids(project_id):
                 elasticsearch_service.append_to_index(record, eid, project_id)
                 app.logger.info('set query id {} to entry {}'.format(query_id, eid))
     return Response({"status": "FINISHED"}, status=204)
-
